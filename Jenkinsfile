@@ -48,12 +48,14 @@ def addStages() {
   if (env.HEAD_REF == 'refs/heads/master' || env.HEAD_REF == 'origin/master') {
     runTheBuilds.timedStage('Push') {
       def version = readFile('VERSION').trim()
-      try {
-        // Try to pull the image tagged with the contents of the VERSION file. If that
-        // call fails, then we should push this image to the registry.
-        docker.image(image.id + ':' + version).pull()
-      } catch (ignored) {
-        image.push(version)
+      docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-password') {
+        try {
+          // Try to pull the image tagged with the contents of the VERSION file. If that
+          // call fails, then we should push this image to the registry.
+          docker.image(image.id + ':' + version).pull()
+        } catch (ignored) {
+          image.push(version)
+        }
       }
     }
   }

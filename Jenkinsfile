@@ -55,6 +55,7 @@ def addStages() {
           docker.image(image.id + ':' + version).pull()
         } catch (ignored) {
           image.push(version)
+          image.push('latest')
         }
       }
     }

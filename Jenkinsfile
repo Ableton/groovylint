@@ -22,7 +22,7 @@ def addStages() {
   }
 
   runTheBuilds.timedStage('Build') {
-    image = docker.build('hub.docker.com/abletonag/groovylint')
+    image = docker.build('abletonag/groovylint')
   }
 
   runTheBuilds.timedStage('Test') {

@@ -4,7 +4,7 @@ def check(String includesPattern, image = null) {
     if (!version) {
       error 'Could not find groovylint version in environment'
     }
-    image = docker.image("hub.docker.com/abletonag/groovylint:${version}")
+    image = docker.image("abletonag/groovylint:${version}")
   }
   echo "Using groovylint Docker image: ${image.id}"
 

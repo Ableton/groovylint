@@ -1,6 +1,9 @@
-def check(String includesPattern, image = null) {
+@SuppressWarnings('MethodParameterTypeRequired')
+void check(String includesPattern, groovylintImage = null) {
+  @SuppressWarnings('VariableTypeRequired')
+  def image = groovylintImage
   if (!image) {
-    def version = env['library.groovylint.version']
+    String version = env['library.groovylint.version']
     if (!version) {
       error 'Could not find groovylint version in environment'
     }
@@ -16,7 +19,7 @@ def check(String includesPattern, image = null) {
     sh "docker logs ${c.id}"
   }
 
-  def outputFile = 'groovylint-errors.html'
+  String outputFile = 'groovylint-errors.html'
   if (fileExists(outputFile)) {
     archive outputFile
     error "Groovy style violations found, see ${outputFile}"

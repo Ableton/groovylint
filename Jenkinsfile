@@ -1,15 +1,19 @@
+@SuppressWarnings('VariableTypeRequired')
 @Library(['ableton-utils@0.1.0', 'python-utils@0.3.0']) _
 
 // Jenkins has some problems loading libraries from git references when they are
 // named 'origin/branch_name' or 'refs/heads/branch_name'. Until this behavior
 // is working, we need to strip those prefixes from the incoming HEAD_REF.
-final BRANCH = "${env.HEAD_REF}".replace('origin/', '').replace('refs/heads/', '')
+final String BRANCH = "${env.HEAD_REF}".replace('origin/', '').replace('refs/heads/', '')
 library "groovylint@${BRANCH}"
 
+import com.ableton.VirtualEnv as VirtualEnv
 
-def addStages() {
+
+void addStages() {
+  @SuppressWarnings('VariableTypeRequired')
   def image
-  def venv = virtualenv.create(this, 'python3.6')
+  VirtualEnv venv = virtualenv.create(this, 'python3.6')
 
   runTheBuilds.timedStage('Checkout') {
     // Print out all environment variables for debugging purposes
@@ -47,7 +51,7 @@ def addStages() {
 
   if (env.HEAD_REF == 'refs/heads/master' || env.HEAD_REF == 'origin/master') {
     runTheBuilds.timedStage('Push') {
-      def version = readFile('VERSION').trim()
+      String version = readFile('VERSION').trim()
       docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-password') {
         try {
           // Try to pull the image tagged with the contents of the VERSION file. If that

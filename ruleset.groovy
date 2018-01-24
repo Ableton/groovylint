@@ -1,4 +1,4 @@
-def jenkinsImportLibraryName = '_'
+String jenkinsImportLibraryName = '_'
 
 ruleset {
   ruleset('rulesets/basic.xml') {}
@@ -17,6 +17,11 @@ ruleset {
   ruleset('rulesets/formatting.xml') {
     ClassJavadoc(enabled: false)
     ConsecutiveBlankLines(enabled: false)
+    // TODO: Re-enable this rule when it works correctly
+    // Right now this rule uses the wrong indentation level for statements not
+    // encapsulated in a class (ie, everything in a Jenkinsfile). See also:
+    // https://github.com/CodeNarc/CodeNarc/issues/310
+    Indentation(spacesPerIndentLevel: 2, enabled: false)
     SpaceAfterOpeningBrace(ignoreEmptyBlock: true)
     SpaceAroundMapEntryColon(characterAfterColonRegex: /\s/)
     SpaceBeforeClosingBrace(ignoreEmptyBlock: true)
@@ -29,7 +34,11 @@ ruleset {
     VariableName(ignoreVariableNames: jenkinsImportLibraryName)
   }
   ruleset('rulesets/security.xml') {}
-  ruleset('rulesets/size.xml') {}
+  ruleset('rulesets/size.xml') {
+    // This rule causes all sorts of CodeNarc crashes since version 1.1. We should
+    // consider re-enabling it in the future when those are ironed out.
+    AbcMetric(enabled: false)
+  }
   ruleset('rulesets/unnecessary.xml') {
     UnnecessaryReturnKeyword(enabled: false)
   }

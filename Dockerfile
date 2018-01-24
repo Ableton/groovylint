@@ -6,7 +6,7 @@ ENV CODENARC_VERSION=1.0
 ENV SLF4J_VERSION=1.7.25
 ENV GMETRICS_VERSION=1.0
 
-RUN wget https://netcologne.dl.sourceforge.net/project/codenarc/codenarc/CodeNarc%201.0/CodeNarc-1.0.jar \
+RUN wget https://netcologne.dl.sourceforge.net/project/codenarc/codenarc/CodeNarc%20$CODENARC_VERSION/CodeNarc-$CODENARC_VERSION.jar \
     -P /opt/CodeNarc-$CODENARC_VERSION
 
 RUN wget -qO- https://www.slf4j.org/dist/slf4j-$SLF4J_VERSION.tar.gz | tar xvz -C /opt

@@ -38,6 +38,7 @@ ruleset {
     // This rule causes all sorts of CodeNarc crashes since version 1.1. We should
     // consider re-enabling it in the future when those are ironed out.
     AbcMetric(enabled: false)
+    NestedBlockDepth(maxNestedBlockDepth: 8)
   }
   ruleset('rulesets/unnecessary.xml') {
     UnnecessaryReturnKeyword(enabled: false)

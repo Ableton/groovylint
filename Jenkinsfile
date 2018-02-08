@@ -1,4 +1,4 @@
-@SuppressWarnings('VariableTypeRequired')
+@SuppressWarnings('VariableTypeRequired') // For _ variable
 @Library(['ableton-utils@0.1.0', 'python-utils@0.3.0']) _
 
 // Jenkins has some problems loading libraries from git references when they are

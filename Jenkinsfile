@@ -1,5 +1,5 @@
 @SuppressWarnings('VariableTypeRequired') // For _ variable
-@Library(['ableton-utils@0.6.4', 'python-utils@0.3.0']) _
+@Library(['ableton-utils@0.6.4', 'python-utils@0.8.0']) _
 
 // Jenkins has some problems loading libraries from git references when they are
 // named 'origin/branch_name' or 'refs/heads/branch_name'. Until this behavior
@@ -12,7 +12,7 @@ import com.ableton.VirtualEnv as VirtualEnv
 
 runTheBuilds.runDevToolsProject(
   setup: { data ->
-    VirtualEnv venv = virtualenv.create(this, 'python3.6')
+    VirtualEnv venv = virtualenv.create('python3.6')
     venv.run('pip install flake8 pydocstyle pylint')
     data['venv'] = venv
   },

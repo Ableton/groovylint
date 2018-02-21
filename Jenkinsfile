@@ -20,9 +20,10 @@ runTheBuilds.runDevToolsProject(
     data['image'] = docker.build('abletonag/groovylint')
   },
   test: { data ->
+    VirtualEnv venv = data['venv']
     parallel(failFast: false,
       flake8: {
-        data['venv'].run('flake8 --max-line-length=90 -v *.py')
+        venv.run('flake8 --max-line-length=90 -v *.py')
       },
       groovylint: {
         // Use the Docker image created in the Build stage above. This ensures that the
@@ -31,10 +32,10 @@ runTheBuilds.runDevToolsProject(
         groovylint.check('./Jenkinsfile,**/*.groovy', data['image'])
       },
       pydocstyle: {
-        data['venv'].run('pydocstyle -v *.py')
+        venv.run('pydocstyle -v *.py')
       },
       pylint: {
-        data['venv'].run('pylint --max-line-length=90 *.py')
+        venv.run('pylint --max-line-length=90 *.py')
       },
     )
   },

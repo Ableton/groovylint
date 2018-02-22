@@ -1,5 +1,5 @@
 @SuppressWarnings('VariableTypeRequired') // For _ variable
-@Library(['ableton-utils@0.5.0', 'python-utils@0.3.0']) _
+@Library(['ableton-utils@0.6.4', 'python-utils@0.8.0']) _
 
 // Jenkins has some problems loading libraries from git references when they are
 // named 'origin/branch_name' or 'refs/heads/branch_name'. Until this behavior
@@ -12,7 +12,7 @@ import com.ableton.VirtualEnv as VirtualEnv
 
 runTheBuilds.runDevToolsProject(
   setup: { data ->
-    VirtualEnv venv = virtualenv.create(this, 'python3.6')
+    VirtualEnv venv = virtualenv.create('python3.6')
     venv.run('pip install flake8 pydocstyle pylint')
     data['venv'] = venv
   },
@@ -20,9 +20,10 @@ runTheBuilds.runDevToolsProject(
     data['image'] = docker.build('abletonag/groovylint')
   },
   test: { data ->
+    VirtualEnv venv = data['venv']
     parallel(failFast: false,
       flake8: {
-        data['venv'].run('flake8 --max-line-length=90 -v *.py')
+        venv.run('flake8 --max-line-length=90 -v *.py')
       },
       groovylint: {
         // Use the Docker image created in the Build stage above. This ensures that the
@@ -31,10 +32,10 @@ runTheBuilds.runDevToolsProject(
         groovylint.check('./Jenkinsfile,**/*.groovy', data['image'])
       },
       pydocstyle: {
-        data['venv'].run('pydocstyle -v *.py')
+        venv.run('pydocstyle -v *.py')
       },
       pylint: {
-        data['venv'].run('pylint --max-line-length=90 *.py')
+        venv.run('pylint --max-line-length=90 *.py')
       },
     )
   },

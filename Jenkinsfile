@@ -1,6 +1,6 @@
 @SuppressWarnings('VariableTypeRequired') // For _ variable
 @Library([
-  'ableton-utils@0.6.4',
+  'ableton-utils@0.7',
   'python-utils@0.8.0',
 ]) _
 

@@ -1,5 +1,8 @@
 @SuppressWarnings('VariableTypeRequired') // For _ variable
-@Library(['ableton-utils@0.6.4', 'python-utils@0.8.0']) _
+@Library([
+  'ableton-utils@0.6.4',
+  'python-utils@0.8.0',
+]) _
 
 // Jenkins has some problems loading libraries from git references when they are
 // named 'origin/branch_name' or 'refs/heads/branch_name'. Until this behavior

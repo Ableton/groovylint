@@ -28,6 +28,9 @@ runTheBuilds.runDevToolsProject(
       flake8: {
         venv.run('flake8 --max-line-length=90 -v *.py')
       },
+      groovydoc: {
+        data['docs'] = groovydoc.generate()
+      },
       groovylint: {
         // Use the Docker image created in the Build stage above. This ensures that the
         // we are checking our own Groovy code with the same library and image which would
@@ -57,6 +60,9 @@ runTheBuilds.runDevToolsProject(
               data['image'].push('latest')
             }
           }
+        },
+        groovydoc: {
+          docs.publish(data['docs'], 'AbletonDevTools/groovylint')
         },
       )
     }

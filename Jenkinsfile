@@ -1,5 +1,8 @@
 @SuppressWarnings('VariableTypeRequired') // For _ variable
-@Library(['ableton-utils@0.6.4', 'python-utils@0.8.0']) _
+@Library([
+  'ableton-utils@0.7',
+  'python-utils@0.8.0',
+]) _
 
 // Jenkins has some problems loading libraries from git references when they are
 // named 'origin/branch_name' or 'refs/heads/branch_name'. Until this behavior
@@ -25,6 +28,9 @@ runTheBuilds.runDevToolsProject(
       flake8: {
         venv.run('flake8 --max-line-length=90 -v *.py')
       },
+      groovydoc: {
+        data['docs'] = groovydoc.generate()
+      },
       groovylint: {
         // Use the Docker image created in the Build stage above. This ensures that the
         // we are checking our own Groovy code with the same library and image which would
@@ -42,16 +48,23 @@ runTheBuilds.runDevToolsProject(
   deploy: { data ->
     runTheBuilds.runForSpecificBranches(['master'], false) {
       String version = readFile('VERSION').trim()
-      docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-password') {
-        try {
-          // Try to pull the image tagged with the contents of the VERSION file. If that
-          // call fails, then we should push this image to the registry.
-          docker.image(data['image'].id + ':' + version).pull()
-        } catch (ignored) {
-          data['image'].push(version)
-          data['image'].push('latest')
-        }
-      }
+      parallel(failFast: false,
+        dtr: {
+          docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-password') {
+            try {
+              // Try to pull the image tagged with the contents of the VERSION file. If
+              // that call fails, then we should push this image to the registry.
+              docker.image(data['image'].id + ':' + version).pull()
+            } catch (ignored) {
+              data['image'].push(version)
+              data['image'].push('latest')
+            }
+          }
+        },
+        groovydoc: {
+          docs.publish(data['docs'], 'AbletonDevTools/groovylint')
+        },
+      )
     }
   },
 )

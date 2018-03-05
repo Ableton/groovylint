@@ -45,16 +45,20 @@ runTheBuilds.runDevToolsProject(
   deploy: { data ->
     runTheBuilds.runForSpecificBranches(['master'], false) {
       String version = readFile('VERSION').trim()
-      docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-password') {
-        try {
-          // Try to pull the image tagged with the contents of the VERSION file. If that
-          // call fails, then we should push this image to the registry.
-          docker.image(data['image'].id + ':' + version).pull()
-        } catch (ignored) {
-          data['image'].push(version)
-          data['image'].push('latest')
-        }
-      }
+      parallel(failFast: false,
+        dtr: {
+          docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-password') {
+            try {
+              // Try to pull the image tagged with the contents of the VERSION file. If
+              // that call fails, then we should push this image to the registry.
+              docker.image(data['image'].id + ':' + version).pull()
+            } catch (ignored) {
+              data['image'].push(version)
+              data['image'].push('latest')
+            }
+          }
+        },
+      )
     }
   },
 )

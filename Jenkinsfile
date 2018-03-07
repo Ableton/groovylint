@@ -64,6 +64,10 @@ runTheBuilds.runDevToolsProject(
         groovydoc: {
           docs.publish(data['docs'], 'AbletonDevTools/groovylint')
         },
+        version: {
+          version.tag(versionNumber)
+          version.forwardMinorBranch(versionNumber)
+        },
       )
     }
   },

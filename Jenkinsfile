@@ -10,6 +10,7 @@
 final String BRANCH = "${env.HEAD_REF}".replace('origin/', '').replace('refs/heads/', '')
 library "groovylint@${BRANCH}"
 
+import com.ableton.VersionTagger as VersionTagger
 import com.ableton.VirtualEnv as VirtualEnv
 
 
@@ -56,6 +57,7 @@ runTheBuilds.runDevToolsProject(
               // that call fails, then we should push this image to the registry.
               docker.image(data['image'].id + ':' + versionNumber).pull()
             } catch (ignored) {
+              data['image'].push(VersionTagger.majorMinorVersion(versionNumber))
               data['image'].push(versionNumber)
               data['image'].push('latest')
             }

@@ -38,6 +38,12 @@ runTheBuilds.runDevToolsProject(
         // be published to production.
         groovylint.check('./Jenkinsfile,**/*.groovy', data['image'])
       },
+      hadolint: {
+        docker.image('hadolint/hadolint').inside("-v ${pwd()}:/ws") {
+          // See comment in Dockerfile explaining why this rule is ignored
+          sh 'hadolint --ignore DL3002 /ws/Dockerfile'
+        }
+      },
       pydocstyle: {
         venv.run('pydocstyle -v *.py')
       },

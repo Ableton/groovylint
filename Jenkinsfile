@@ -1,7 +1,7 @@
 @SuppressWarnings('VariableTypeRequired') // For _ variable
 @Library([
   'ableton-utils@0.8',
-  'python-utils@0.8.0',
+  'python-utils@0.8',
 ]) _
 
 // Jenkins has some problems loading libraries from git references when they are
@@ -37,6 +37,12 @@ runTheBuilds.runDevToolsProject(
         // we are checking our own Groovy code with the same library and image which would
         // be published to production.
         groovylint.check('./Jenkinsfile,**/*.groovy', data['image'])
+      },
+      hadolint: {
+        docker.image('hadolint/hadolint').inside("-v ${pwd()}:/ws") {
+          // See comment in Dockerfile explaining why this rule is ignored
+          sh 'hadolint --ignore DL3002 /ws/Dockerfile'
+        }
       },
       pydocstyle: {
         venv.run('pydocstyle -v *.py')

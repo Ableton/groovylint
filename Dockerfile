@@ -18,7 +18,7 @@ RUN wget "https://github.com/dx42/gmetrics/releases/download/v$GMETRICS_VERSION/
     -P "/opt/GMetrics-$GMETRICS_VERSION"
 
 RUN apt-get update
-RUN apt-get install python3 -y
+RUN apt-get install -y python3
 
 COPY codenarc /usr/bin
 ADD ruleset.groovy /opt/ruleset.groovy

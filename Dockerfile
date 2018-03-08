@@ -1,5 +1,8 @@
 FROM groovy:2.4
 
+# This line requires that we ignore the hadolint violation DL3002
+# We need to switch to the root user to run apt-get, which is a limitation of the Ubuntu
+# image, which the groovy image is based upon.
 USER root
 
 ENV CODENARC_VERSION=1.1

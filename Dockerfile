@@ -18,7 +18,7 @@ RUN wget "https://github.com/dx42/gmetrics/releases/download/v$GMETRICS_VERSION/
     -P "/opt/GMetrics-$GMETRICS_VERSION"
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends python3 \
+  && apt-get install -y --no-install-recommends python3=3.5.3-1 \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 

@@ -23,8 +23,8 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 COPY codenarc /usr/bin
-ADD ruleset.groovy /opt/ruleset.groovy
-ADD run_codenarc.py /opt/run_codenarc.py
+COPY ruleset.groovy /opt/ruleset.groovy
+COPY run_codenarc.py /opt/run_codenarc.py
 
 RUN useradd jenkins
 USER jenkins

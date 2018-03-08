@@ -17,8 +17,8 @@ RUN wget -qO- "https://www.slf4j.org/dist/slf4j-$SLF4J_VERSION.tar.gz" | tar xvz
 RUN wget "https://github.com/dx42/gmetrics/releases/download/v$GMETRICS_VERSION/GMetrics-$GMETRICS_VERSION.jar" \
     -P "/opt/GMetrics-$GMETRICS_VERSION"
 
-RUN apt-get update
-RUN apt-get install -y python3
+RUN apt-get update \
+  && apt-get install -y python3
 
 COPY codenarc /usr/bin
 ADD ruleset.groovy /opt/ruleset.groovy

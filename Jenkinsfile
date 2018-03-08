@@ -1,6 +1,6 @@
 @SuppressWarnings('VariableTypeRequired') // For _ variable
 @Library([
-  'ableton-utils@0.7',
+  'ableton-utils@0.8',
   'python-utils@0.8.0',
 ]) _
 
@@ -10,6 +10,7 @@
 final String BRANCH = "${env.HEAD_REF}".replace('origin/', '').replace('refs/heads/', '')
 library "groovylint@${BRANCH}"
 
+import com.ableton.VersionTagger as VersionTagger
 import com.ableton.VirtualEnv as VirtualEnv
 
 
@@ -47,22 +48,27 @@ runTheBuilds.runDevToolsProject(
   },
   deploy: { data ->
     runTheBuilds.runForSpecificBranches(['master'], false) {
-      String version = readFile('VERSION').trim()
+      String versionNumber = readFile('VERSION').trim()
       parallel(failFast: false,
         dtr: {
           docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-password') {
             try {
               // Try to pull the image tagged with the contents of the VERSION file. If
               // that call fails, then we should push this image to the registry.
-              docker.image(data['image'].id + ':' + version).pull()
+              docker.image(data['image'].id + ':' + versionNumber).pull()
             } catch (ignored) {
-              data['image'].push(version)
+              data['image'].push(VersionTagger.majorMinorVersion(versionNumber))
+              data['image'].push(versionNumber)
               data['image'].push('latest')
             }
           }
         },
         groovydoc: {
           docs.publish(data['docs'], 'AbletonDevTools/groovylint')
+        },
+        version: {
+          version.tag(versionNumber)
+          version.forwardMinorBranch(versionNumber)
         },
       )
     }

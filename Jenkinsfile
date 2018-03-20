@@ -34,10 +34,9 @@ runTheBuilds.runDevToolsProject(
     data['image'] = docker.build('abletonag/groovylint')
   },
   test: { data ->
-    VirtualEnv venv = data['venv']
     parallel(failFast: false,
       flake8: {
-        venv.run('flake8 --max-line-length=90 -v *.py')
+        data.venv.run('flake8 --max-line-length=90 -v *.py')
       },
       groovydoc: {
         data['docs'] = groovydoc.generate()
@@ -55,10 +54,10 @@ runTheBuilds.runDevToolsProject(
         }
       },
       pydocstyle: {
-        venv.run('pydocstyle -v *.py')
+        data.venv.run('pydocstyle -v *.py')
       },
       pylint: {
-        venv.run('pylint --max-line-length=90 *.py')
+        data.venv.run('pylint --max-line-length=90 *.py')
       },
     )
   },

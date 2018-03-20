@@ -1,7 +1,7 @@
 @SuppressWarnings('VariableTypeRequired') // For _ variable
 @Library([
   'ableton-utils@0.8',
-  'python-utils@0.8',
+  'python-utils@0.9',
 ]) _
 
 // Jenkins has some problems loading libraries from git references when they are
@@ -87,6 +87,11 @@ runTheBuilds.runDevToolsProject(
           version.forwardMinorBranch(versionNumber)
         },
       )
+    }
+  },
+  cleanup: { data ->
+    if (data?.venv) {
+      data.venv.cleanup()
     }
   },
 )

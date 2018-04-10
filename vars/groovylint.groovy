@@ -31,6 +31,6 @@ void check(String includesPattern, groovylintImage = null) {
   String outputFile = 'groovylint-errors.html'
   if (fileExists(outputFile)) {
     archive outputFile
-    error "Groovy style violations found, see ${outputFile}"
+    error "Groovy style violations found, see ${env.BUILD_URL}artifact/${outputFile}"
   }
 }

@@ -1,4 +1,5 @@
-String jenkinsImportLibraryName = '_'
+// For a complete list of rules, see:
+// http://codenarc.sourceforge.net/codenarc-rule-index.html
 
 ruleset {
   ruleset('rulesets/basic.xml') {}
@@ -8,10 +9,6 @@ ruleset {
   }
   ruleset('rulesets/design.xml') {
     Instanceof(enabled: false)
-  }
-  ruleset('rulesets/dry.xml') {
-    DuplicateMapLiteral(enabled: false)
-    DuplicateStringLiteral(enabled: false)
   }
   ruleset('rulesets/exceptions.xml') {}
   ruleset('rulesets/formatting.xml') {
@@ -31,7 +28,7 @@ ruleset {
   ruleset('rulesets/imports.xml') {}
   ruleset('rulesets/naming.xml') {
     FactoryMethodName(enabled: false)
-    VariableName(ignoreVariableNames: jenkinsImportLibraryName)
+    VariableName(ignoreVariableNames: '_')
   }
   ruleset('rulesets/security.xml') {}
   ruleset('rulesets/size.xml') {
@@ -44,6 +41,6 @@ ruleset {
     UnnecessaryReturnKeyword(enabled: false)
   }
   ruleset('rulesets/unused.xml') {
-    UnusedVariable(ignoreVariableNames: jenkinsImportLibraryName)
+    UnusedVariable(ignoreVariableNames: '_')
   }
 }

@@ -1,3 +1,5 @@
+// For a complete list of rules, see:
+// http://codenarc.sourceforge.net/codenarc-rule-index.html
 
 ruleset {
   ruleset('rulesets/basic.xml') {}

@@ -9,10 +9,6 @@ ruleset {
   ruleset('rulesets/design.xml') {
     Instanceof(enabled: false)
   }
-  ruleset('rulesets/dry.xml') {
-    DuplicateMapLiteral(enabled: false)
-    DuplicateStringLiteral(enabled: false)
-  }
   ruleset('rulesets/exceptions.xml') {}
   ruleset('rulesets/formatting.xml') {
     ClassJavadoc(enabled: false)

@@ -1,4 +1,3 @@
-String jenkinsImportLibraryName = '_'
 
 ruleset {
   ruleset('rulesets/basic.xml') {}
@@ -27,7 +26,7 @@ ruleset {
   ruleset('rulesets/imports.xml') {}
   ruleset('rulesets/naming.xml') {
     FactoryMethodName(enabled: false)
-    VariableName(ignoreVariableNames: jenkinsImportLibraryName)
+    VariableName(ignoreVariableNames: '_')
   }
   ruleset('rulesets/security.xml') {}
   ruleset('rulesets/size.xml') {
@@ -40,6 +39,6 @@ ruleset {
     UnnecessaryReturnKeyword(enabled: false)
   }
   ruleset('rulesets/unused.xml') {
-    UnusedVariable(ignoreVariableNames: jenkinsImportLibraryName)
+    UnusedVariable(ignoreVariableNames: '_')
   }
 }

@@ -42,7 +42,7 @@ class CodeNarcHTMLParser(HTMLParser):
             self.violating_files = int(data)
 
     def error(self, message):
-        """Satisfes pylint as error is NotImplemented in HTMLParser."""
+        """Satisfy pylint as error is NotImplemented in HTMLParser."""
         raise message
 
 

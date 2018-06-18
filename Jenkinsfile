@@ -27,7 +27,7 @@ import com.ableton.VirtualEnv as VirtualEnv
 runTheBuilds.runDevToolsProject(
   setup: { data ->
     VirtualEnv venv = virtualenv.create('python3.6')
-    venv.run('pip install flake8 pydocstyle pylint')
+    venv.run('pip install flake8 flake8-commas pydocstyle pylint')
     data['venv'] = venv
   },
   build: { data ->

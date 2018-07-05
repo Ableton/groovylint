@@ -4,9 +4,9 @@ This repository provides a way to run [CodeNarc](codenarc-home) checks from a do
 image. CodeNarc analyzes Groovy code for defects, bad practices, inconsistencies, style
 issues and more.
 
-# Usage
+## Usage
 
-## Running as an application
+### Running as an application
 
 ```
 docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` abletonag/groovylint \
@@ -21,7 +21,7 @@ that you run the image with your own user ID to avoid permission issues.
 The above example would check the file `foo/bar.groovy`, and all Groovy files in the `src`
 directory tree.
 
-## Running in a container
+### Running in a container
 
 ```
 docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` --entrypoint=/bin/bash \
@@ -31,7 +31,7 @@ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` --entrypoint=/bin/bash \
 This command will run the CodeNarc image and override the entry point. You can then run
 `codenarc` inside the container as a regular program.
 
-## Specifying the ruleset
+### Specifying the ruleset
 
 As described in the [CodeNarc documentation](codenarc-rules), you can specify your own
 ruleset file. The file's location must be relative to your workspace, and can be given in
@@ -42,7 +42,7 @@ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` abletonag/groovylint \
   python3 /opt/run_codenarc.py -includes='Jenkinsfile' -rulesetfiles=file:myrules.groovy
 ```
 
-## Usage in a Jenkinsfile
+### Usage in a Jenkinsfile
 
 Any `Jenkinsfile` which is using this library should also use the version tag, like so:
 
@@ -53,7 +53,7 @@ Any `Jenkinsfile` which is using this library should also use the version tag, l
 Jenkins exposes the library version in the environment variables, and the library will use
 that version to find the corresponding Docker image for that release.
 
-# Making releases
+## Making releases
 
 In order to ensure that the library is using a compatible version of the Docker image, a
 file named `VERSION` exists in the top-level directory of this project. To make a release,

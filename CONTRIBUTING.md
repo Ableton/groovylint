@@ -9,5 +9,6 @@ the following criteria:
    * Please see the linting checks in the `test` section of the
      [Jenkinsfile][jenkinsfile]).
  
- [cla]: http://ableton.github.io/cla/
- [jenkinsfile]: https://github.com/AbletonDevTools/groovylint/blob/master/Jenkinsfile
+
+[cla]: http://ableton.github.io/cla/
+[jenkinsfile]: https://github.com/AbletonDevTools/groovylint/blob/master/Jenkinsfile

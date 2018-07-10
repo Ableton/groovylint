@@ -1,3 +1,4 @@
 [flake8]
 filename = *.py
+ignore =
 max-line-length = 90

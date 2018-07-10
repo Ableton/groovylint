@@ -54,7 +54,7 @@ runTheBuilds.runDevToolsProject(
         }
       },
       pydocstyle: {
-        data.venv.run('pydocstyle -v *.py')
+        data.venv.run('pydocstyle -v')
       },
       pylint: {
         data.venv.run('pylint --max-line-length=90 *.py')

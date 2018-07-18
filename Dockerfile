@@ -5,7 +5,7 @@ FROM groovy:2.4
 # image, which the groovy image is based upon.
 USER root
 
-ENV CODENARC_VERSION=1.2
+ENV CODENARC_VERSION=1.1
 ENV SLF4J_VERSION=1.7.25
 ENV GMETRICS_VERSION=1.0
 

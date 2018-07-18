@@ -6,7 +6,6 @@ ruleset {
   ruleset('rulesets/braces.xml') {}
   ruleset('rulesets/convention.xml') {
     NoDef(enabled: false)
-    VariableTypeRequired(ignoreVariableNames: '_')
   }
   ruleset('rulesets/design.xml') {
     Instanceof(enabled: false)

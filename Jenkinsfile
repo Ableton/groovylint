@@ -31,7 +31,8 @@ runTheBuilds.runDevToolsProject(
     data['venv'] = venv
   },
   build: { data ->
-    data['image'] = docker.build('abletonag/groovylint')
+    String gitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+    data['image'] = docker.build("abletonag/groovylint:${gitHash}")
   },
   test: { data ->
     parallel(failFast: false,
@@ -70,7 +71,7 @@ runTheBuilds.runDevToolsProject(
             try {
               // Try to pull the image tagged with the contents of the VERSION file. If
               // that call fails, then we should push this image to the registry.
-              docker.image(data['image'].id + ':' + versionNumber).pull()
+              docker.image("abletonag/groovylint:${versionNumber}").pull()
             } catch (ignored) {
               data['image'].push(VersionTagger.majorMinorVersion(versionNumber))
               data['image'].push(versionNumber)

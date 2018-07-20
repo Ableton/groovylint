@@ -17,10 +17,10 @@ void check(String includesPattern, groovylintImage = null) {
       error 'Could not find groovylint version in environment'
     }
     image = docker.image("abletonag/groovylint:${version}")
+    image.pull()
   }
   echo "Using groovylint Docker image: ${image.id}"
 
-  image.pull()
   image.withRun(
       "-v ${env.WORKSPACE}:/ws",
       "python3 /opt/run_codenarc.py -includes=${includesPattern}",

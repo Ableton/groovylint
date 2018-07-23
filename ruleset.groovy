@@ -6,6 +6,7 @@ ruleset {
   ruleset('rulesets/braces.xml') {}
   ruleset('rulesets/convention.xml') {
     NoDef(enabled: false)
+    VariableTypeRequired(ignoreVariableNames: '_')
   }
   ruleset('rulesets/design.xml') {
     Instanceof(enabled: false)
@@ -14,11 +15,7 @@ ruleset {
   ruleset('rulesets/formatting.xml') {
     ClassJavadoc(enabled: false)
     ConsecutiveBlankLines(enabled: false)
-    // TODO: Re-enable this rule when it works correctly
-    // Right now this rule uses the wrong indentation level for statements not
-    // encapsulated in a class (ie, everything in a Jenkinsfile). See also:
-    // https://github.com/CodeNarc/CodeNarc/issues/310
-    Indentation(spacesPerIndentLevel: 2, enabled: false)
+    Indentation(spacesPerIndentLevel: 2, enabled: true)
     SpaceAfterOpeningBrace(ignoreEmptyBlock: true)
     SpaceAroundMapEntryColon(characterAfterColonRegex: /\s/)
     SpaceBeforeClosingBrace(ignoreEmptyBlock: true)

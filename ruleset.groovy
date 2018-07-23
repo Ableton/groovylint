@@ -16,6 +16,7 @@ ruleset {
     ClassJavadoc(enabled: false)
     ConsecutiveBlankLines(enabled: false)
     Indentation(spacesPerIndentLevel: 2, enabled: true)
+    LineLength(length: 90)
     SpaceAfterOpeningBrace(ignoreEmptyBlock: true)
     SpaceAroundMapEntryColon(characterAfterColonRegex: /\s/)
     SpaceBeforeClosingBrace(ignoreEmptyBlock: true)

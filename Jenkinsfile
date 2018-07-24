@@ -1,7 +1,6 @@
 @SuppressWarnings('VariableTypeRequired') // For _ variable
 @Library([
   'ableton-utils@0.8',
-  'python-utils@0.9',
 ]) _
 
 // Jenkins has some problems loading libraries from git references when they are
@@ -21,14 +20,11 @@ if (env.CHANGE_BRANCH) {
 library "groovylint@${branch}"
 
 import com.ableton.VersionTagger as VersionTagger
-import com.ableton.VirtualEnv as VirtualEnv
 
 
 runTheBuilds.runDevToolsProject(
-  setup: { data ->
-    VirtualEnv venv = virtualenv.create('python3.6')
-    venv.run('pip install flake8 flake8-commas pydocstyle pylint')
-    data['venv'] = venv
+  setup: {
+    sh 'pipenv install --dev'
   },
   build: { data ->
     String gitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
@@ -37,7 +33,7 @@ runTheBuilds.runDevToolsProject(
   test: { data ->
     parallel(failFast: false,
       flake8: {
-        data.venv.run('flake8 -v')
+        sh 'pipenv run flake8 -v'
       },
       groovydoc: {
         data['docs'] = groovydoc.generate()
@@ -54,11 +50,14 @@ runTheBuilds.runDevToolsProject(
           sh 'hadolint --ignore DL3002 /ws/Dockerfile'
         }
       },
+      pipenv: {
+        sh 'pipenv check'
+      },
       pydocstyle: {
-        data.venv.run('pydocstyle -v')
+        sh 'pipenv run pydocstyle -v'
       },
       pylint: {
-        data.venv.run('pylint --max-line-length=90 *.py')
+        sh 'pipenv run pylint --max-line-length=90 *.py'
       },
     )
   },
@@ -89,9 +88,9 @@ runTheBuilds.runDevToolsProject(
       )
     }
   },
-  cleanup: { data ->
-    if (data?.venv) {
-      data.venv.cleanup()
-    }
+  cleanup: {
+    try {
+      sh 'pipenv --rm'
+    } catch (ignored) {}
   },
 )

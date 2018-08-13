@@ -1,4 +1,3 @@
-@SuppressWarnings('VariableTypeRequired') // For _ variable
 @Library([
   'ableton-utils@0.8',
 ]) _

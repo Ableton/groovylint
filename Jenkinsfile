@@ -1,5 +1,5 @@
 @Library([
-  'ableton-utils@0.8',
+  'ableton-utils@0.10',
 ]) _
 
 // Jenkins has some problems loading libraries from git references when they are
@@ -61,7 +61,7 @@ runTheBuilds.runDevToolsProject(
     )
   },
   deploy: { data ->
-    runTheBuilds.runForSpecificBranches(['master'], false) {
+    runTheBuilds.withBranches(branches: ['master'], acceptPullRequests: false) {
       String versionNumber = readFile('VERSION').trim()
       parallel(failFast: false,
         docker_hub: {

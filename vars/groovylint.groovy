@@ -29,9 +29,9 @@ void check(String includesPattern, groovylintImage = null) {
     sh "docker logs ${c.id}"
   }
 
-  String outputFile = 'groovylint-errors.html'
-  if (fileExists(outputFile)) {
-    archive outputFile
-    error "Groovy style violations found, see ${env.BUILD_URL}artifact/${outputFile}"
+  String errorsFile = 'groovylint-errors.html'
+  if (fileExists(errorsFile)) {
+    archive errorsFile
+    error "Groovy style violations found, see ${env.BUILD_URL}artifact/${errorsFile}"
   }
 }

@@ -8,6 +8,10 @@ import subprocess
 import sys
 
 
+CODENARC_OUTPUT_FILE = 'codenarc-output.html'
+GROOVYLINT_ERRORS_FILE = 'groovylint-errors.html'
+
+
 class CodeNarcHTMLParser(HTMLParser):
     """Custom HTML parser for CodeNarc output.
 
@@ -50,13 +54,11 @@ def main():
     """Run CodeNarc on specified code."""
     parsed_args = sys.argv[1:]
 
-    output_file = 'codenarc-output.html'
-
     # -rulesetfiles must not be an absolute path, only a relative one to the CLASSPATH
     codenarc_call = [
         '/usr/bin/codenarc',
         '-rulesetfiles=ruleset.groovy',
-        '-report=html:{}'.format(output_file),
+        '-report=html:{}'.format(CODENARC_OUTPUT_FILE),
     ] + parsed_args
 
     output = subprocess.run(
@@ -75,24 +77,23 @@ def main():
 
     if output.returncode != 0:
         return output.returncode
-    if not os.path.exists(output_file):
-        print('Error: {} was not generated, aborting!'.format(output_file))
+    if not os.path.exists(CODENARC_OUTPUT_FILE):
+        print('Error: {} was not generated, aborting!'.format(CODENARC_OUTPUT_FILE))
         return 1
 
     parser = CodeNarcHTMLParser()
-    with open(output_file) as file:
+    with open(CODENARC_OUTPUT_FILE) as file:
         parser.feed(file.read())
 
     if parser.violating_files is None:
         print('Error parsing CodeNarc output!')
         return 1
 
-    error_file = 'groovylint-errors.html'
     if parser.violating_files > 0:
-        print('Moving {} to {}.'.format(output_file, error_file))
-        os.rename(output_file, error_file)
+        print('Moving {} to {}.'.format(CODENARC_OUTPUT_FILE, GROOVYLINT_ERRORS_FILE))
+        os.rename(CODENARC_OUTPUT_FILE, GROOVYLINT_ERRORS_FILE)
         print('Error: {} files with violations. See {} for details.'.format(
-            parser.violating_files, error_file))
+            parser.violating_files, GROOVYLINT_ERRORS_FILE))
         return 1
 
     print('No violations detected!')

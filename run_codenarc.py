@@ -53,11 +53,17 @@ def main():
     output_file = 'codenarc-output.html'
 
     # -rulesetfiles must not be an absolute path, only a relative one to the CLASSPATH
-    codenarc_call = ['/usr/bin/codenarc', '-rulesetfiles=ruleset.groovy',
-                     '-report=html:%s' % output_file] + parsed_args
+    codenarc_call = [
+        '/usr/bin/codenarc',
+        '-rulesetfiles=ruleset.groovy',
+        '-report=html:%s' % output_file,
+    ] + parsed_args
 
     output = subprocess.run(
-        codenarc_call, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+        codenarc_call,
+        stderr=subprocess.STDOUT,
+        stdout=subprocess.PIPE,
+    )
     sys.stdout.buffer.write(output.stdout)
 
     # CodeNarc doesn't fail on compilation errors (?)

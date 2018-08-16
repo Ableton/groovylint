@@ -4,8 +4,13 @@
 
 from html.parser import HTMLParser
 import os
+import shutil
 import subprocess
 import sys
+
+
+CODENARC_OUTPUT_FILE = 'codenarc-output.html'
+GROOVYLINT_ERRORS_FILE = 'groovylint-errors.html'
 
 
 class CodeNarcHTMLParser(HTMLParser):
@@ -50,14 +55,18 @@ def main():
     """Run CodeNarc on specified code."""
     parsed_args = sys.argv[1:]
 
-    output_file = 'codenarc-output.html'
-
     # -rulesetfiles must not be an absolute path, only a relative one to the CLASSPATH
-    codenarc_call = ['/usr/bin/codenarc', '-rulesetfiles=ruleset.groovy',
-                     '-report=html:%s' % output_file] + parsed_args
+    codenarc_call = [
+        '/usr/bin/codenarc',
+        '-rulesetfiles=ruleset.groovy',
+        '-report=html:{}'.format(CODENARC_OUTPUT_FILE),
+    ] + parsed_args
 
     output = subprocess.run(
-        codenarc_call, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+        codenarc_call,
+        stderr=subprocess.STDOUT,
+        stdout=subprocess.PIPE,
+    )
     sys.stdout.buffer.write(output.stdout)
 
     # CodeNarc doesn't fail on compilation errors (?)
@@ -65,28 +74,27 @@ def main():
         print('Error when compiling files!')
         return 1
 
-    print('Return code: %d' % output.returncode)
+    print('Return code: {}'.format(output.returncode))
 
     if output.returncode != 0:
         return output.returncode
-    if not os.path.exists(output_file):
-        print('Error: %s was not generated, aborting!' % output_file)
+    if not os.path.exists(CODENARC_OUTPUT_FILE):
+        print('Error: {} was not generated, aborting!'.format(CODENARC_OUTPUT_FILE))
         return 1
 
     parser = CodeNarcHTMLParser()
-    with open(output_file) as file:
+    with open(CODENARC_OUTPUT_FILE) as file:
         parser.feed(file.read())
 
     if parser.violating_files is None:
         print('Error parsing CodeNarc output!')
         return 1
 
-    error_file = 'groovylint-errors.html'
     if parser.violating_files > 0:
-        print('Moving %s to %s.' % (output_file, error_file))
-        os.rename(output_file, error_file)
-        print('Error: %d files with violations. See %s for details.'
-              % (parser.violating_files, error_file))
+        print('Copying {} to {}.'.format(CODENARC_OUTPUT_FILE, GROOVYLINT_ERRORS_FILE))
+        shutil.copy(CODENARC_OUTPUT_FILE, GROOVYLINT_ERRORS_FILE)
+        print('Error: {} files with violations. See {} for details.'.format(
+            parser.violating_files, GROOVYLINT_ERRORS_FILE))
         return 1
 
     print('No violations detected!')

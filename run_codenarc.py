@@ -56,7 +56,7 @@ def main():
     codenarc_call = [
         '/usr/bin/codenarc',
         '-rulesetfiles=ruleset.groovy',
-        '-report=html:%s' % output_file,
+        '-report=html:{}'.format(output_file),
     ] + parsed_args
 
     output = subprocess.run(
@@ -71,12 +71,12 @@ def main():
         print('Error when compiling files!')
         return 1
 
-    print('Return code: %d' % output.returncode)
+    print('Return code: {}'.format(output.returncode))
 
     if output.returncode != 0:
         return output.returncode
     if not os.path.exists(output_file):
-        print('Error: %s was not generated, aborting!' % output_file)
+        print('Error: {} was not generated, aborting!'.format(output_file))
         return 1
 
     parser = CodeNarcHTMLParser()
@@ -89,10 +89,10 @@ def main():
 
     error_file = 'groovylint-errors.html'
     if parser.violating_files > 0:
-        print('Moving %s to %s.' % (output_file, error_file))
+        print('Moving {} to {}.'.format(output_file, error_file))
         os.rename(output_file, error_file)
-        print('Error: %d files with violations. See %s for details.'
-              % (parser.violating_files, error_file))
+        print('Error: {} files with violations. See {} for details.'.format(
+            parser.violating_files, error_file))
         return 1
 
     print('No violations detected!')

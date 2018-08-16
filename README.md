@@ -1,6 +1,6 @@
 # Groovylint
 
-This repository provides a way to run [CodeNarc](codenarc-home) checks from a docker
+This repository provides a way to run [CodeNarc][codenarc-home] checks from a docker
 image. CodeNarc analyzes Groovy code for defects, bad practices, inconsistencies, style
 issues and more.
 
@@ -33,7 +33,7 @@ This command will run the CodeNarc image and override the entry point. You can t
 
 ### Specifying the ruleset
 
-As described in the [CodeNarc documentation](codenarc-rules), you can specify your own
+As described in the [CodeNarc documentation][codenarc-rules], you can specify your own
 ruleset file. The file's location must be relative to your workspace, and can be given in
 the command line arguments with the `-rulesetfile` flag:
 

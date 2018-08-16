@@ -29,6 +29,8 @@ void check(String includesPattern, groovylintImage = null) {
     sh "docker logs ${c.id}"
   }
 
+  archive 'codenarc-output.html'
+
   String errorsFile = 'groovylint-errors.html'
   if (fileExists(errorsFile)) {
     archive errorsFile

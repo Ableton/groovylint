@@ -4,6 +4,7 @@
 
 from html.parser import HTMLParser
 import os
+import shutil
 import subprocess
 import sys
 
@@ -90,8 +91,8 @@ def main():
         return 1
 
     if parser.violating_files > 0:
-        print('Moving {} to {}.'.format(CODENARC_OUTPUT_FILE, GROOVYLINT_ERRORS_FILE))
-        os.rename(CODENARC_OUTPUT_FILE, GROOVYLINT_ERRORS_FILE)
+        print('Copying {} to {}.'.format(CODENARC_OUTPUT_FILE, GROOVYLINT_ERRORS_FILE))
+        shutil.copy(CODENARC_OUTPUT_FILE, GROOVYLINT_ERRORS_FILE)
         print('Error: {} files with violations. See {} for details.'.format(
             parser.violating_files, GROOVYLINT_ERRORS_FILE))
         return 1

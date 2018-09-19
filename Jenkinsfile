@@ -44,9 +44,8 @@ runTheBuilds.runDevToolsProject(
         groovylint.check('./Jenkinsfile,**/*.groovy', data['image'])
       },
       hadolint: {
-        docker.image('hadolint/hadolint:v1.6.6').inside("-v ${pwd()}:/ws") {
-          // See comment in Dockerfile explaining why this rule is ignored
-          sh 'hadolint --ignore DL3002 /ws/Dockerfile'
+        docker.image('hadolint/hadolint:v1.13.0-debian').inside("-v ${pwd()}:/ws") {
+          sh 'hadolint /ws/Dockerfile'
         }
       },
       pipenv: {

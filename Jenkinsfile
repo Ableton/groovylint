@@ -1,5 +1,5 @@
 @Library([
-  'ableton-utils@0.10',
+  'ableton-utils@0.11',
 ]) _
 
 // Jenkins has some problems loading libraries from git references when they are

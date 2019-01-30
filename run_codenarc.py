@@ -59,7 +59,7 @@ def main():
     codenarc_call = [
         '/usr/bin/codenarc.sh',
         '-rulesetfiles=ruleset.groovy',
-        '-report=html:{}'.format(CODENARC_OUTPUT_FILE),
+        f'-report=html:{CODENARC_OUTPUT_FILE}',
     ] + parsed_args
 
     output = subprocess.run(
@@ -74,12 +74,11 @@ def main():
         print('Error when compiling files!')
         return 1
 
-    print('Return code: {}'.format(output.returncode))
-
+    print(f'CodeNarc finished with code: {output.returncode}')
     if output.returncode != 0:
         return output.returncode
     if not os.path.exists(CODENARC_OUTPUT_FILE):
-        print('Error: {} was not generated, aborting!'.format(CODENARC_OUTPUT_FILE))
+        print(f'Error: {CODENARC_OUTPUT_FILE} was not generated, aborting!')
         return 1
 
     parser = CodeNarcHTMLParser()

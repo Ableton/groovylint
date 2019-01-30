@@ -21,7 +21,7 @@ RUN wget -q -O slf4j.tar.gz "https://www.slf4j.org/dist/slf4j-$SLF4J_VERSION.tar
 RUN wget "https://github.com/dx42/gmetrics/releases/download/v$GMETRICS_VERSION/GMetrics-$GMETRICS_VERSION.jar" \
     -P "/opt/GMetrics-$GMETRICS_VERSION"
 
-COPY codenarc /usr/bin
+COPY codenarc.sh /usr/bin
 COPY ruleset.groovy /opt/ruleset.groovy
 COPY run_codenarc.py /opt/run_codenarc.py
 

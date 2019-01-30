@@ -57,7 +57,7 @@ def main():
 
     # -rulesetfiles must not be an absolute path, only a relative one to the CLASSPATH
     codenarc_call = [
-        '/usr/bin/codenarc',
+        '/usr/bin/codenarc.sh',
         '-rulesetfiles=ruleset.groovy',
         '-report=html:{}'.format(CODENARC_OUTPUT_FILE),
     ] + parsed_args

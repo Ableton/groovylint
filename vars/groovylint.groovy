@@ -28,12 +28,4 @@ void check(String includesPattern, groovylintImage = null) {
     sh "docker wait ${c.id}"
     sh "docker logs ${c.id}"
   }
-
-  archive 'codenarc-output.html'
-
-  String errorsFile = 'groovylint-errors.html'
-  if (fileExists(errorsFile)) {
-    archive errorsFile
-    error "Groovy style violations found, see ${env.BUILD_URL}artifact/${errorsFile}"
-  }
 }

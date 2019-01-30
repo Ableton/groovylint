@@ -36,6 +36,11 @@ def _print_violations_in_package(packages):
         _print_violations_in_file(package_path, _safe_list_wrapper(package["File"]))
 
 
+def _remove_report_file():
+    if os.path.exists(CODENARC_OUTPUT_FILE):
+        os.remove(CODENARC_OUTPUT_FILE)
+
+
 def _safe_list_wrapper(element):
     """Wrap an XML element in a list if necessary.
 
@@ -68,17 +73,21 @@ def main():
     # CodeNarc doesn't fail on compilation errors (?)
     if 'Compilation failed' in str(output.stdout):
         print('Error when compiling files!')
+        _remove_report_file()
         return 1
 
     print(f'CodeNarc finished with code: {output.returncode}')
     if output.returncode != 0:
+        _remove_report_file()
         return output.returncode
     if not os.path.exists(CODENARC_OUTPUT_FILE):
         print(f'Error: {CODENARC_OUTPUT_FILE} was not generated, aborting!')
+        _remove_report_file()
         return 1
 
     with open(CODENARC_OUTPUT_FILE) as xml_file:
         xml_doc = xmltodict.parse(xml_file.read())
+    _remove_report_file()
 
     package_summary = xml_doc['CodeNarc']['PackageSummary']
     total_files_scanned = package_summary['@totalFiles']

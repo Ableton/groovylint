@@ -9,7 +9,7 @@ ENV GMETRICS_VERSION=1.0
 
 # While the base Alpine image has a busybox-based wget, that version is not sophisticated
 # enough to download from Sourceforge et. al.
-RUN apk add --no-cache python3=3.6.5-r0 wget=1.19.5-r0
+RUN apk add --no-cache python3=3.6.6-r0 wget=1.20.1-r0
 
 RUN wget "https://netcologne.dl.sourceforge.net/project/codenarc/codenarc/CodeNarc%20$CODENARC_VERSION/CodeNarc-$CODENARC_VERSION.jar" \
     -P "/opt/CodeNarc-$CODENARC_VERSION"

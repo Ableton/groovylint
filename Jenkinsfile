@@ -64,6 +64,9 @@ runTheBuilds.runDevToolsProject(
       pylint: {
         sh 'pipenv run pylint --max-line-length=90 *.py'
       },
+      pytest: {
+        sh 'pipenv run python -m pytest -rXxs'
+      },
     )
   },
   deploy: { data ->

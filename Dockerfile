@@ -25,6 +25,7 @@ COPY Pipfile /opt
 COPY Pipfile.lock /opt
 COPY codenarc.sh /usr/bin
 COPY ruleset.groovy /opt/ruleset.groovy
+COPY groovylint /opt/groovylint
 COPY run_codenarc.py /opt/run_codenarc.py
 
 WORKDIR /opt

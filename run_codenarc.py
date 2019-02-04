@@ -2,53 +2,54 @@
 
 """A small wrapper script to call CodeNarc and interpret its output."""
 
-from html.parser import HTMLParser
 import os
-import shutil
 import subprocess
 import sys
+import xmltodict
 
 
-CODENARC_OUTPUT_FILE = 'codenarc-output.html'
-GROOVYLINT_ERRORS_FILE = 'groovylint-errors.html'
+CODENARC_OUTPUT_FILE = 'codenarc-output.xml'
 
 
-class CodeNarcHTMLParser(HTMLParser):
-    """Custom HTML parser for CodeNarc output.
+def _print_violations(package_file_path, violations):
+    for violation in violations:
+        violation_message = f'{violation["@ruleName"]}: {violation["Message"]}'
+        print(f'{package_file_path}:{violation["@lineNumber"]}: {violation_message}')
 
-    Seeks through <td> tags until 'All Packages' is seen, then grabs the second <td>
-    afterward. This is the 'Files with Violations' column for 'All Packages'.
+
+def _print_violations_in_file(package_path, files):
+    for package_file in files:
+        _print_violations(
+            f'{package_path}/{package_file["@name"]}',
+            _safe_list_wrapper(package_file["Violation"]),
+        )
+
+
+def _print_violations_in_package(packages):
+    for package in [p for p in packages if p['@filesWithViolations'] > 0]:
+        # CodeNarc uses the empty string for the top-level package, which we translate to
+        # '.', which prevents the violation files from appearing as belonging to '/'.
+        package_path = package["@path"]
+        if not package_path:
+            package_path = '.'
+
+        _print_violations_in_file(package_path, _safe_list_wrapper(package["File"]))
+
+
+def _remove_report_file():
+    if os.path.exists(CODENARC_OUTPUT_FILE):
+        os.remove(CODENARC_OUTPUT_FILE)
+
+
+def _safe_list_wrapper(element):
+    """Wrap an XML element in a list if necessary.
+
+    This function is used to safely handle data from xmltodict. If an XML element has
+    multiple children, they will be returned in a list. However, a single child is
+    returned as a dict. By wrapping single elements in a list, we can use the same code to
+    handle both cases.
     """
-
-    saw_all_packages = False
-    my_offset = 0
-    current_tag = None
-    violating_files = None
-
-    def handle_starttag(self, tag, attrs):
-        """Record when a tag is opened."""
-        self.current_tag = tag
-
-    def handle_data(self, data):
-        """Process data if it's inside a <td>."""
-        if self.violating_files is not None:
-            # We already have what we need, stop processing.
-            return
-        if self.current_tag != 'td':
-            # It's not a <td> tag, skip ahead.
-            return
-        if self.saw_all_packages:
-            self.my_offset = self.my_offset + 1
-        elif data == 'All Packages':
-            self.saw_all_packages = True
-        if self.my_offset == 2:
-            if data == '-':
-                data = '0'
-            self.violating_files = int(data)
-
-    def error(self, message):
-        """Satisfy pylint as error is NotImplemented in HTMLParser."""
-        raise message
+    return element if isinstance(element, list) else [element]
 
 
 def main():
@@ -57,9 +58,9 @@ def main():
 
     # -rulesetfiles must not be an absolute path, only a relative one to the CLASSPATH
     codenarc_call = [
-        '/usr/bin/codenarc',
+        '/usr/bin/codenarc.sh',
         '-rulesetfiles=ruleset.groovy',
-        '-report=html:{}'.format(CODENARC_OUTPUT_FILE),
+        f'-report=xml:{CODENARC_OUTPUT_FILE}',
     ] + parsed_args
 
     output = subprocess.run(
@@ -72,33 +73,35 @@ def main():
     # CodeNarc doesn't fail on compilation errors (?)
     if 'Compilation failed' in str(output.stdout):
         print('Error when compiling files!')
+        _remove_report_file()
         return 1
 
-    print('Return code: {}'.format(output.returncode))
-
+    print(f'CodeNarc finished with code: {output.returncode}')
     if output.returncode != 0:
+        _remove_report_file()
         return output.returncode
     if not os.path.exists(CODENARC_OUTPUT_FILE):
-        print('Error: {} was not generated, aborting!'.format(CODENARC_OUTPUT_FILE))
+        print(f'Error: {CODENARC_OUTPUT_FILE} was not generated, aborting!')
+        _remove_report_file()
         return 1
 
-    parser = CodeNarcHTMLParser()
-    with open(CODENARC_OUTPUT_FILE) as file:
-        parser.feed(file.read())
+    with open(CODENARC_OUTPUT_FILE) as xml_file:
+        xml_doc = xmltodict.parse(xml_file.read())
+    _remove_report_file()
 
-    if parser.violating_files is None:
-        print('Error parsing CodeNarc output!')
-        return 1
+    package_summary = xml_doc['CodeNarc']['PackageSummary']
+    total_files_scanned = package_summary['@totalFiles']
+    total_violations = package_summary['@filesWithViolations']
 
-    if parser.violating_files > 0:
-        print('Copying {} to {}.'.format(CODENARC_OUTPUT_FILE, GROOVYLINT_ERRORS_FILE))
-        shutil.copy(CODENARC_OUTPUT_FILE, GROOVYLINT_ERRORS_FILE)
-        print('Error: {} files with violations. See {} for details.'.format(
-            parser.violating_files, GROOVYLINT_ERRORS_FILE))
-        return 1
+    print(f'Scanned {total_files_scanned} files')
+    if total_violations == '0':
+        print('No violations found')
+        return 0
 
-    print('No violations detected!')
-    return 0
+    print(f'Found {total_violations} violation(s):')
+    _print_violations_in_package(_safe_list_wrapper(xml_doc["CodeNarc"]["Package"]))
+
+    return 1
 
 
 if __name__ == '__main__':

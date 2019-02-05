@@ -75,16 +75,14 @@ def parse_xml_report(xml_text):
     return 1
 
 
-def main():
+def main(args):
     """Run CodeNarc on specified code."""
-    parsed_args = sys.argv[1:]
-
     # -rulesetfiles must not be an absolute path, only a relative one to the CLASSPATH
     codenarc_call = [
         '/usr/bin/codenarc.sh',
         '-rulesetfiles=ruleset.groovy',
         f'-report=xml:{CODENARC_OUTPUT_FILE}',
-    ] + parsed_args
+    ] + args
 
     output = subprocess.run(
         codenarc_call,
@@ -116,4 +114,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))

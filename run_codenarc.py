@@ -1,4 +1,9 @@
 #!/bin/env python3
+#
+# Copyright (c) 2019 Ableton AG, Berlin. All rights reserved.
+#
+# Use of this source code is governed by a MIT-style
+# license that can be found in the LICENSE file.
 
 """A small wrapper script to call CodeNarc and interpret its output."""
 

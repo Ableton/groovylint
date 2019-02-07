@@ -34,7 +34,7 @@ COPY run_codenarc.py /opt/run_codenarc.py
 
 WORKDIR /opt
 RUN pip3 install --no-cache-dir pipenv==2018.11.26
-RUN pipenv install --system --deploy
+RUN pipenv install --system --ignore-pipfile
 
 RUN adduser -D jenkins
 USER jenkins

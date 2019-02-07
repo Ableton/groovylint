@@ -30,7 +30,7 @@ import com.ableton.VersionTagger as VersionTagger
 
 runTheBuilds.runDevToolsProject(
   setup: {
-    sh 'pipenv install --dev'
+    sh 'pipenv sync --dev'
   },
   build: { data ->
     String gitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()

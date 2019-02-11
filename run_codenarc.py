@@ -99,7 +99,10 @@ def run_codenarc(args):
     )
     sys.stdout.buffer.write(output.stdout)
 
-    # CodeNarc doesn't fail on compilation errors (?)
+    # CodeNarc doesn't fail on compilation errors, it just logs a message for each file
+    # that could not be compiled and generates a report for everything else. It also does
+    # not return a non-zero code in such cases. For our purposes, we want to treat syntax
+    # errors (and similar problems) as a failure condition.
     if 'Compilation failed' in str(output.stdout):
         _remove_report_file()
         raise ValueError('Error when compiling files!')

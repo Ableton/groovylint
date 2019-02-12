@@ -13,7 +13,7 @@ import sys
 import xmltodict
 
 
-CODENARC_OUTPUT_FILE = 'codenarc-output.xml'
+DEFAULT_REPORT_FILE = 'codenarc-report.xml'
 
 
 def _print_violations(package_file_path, violations):
@@ -79,7 +79,7 @@ def parse_xml_report(xml_text):
     return 1
 
 
-def run_codenarc(args, report_file=CODENARC_OUTPUT_FILE):
+def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
     """Run CodeNarc on specified code.
 
     :param args: Command line arguments to be passed to CodeNarc.

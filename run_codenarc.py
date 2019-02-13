@@ -93,25 +93,22 @@ def run_codenarc(args):
 
     # CodeNarc doesn't fail on compilation errors (?)
     if 'Compilation failed' in str(output.stdout):
-        print('Error when compiling files!')
         _remove_report_file()
-        return 1
+        raise ValueError('Error when compiling files!')
 
-    print(f'CodeNarc finished with code: {output.returncode}')
     if output.returncode != 0:
         _remove_report_file()
-        return output.returncode
+        raise ValueError(f'CodeNarc failed with return code {output.returncode}')
     if not os.path.exists(CODENARC_OUTPUT_FILE):
-        print(f'Error: {CODENARC_OUTPUT_FILE} was not generated, aborting!')
         _remove_report_file()
-        return 1
+        raise ValueError(f'{CODENARC_OUTPUT_FILE} was not generated, aborting!')
 
     with open(CODENARC_OUTPUT_FILE) as xml_file:
         xml_text = xml_file.read()
     _remove_report_file()
 
-    return parse_xml_report(xml_text)
+    return xml_text
 
 
 if __name__ == '__main__':
-    sys.exit(run_codenarc(sys.argv[1:]))
+    sys.exit(parse_xml_report(run_codenarc(sys.argv[1:])))

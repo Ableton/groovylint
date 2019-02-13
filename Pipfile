@@ -11,6 +11,7 @@ flake8 = "*"
 flake8-commas = "*"
 pydocstyle = "*"
 pylint = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.6"

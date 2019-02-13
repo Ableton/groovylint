@@ -31,7 +31,10 @@ def _print_violations_in_file(package_path, files):
 
 
 def _print_violations_in_package(packages):
-    for package in [p for p in packages if p['@filesWithViolations'] > 0]:
+    # I believe that CodeNarc has a bug where it erroneously sets filesWithViolations
+    # to the same value in every package. Therefore rather than looking at this attribute
+    # value, we check to see if there are any File elements in the package.
+    for package in [p for p in packages if 'Files' in p]:
         # CodeNarc uses the empty string for the top-level package, which we translate to
         # '.', which prevents the violation files from appearing as belonging to '/'.
         package_path = package["@path"]

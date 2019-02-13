@@ -75,7 +75,7 @@ def parse_xml_report(xml_text):
     return 1
 
 
-def main(args):
+def run_codenarc(args):
     """Run CodeNarc on specified code."""
     # -rulesetfiles must not be an absolute path, only a relative one to the CLASSPATH
     codenarc_call = [
@@ -114,4 +114,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))
+    sys.exit(run_codenarc(sys.argv[1:]))

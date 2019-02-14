@@ -28,8 +28,8 @@ RUN wget "https://github.com/dx42/gmetrics/releases/download/v$GMETRICS_VERSION/
 COPY Pipfile /opt
 COPY Pipfile.lock /opt
 COPY codenarc.sh /usr/bin
-COPY ruleset.groovy /opt/ruleset.groovy
-COPY run_codenarc.py /opt/run_codenarc.py
+COPY ruleset.groovy /opt/
+COPY run_codenarc.py /opt/
 
 WORKDIR /opt
 RUN pip3 install --no-cache-dir pipenv==2018.11.26

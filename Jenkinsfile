@@ -65,7 +65,15 @@ runTheBuilds.runDevToolsProject(
         sh 'pipenv run pylint --max-line-length=90 *.py'
       },
       pytest: {
-        sh 'pipenv run python -m pytest -rXxs'
+        withEnv([
+          'GROOVY_HOME=test',
+          'CODENARC_VERSION=test',
+          'GMETRICS_VERSION=test',
+          'GROOVY_VERSION=test',
+          'SLF4J_VERSION=test',
+        ]) {
+          sh 'pipenv run python -m pytest -rXxs'
+        }
       },
     )
   },

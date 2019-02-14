@@ -27,7 +27,6 @@ RUN wget "https://github.com/dx42/gmetrics/releases/download/v$GMETRICS_VERSION/
 
 COPY Pipfile /opt/
 COPY Pipfile.lock /opt/
-COPY codenarc.sh /usr/bin/
 COPY ruleset.groovy /opt/
 COPY run_codenarc.py /opt/
 

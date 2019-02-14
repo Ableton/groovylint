@@ -11,7 +11,6 @@ ENV CODENARC_VERSION=1.2.1
 ENV SLF4J_VERSION=1.7.25
 ENV GMETRICS_VERSION=1.0
 
-
 # While the base Alpine image has a busybox-based wget, that version is not sophisticated
 # enough to download from Sourceforge et. al.
 RUN apk add --no-cache py3-setuptools=39.1.0-r0 python3=3.6.6-r0 wget=1.20.1-r0

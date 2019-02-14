@@ -16,14 +16,14 @@ ENV GMETRICS_VERSION=1.0
 RUN apk add --no-cache py3-setuptools=39.1.0-r0 python3=3.6.6-r0 wget=1.20.1-r0
 
 RUN wget "https://netcologne.dl.sourceforge.net/project/codenarc/codenarc/CodeNarc%20$CODENARC_VERSION/CodeNarc-$CODENARC_VERSION.jar" \
-    -P "/opt/CodeNarc-$CODENARC_VERSION"
+    -P "/opt/"
 
 RUN wget -q -O slf4j.tar.gz "https://www.slf4j.org/dist/slf4j-$SLF4J_VERSION.tar.gz" && \
     tar xvzf slf4j.tar.gz -C /opt && \
     rm slf4j.tar.gz
 
 RUN wget "https://github.com/dx42/gmetrics/releases/download/v$GMETRICS_VERSION/GMetrics-$GMETRICS_VERSION.jar" \
-    -P "/opt/GMetrics-$GMETRICS_VERSION"
+    -P "/opt/"
 
 COPY Pipfile /opt/
 COPY Pipfile.lock /opt/

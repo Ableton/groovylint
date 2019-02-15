@@ -93,14 +93,11 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
     groovy_home = os.environ['GROOVY_HOME']
     codenarc_version = os.environ['CODENARC_VERSION']
     gmetrics_version = os.environ['GMETRICS_VERSION']
-    groovy_version = os.environ['GROOVY_VERSION']
     slf4j_version = os.environ['SLF4J_VERSION']
 
     classpath = [
         home_dir,
-        # Note: This path only applies to Groovy 2.4.
-        # In Groovy 2.5, we will need to load all jars from lib/*
-        f'{groovy_home}/embeddable/groovy-all-{groovy_version}.jar',
+        f'{groovy_home}/lib/*',
         f'{home_dir}/CodeNarc-{codenarc_version}.jar',
         f'{home_dir}/GMetrics-{gmetrics_version}.jar',
         f'{home_dir}/slf4j-{slf4j_version}/slf4j-api-{slf4j_version}.jar',

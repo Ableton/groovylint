@@ -13,6 +13,7 @@ from unittest.mock import patch
 import pytest
 
 from run_codenarc import (
+    parse_args,
     parse_xml_report,
     run_codenarc,
 )
@@ -53,7 +54,10 @@ def test_run_codenarc(remove_mock):
             stdout=b'',
         )
 
-        output = run_codenarc(args=[], report_file=_report_file_path('success.xml'))
+        output = run_codenarc(
+            args=parse_args(args=[]),
+            report_file=_report_file_path('success.xml'),
+        )
 
     assert _report_file_contents('success.xml') == output
 
@@ -72,7 +76,7 @@ def test_run_codenarc_compilation_failure():
         )
 
         with pytest.raises(ValueError):
-            run_codenarc(args=[])
+            run_codenarc(args=parse_args(args=[]))
 
 
 def test_run_codenarc_failure_code():
@@ -85,7 +89,7 @@ def test_run_codenarc_failure_code():
         )
 
         with pytest.raises(ValueError):
-            run_codenarc(args=[])
+            run_codenarc(args=parse_args(args=[]))
 
 
 def test_run_codenarc_no_report_file():
@@ -98,4 +102,4 @@ def test_run_codenarc_no_report_file():
         )
 
         with pytest.raises(ValueError):
-            run_codenarc(args=[], report_file='invalid')
+            run_codenarc(args=parse_args(args=[]), report_file='invalid')

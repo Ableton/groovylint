@@ -15,24 +15,19 @@ ENV GMETRICS_VERSION=1.0
 # enough to download from Sourceforge et. al.
 RUN apk add --no-cache py3-setuptools=39.1.0-r0 python3=3.6.6-r0 wget=1.20.1-r0
 
-RUN wget "https://netcologne.dl.sourceforge.net/project/codenarc/codenarc/CodeNarc%20$CODENARC_VERSION/CodeNarc-$CODENARC_VERSION.jar" \
-    -P "/opt/CodeNarc-$CODENARC_VERSION"
-
-RUN wget -q -O slf4j.tar.gz "https://www.slf4j.org/dist/slf4j-$SLF4J_VERSION.tar.gz" && \
-    tar xvzf slf4j.tar.gz -C /opt && \
-    rm slf4j.tar.gz
-
-RUN wget "https://github.com/dx42/gmetrics/releases/download/v$GMETRICS_VERSION/GMetrics-$GMETRICS_VERSION.jar" \
-    -P "/opt/GMetrics-$GMETRICS_VERSION"
-
 COPY Pipfile /opt/
 COPY Pipfile.lock /opt/
+COPY fetch_jars.py /opt/
 COPY ruleset.groovy /opt/
 COPY run_codenarc.py /opt/
 
 WORKDIR /opt
 RUN pip3 install --no-cache-dir pipenv==2018.11.26
 RUN pipenv install --system --ignore-pipfile
+RUN python3 fetch_jars.py --output-dir /opt \
+  --codenarc-version $CODENARC_VERSION \
+  --gmetrics-version $GMETRICS_VERSION \
+  --slf4j-version $SLF4J_VERSION
 
 RUN adduser -D jenkins
 USER jenkins

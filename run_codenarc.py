@@ -40,7 +40,7 @@ def _print_violations(package_file_path, violations):
         print(f'{package_file_path}:{violation["@lineNumber"]}: {violation_message}')
 
 
-def _print_violations_in_file(package_path, files):
+def _print_violations_in_files(package_path, files):
     for package_file in files:
         _print_violations(
             f'{package_path}/{package_file["@name"]}',
@@ -48,7 +48,7 @@ def _print_violations_in_file(package_path, files):
         )
 
 
-def _print_violations_in_package(packages):
+def _print_violations_in_packages(packages):
     # I believe that CodeNarc has a bug where it erroneously sets filesWithViolations
     # to the same value in every package. Therefore rather than looking at this attribute
     # value, we check to see if there are any File elements in the package.
@@ -59,7 +59,7 @@ def _print_violations_in_package(packages):
         if not package_path:
             package_path = '.'
 
-        _print_violations_in_file(package_path, _safe_list_wrapper(package["File"]))
+        _print_violations_in_files(package_path, _safe_list_wrapper(package["File"]))
 
 
 def _remove_report_file(report_file):
@@ -155,7 +155,7 @@ def parse_xml_report(xml_text):
         return 0
 
     print(f'Found {total_violations} violation(s):')
-    _print_violations_in_package(_safe_list_wrapper(xml_doc["CodeNarc"]["Package"]))
+    _print_violations_in_packages(_safe_list_wrapper(xml_doc["CodeNarc"]["Package"]))
     return 1
 
 

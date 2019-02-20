@@ -35,6 +35,12 @@ def _guess_groovy_home():
 
 
 def _print_violations(package_file_path, violations):
+    """Print violations for a file.
+
+    :param package_file_path: File path.
+    :param violations: List of Violation elements.
+    :return: Number of violations for the file.
+    """
     for violation in violations:
         violation_message = f'{violation["@ruleName"]}: {violation["Message"]}'
         print(f'{package_file_path}:{violation["@lineNumber"]}: {violation_message}')
@@ -43,6 +49,12 @@ def _print_violations(package_file_path, violations):
 
 
 def _print_violations_in_files(package_path, files):
+    """Print violations for each file in a package.
+
+    :param package_path: Package path.
+    :param files: List of File elements.
+    :return: Number of violations for all files in the package.
+    """
     num_violations = 0
 
     for package_file in files:
@@ -55,6 +67,11 @@ def _print_violations_in_files(package_path, files):
 
 
 def _print_violations_in_packages(packages):
+    """Print violations for each package in a list of packages.
+
+    :param packages: List of Package elements.
+    :return: Number of violations for all packages.
+    """
     num_violations = 0
 
     # I believe that CodeNarc has a bug where it erroneously sets filesWithViolations

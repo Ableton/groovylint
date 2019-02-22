@@ -29,10 +29,10 @@ def _report_file_path(name):
 
 
 @pytest.mark.parametrize('report_file, return_code', [
-    ('multiple-violations-multiple-files-2.xml', 1),
-    ('multiple-violations-multiple-files.xml', 1),
-    ('multiple-violations-single-file.xml', 1),
-    ('single-violation-multiple-files.xml', 1),
+    ('multiple-violations-multiple-files-2.xml', 5),
+    ('multiple-violations-multiple-files.xml', 3),
+    ('multiple-violations-single-file.xml', 3),
+    ('single-violation-multiple-files.xml', 2),
     ('single-violation-single-file.xml', 1),
     ('success.xml', 0),
 ])

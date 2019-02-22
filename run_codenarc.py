@@ -39,16 +39,24 @@ def _print_violations(package_file_path, violations):
         violation_message = f'{violation["@ruleName"]}: {violation["Message"]}'
         print(f'{package_file_path}:{violation["@lineNumber"]}: {violation_message}')
 
+    return len(violations)
+
 
 def _print_violations_in_files(package_path, files):
+    num_violations = 0
+
     for package_file in files:
-        _print_violations(
+        num_violations += _print_violations(
             f'{package_path}/{package_file["@name"]}',
             _safe_list_wrapper(package_file["Violation"]),
         )
 
+    return num_violations
+
 
 def _print_violations_in_packages(packages):
+    num_violations = 0
+
     # I believe that CodeNarc has a bug where it erroneously sets filesWithViolations
     # to the same value in every package. Therefore rather than looking at this attribute
     # value, we check to see if there are any File elements in the package.
@@ -59,7 +67,12 @@ def _print_violations_in_packages(packages):
         if not package_path:
             package_path = '.'
 
-        _print_violations_in_files(package_path, _safe_list_wrapper(package["File"]))
+        num_violations += _print_violations_in_files(
+            package_path,
+            _safe_list_wrapper(package['File']),
+        )
+
+    return num_violations
 
 
 def _remove_report_file(report_file):
@@ -147,16 +160,18 @@ def parse_xml_report(xml_text):
 
     package_summary = xml_doc['CodeNarc']['PackageSummary']
     total_files_scanned = package_summary['@totalFiles']
-    total_violations = package_summary['@filesWithViolations']
+    total_violations = _print_violations_in_packages(
+        _safe_list_wrapper(xml_doc['CodeNarc']['Package']),
+    )
 
     print(f'Scanned {total_files_scanned} files')
-    if total_violations == '0':
+    if total_violations == 0:
         print('No violations found')
         return 0
 
     print(f'Found {total_violations} violation(s):')
     _print_violations_in_packages(_safe_list_wrapper(xml_doc['CodeNarc']['Package']))
-    return 1
+    return total_violations
 
 
 def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):

@@ -18,6 +18,15 @@ import xmltodict
 DEFAULT_REPORT_FILE = 'codenarc-report.xml'
 
 
+class CodeNarcViolationsException(Exception):
+    """Raised if CodeNarc violations were found."""
+
+    def __init__(self, num_violations):
+        """Create a new instance of the CodeNarcViolationsException class."""
+        super().__init__()
+        self.num_violations = num_violations
+
+
 def _guess_groovy_home():
     """Try to determine the location where Groovy is installed.
 
@@ -177,18 +186,13 @@ def parse_xml_report(xml_text):
 
     package_summary = xml_doc['CodeNarc']['PackageSummary']
     total_files_scanned = package_summary['@totalFiles']
+    print(f'Scanned {total_files_scanned} files')
     total_violations = _print_violations_in_packages(
         _safe_list_wrapper(xml_doc['CodeNarc']['Package']),
     )
 
-    print(f'Scanned {total_files_scanned} files')
-    if total_violations == 0:
-        print('No violations found')
-        return 0
-
-    print(f'Found {total_violations} violation(s):')
-    _print_violations_in_packages(_safe_list_wrapper(xml_doc['CodeNarc']['Package']))
-    return total_violations
+    if total_violations != 0:
+        raise CodeNarcViolationsException(total_violations)
 
 
 def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
@@ -253,4 +257,9 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
 
 
 if __name__ == '__main__':
-    sys.exit(parse_xml_report(run_codenarc(parse_args(sys.argv[1:]))))
+    try:
+        parse_xml_report(run_codenarc(parse_args(sys.argv[1:])))
+        print('No violations found')
+    except CodeNarcViolationsException as exception:
+        print(f'Found {exception.num_violations} violation(s)')
+        sys.exit(1)

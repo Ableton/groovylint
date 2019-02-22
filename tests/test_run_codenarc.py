@@ -55,7 +55,14 @@ def test_run_codenarc(remove_mock):
         )
 
         output = run_codenarc(
-            args=parse_args(args=[]),
+            args=parse_args(args=[
+                '--codenarc-version',
+                '1.0',
+                '--gmetrics-version',
+                '1.0',
+                '--slf4j-version',
+                '1.0',
+            ]),
             report_file=_report_file_path('success.xml'),
         )
 

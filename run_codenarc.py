@@ -55,7 +55,7 @@ def _print_violations_in_packages(packages):
     for package in [p for p in packages if 'Files' in p]:
         # CodeNarc uses the empty string for the top-level package, which we translate to
         # '.', which prevents the violation files from appearing as belonging to '/'.
-        package_path = package["@path"]
+        package_path = package['@path']
         if not package_path:
             package_path = '.'
 
@@ -155,7 +155,7 @@ def parse_xml_report(xml_text):
         return 0
 
     print(f'Found {total_violations} violation(s):')
-    _print_violations_in_packages(_safe_list_wrapper(xml_doc["CodeNarc"]["Package"]))
+    _print_violations_in_packages(_safe_list_wrapper(xml_doc['CodeNarc']['Package']))
     return 1
 
 

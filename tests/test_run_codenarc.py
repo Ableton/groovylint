@@ -19,6 +19,8 @@ from run_codenarc import (
     run_codenarc,
 )
 
+MOCK_CODENARC_SUMMARY = b'CodeNarc completed: (p1=0; p2=0; p3=0) 6664ms\n'
+
 
 def _report_file_contents(name):
     with open(_report_file_path(name)) as report_file:
@@ -58,7 +60,7 @@ def test_run_codenarc(remove_mock):
         subprocess_mock.return_value = subprocess.CompletedProcess(
             args='',
             returncode=0,
-            stdout=b'',
+            stdout=MOCK_CODENARC_SUMMARY,
         )
 
         output = run_codenarc(
@@ -82,11 +84,11 @@ def test_run_codenarc_compilation_failure():
         subprocess_mock.return_value = subprocess.CompletedProcess(
             args='',
             returncode=0,
-            stdout=b"""
-                [main] INFO org.codenarc.source.AbstractSourceCode - Compilation
-                failed because of [org.codehaus.groovy.control.CompilationErrorsException]
-                with message: [startup failed:
-            """,
+            stdout=b'INFO org.codenarc.source.AbstractSourceCode - Compilation'
+                   b' failed because of'
+                   b' [org.codehaus.groovy.control.CompilationErrorsException] with'
+                   b' message: [startup failed:\n'
+                   + MOCK_CODENARC_SUMMARY,
         )
 
         with pytest.raises(ValueError):
@@ -99,7 +101,7 @@ def test_run_codenarc_failure_code():
         subprocess_mock.return_value = subprocess.CompletedProcess(
             args='',
             returncode=1,
-            stdout=b'',
+            stdout=MOCK_CODENARC_SUMMARY,
         )
 
         with pytest.raises(ValueError):
@@ -112,7 +114,7 @@ def test_run_codenarc_no_report_file():
         subprocess_mock.return_value = subprocess.CompletedProcess(
             args='',
             returncode=0,
-            stdout=b'',
+            stdout=MOCK_CODENARC_SUMMARY,
         )
 
         with pytest.raises(ValueError):

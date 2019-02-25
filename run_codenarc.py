@@ -18,6 +18,15 @@ import xmltodict
 DEFAULT_REPORT_FILE = 'codenarc-report.xml'
 
 
+class CodeNarcViolationsException(Exception):
+    """Raised if CodeNarc violations were found."""
+
+    def __init__(self, num_violations):
+        """Create a new instance of the CodeNarcViolationsException class."""
+        super().__init__()
+        self.num_violations = num_violations
+
+
 def _guess_groovy_home():
     """Try to determine the location where Groovy is installed.
 
@@ -35,31 +44,61 @@ def _guess_groovy_home():
 
 
 def _print_violations(package_file_path, violations):
+    """Print violations for a file.
+
+    :param package_file_path: File path.
+    :param violations: List of Violation elements.
+    :return: Number of violations for the file.
+    """
     for violation in violations:
         violation_message = f'{violation["@ruleName"]}: {violation["Message"]}'
         print(f'{package_file_path}:{violation["@lineNumber"]}: {violation_message}')
 
+    return len(violations)
 
-def _print_violations_in_file(package_path, files):
+
+def _print_violations_in_files(package_path, files):
+    """Print violations for each file in a package.
+
+    :param package_path: Package path.
+    :param files: List of File elements.
+    :return: Number of violations for all files in the package.
+    """
+    num_violations = 0
+
     for package_file in files:
-        _print_violations(
+        num_violations += _print_violations(
             f'{package_path}/{package_file["@name"]}',
             _safe_list_wrapper(package_file["Violation"]),
         )
 
+    return num_violations
 
-def _print_violations_in_package(packages):
+
+def _print_violations_in_packages(packages):
+    """Print violations for each package in a list of packages.
+
+    :param packages: List of Package elements.
+    :return: Number of violations for all packages.
+    """
+    num_violations = 0
+
     # I believe that CodeNarc has a bug where it erroneously sets filesWithViolations
     # to the same value in every package. Therefore rather than looking at this attribute
     # value, we check to see if there are any File elements in the package.
-    for package in [p for p in packages if 'Files' in p]:
+    for package in [p for p in packages if 'File' in p]:
         # CodeNarc uses the empty string for the top-level package, which we translate to
         # '.', which prevents the violation files from appearing as belonging to '/'.
-        package_path = package["@path"]
+        package_path = package['@path']
         if not package_path:
             package_path = '.'
 
-        _print_violations_in_file(package_path, _safe_list_wrapper(package["File"]))
+        num_violations += _print_violations_in_files(
+            package_path,
+            _safe_list_wrapper(package['File']),
+        )
+
+    return num_violations
 
 
 def _remove_report_file(report_file):
@@ -147,16 +186,13 @@ def parse_xml_report(xml_text):
 
     package_summary = xml_doc['CodeNarc']['PackageSummary']
     total_files_scanned = package_summary['@totalFiles']
-    total_violations = package_summary['@filesWithViolations']
-
     print(f'Scanned {total_files_scanned} files')
-    if total_violations == '0':
-        print('No violations found')
-        return 0
+    total_violations = _print_violations_in_packages(
+        _safe_list_wrapper(xml_doc['CodeNarc']['Package']),
+    )
 
-    print(f'Found {total_violations} violation(s):')
-    _print_violations_in_package(_safe_list_wrapper(xml_doc["CodeNarc"]["Package"]))
-    return 1
+    if total_violations != 0:
+        raise CodeNarcViolationsException(total_violations)
 
 
 def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
@@ -221,4 +257,9 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
 
 
 if __name__ == '__main__':
-    sys.exit(parse_xml_report(run_codenarc(parse_args(sys.argv[1:]))))
+    try:
+        parse_xml_report(run_codenarc(parse_args(sys.argv[1:])))
+        print('No violations found')
+    except CodeNarcViolationsException as exception:
+        print(f'Found {exception.num_violations} violation(s)')
+        sys.exit(1)

@@ -40,6 +40,10 @@ def _build_classpath(args):
         f'{args.home}/slf4j-{args.slf4j_version}/slf4j-simple-{args.slf4j_version}.jar',
     ]
 
+    for path in classpath:
+        if not (os.path.exists(path) or path.endswith('*')):
+            raise ValueError(f'Classpath element {path} does not exist')
+
     return ':'.join(classpath)
 
 

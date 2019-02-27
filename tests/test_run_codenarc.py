@@ -56,24 +56,26 @@ def test_parse_xml_report_failed(report_file, num_violations):
 @patch('os.remove')
 def test_run_codenarc(remove_mock):
     """Test that run_codenarc exits without errors if CodeNarc ran successfully."""
-    with patch('subprocess.run') as subprocess_mock:
-        subprocess_mock.return_value = subprocess.CompletedProcess(
-            args='',
-            returncode=0,
-            stdout=MOCK_CODENARC_SUMMARY,
-        )
+    with patch('os.path.exists') as path_exists_mock:
+        path_exists_mock.return_value = True
+        with patch('subprocess.run') as subprocess_mock:
+            subprocess_mock.return_value = subprocess.CompletedProcess(
+                args='',
+                returncode=0,
+                stdout=MOCK_CODENARC_SUMMARY,
+            )
 
-        output = run_codenarc(
-            args=parse_args(args=[
-                '--codenarc-version',
-                '1.0',
-                '--gmetrics-version',
-                '1.0',
-                '--slf4j-version',
-                '1.0',
-            ]),
-            report_file=_report_file_path('success.xml'),
-        )
+            output = run_codenarc(
+                args=parse_args(args=[
+                    '--codenarc-version',
+                    '1.0',
+                    '--gmetrics-version',
+                    '1.0',
+                    '--slf4j-version',
+                    '1.0',
+                ]),
+                report_file=_report_file_path('success.xml'),
+            )
 
     assert _report_file_contents('success.xml') == output
 
@@ -106,6 +108,21 @@ def test_run_codenarc_failure_code():
 
         with pytest.raises(ValueError):
             run_codenarc(args=parse_args(args=[]))
+
+
+def test_run_codenarc_missing_jar():
+    """Test that run_codenarc raises an error if a JAR file could not be found.
+
+    Calling run_codenarc with no valid version arguments should result in no files found,
+    which should cause _build_classpath to raise.
+    """
+    with pytest.raises(ValueError) as exception_info:
+        run_codenarc(
+            args=parse_args(args=['--codenarc-version', '6.6.6']),
+            report_file='invalid',
+        )
+    # Ensure that the exception message contained the name of the invalid JAR file
+    assert 'CodeNarc-6.6.6.jar' in str(exception_info.value)
 
 
 def test_run_codenarc_no_report_file():

@@ -120,6 +120,8 @@ def uncompress_tar(file_path, output_dir):
     with tarfile.open(file_path) as tar:
         tar.extractall(path=output_dir)
     logging.info('Uncompressed %s', file_path)
+    os.remove(file_path)
+    logging.debug('Removed %s', file_path)
 
 
 def verify_jar(file_path):

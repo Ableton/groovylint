@@ -7,10 +7,6 @@ FROM groovy:2.4-alpine
 
 USER root
 
-ENV CODENARC_VERSION=1.2.1
-ENV SLF4J_VERSION=1.7.25
-ENV GMETRICS_VERSION=1.0
-
 RUN apk add --no-cache py3-setuptools=39.1.0-r0 python3=3.6.6-r0
 
 COPY Pipfile /opt/

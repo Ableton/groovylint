@@ -8,6 +8,7 @@
 """A small wrapper script to call CodeNarc and interpret its output."""
 
 import argparse
+import glob
 import logging
 import os
 import platform
@@ -31,13 +32,15 @@ class CodeNarcViolationsException(Exception):
 
 def _build_classpath(args):
     """Construct the classpath from the Groovy/Groovylint homes and JAR versions."""
+    slf4j_dir = _find_dependency('slf4j', args.slf4j_version, args.home)
+
     classpath = [
         args.home,
         f'{args.groovy_home}/lib/*',
-        f'{args.home}/CodeNarc-{args.codenarc_version}.jar',
-        f'{args.home}/GMetrics-{args.gmetrics_version}.jar',
-        f'{args.home}/slf4j-{args.slf4j_version}/slf4j-api-{args.slf4j_version}.jar',
-        f'{args.home}/slf4j-{args.slf4j_version}/slf4j-simple-{args.slf4j_version}.jar',
+        _find_dependency('CodeNarc', args.codenarc_version, args.home, '.jar'),
+        _find_dependency('GMetrics', args.gmetrics_version, args.home, '.jar'),
+        _find_dependency('slf4j-api', args.slf4j_version, slf4j_dir, '.jar'),
+        _find_dependency('slf4j-simple', args.slf4j_version, slf4j_dir, '.jar'),
     ]
 
     for path in classpath:
@@ -45,6 +48,46 @@ def _build_classpath(args):
             raise ValueError(f'Classpath element {path} does not exist')
 
     return ':'.join(classpath)
+
+
+def _find_dependency(name, version, search_dir, extension=''):
+    """Find the path to a dependency of CodeNarc.
+
+    This function searches the given directory for a versioned dependency of CodeNarc. The
+    dependency can be either a file or a directory, but the requirement for matching is
+    that the name is of the form "Name-X.Y.Z", with an optional file extension.
+
+    :param name: Dependency base name.
+    :param version: Dependency version. If None, then a glob is used to try to find
+                    potential matches in the search_dir. If multiple or no matches are
+                    found, then an exception will be raised.
+    :param search_dir: Directory to search for the dependency in.
+    :param extension: File extension. Use the empty string (default) to match versioned
+                      directories.
+    :return: The absolute path to the dependency.
+    """
+    # If the version is not specified, then we use a glob to try to find that JAR in the
+    # given directory. Anything other than a single match should be considered an error.
+    if not version:
+        logging.debug('No version for %s given, searching for it in %s', name, search_dir)
+        glob_result = glob.glob(os.path.join(search_dir, f'{name}-*[0-9]{extension}'))
+        num_items_found = len(glob_result)
+        if num_items_found == 0:
+            raise ValueError(f'Dependency {name} not found in {search_dir}')
+        if num_items_found > 1:
+            multiple_files_error_msg = f'Multiple files for {name} found in {search_dir}'
+            logging.error(multiple_files_error_msg)
+            for result in glob_result:
+                logging.error('Found: %s', result)
+            raise ValueError(multiple_files_error_msg)
+
+        logging.debug('Found dependency: %s', glob_result[0])
+        return glob_result[0]
+
+    dependency_path = os.path.join(search_dir, f'{name}-{version}{extension}')
+    if not os.path.exists(dependency_path):
+        raise ValueError(f'Dependency {dependency_path} not found')
+    return dependency_path
 
 
 def _guess_groovy_home():
@@ -227,13 +270,6 @@ def parse_args(args):
     )
 
     parsed_args = arg_parser.parse_args(args)
-
-    if not parsed_args.codenarc_version:
-        raise ValueError('Could not determine CodeNarc version')
-    if not parsed_args.gmetrics_version:
-        raise ValueError('Could not determine GMetrics version')
-    if not parsed_args.slf4j_version:
-        raise ValueError('Could not determine SLF4J version')
 
     parsed_args.codenarc_options = [
         option for sublist in parsed_args.codenarc_options for option in sublist

@@ -118,11 +118,18 @@ def test_run_codenarc_missing_jar():
     """
     with pytest.raises(ValueError) as exception_info:
         run_codenarc(
-            args=parse_args(args=['--codenarc-version', '6.6.6']),
+            args=parse_args(args=[
+                '--codenarc-version',
+                '6.6.6',
+                '--gmetrics-version',
+                '6.6.6',
+                '--slf4j-version',
+                '6.6.6',
+            ]),
             report_file='invalid',
         )
-    # Ensure that the exception message contained the name of the invalid JAR file
-    assert 'CodeNarc-6.6.6.jar' in str(exception_info.value)
+    # Ensure that the exception message contained an invalid JAR version
+    assert '6.6.6' in str(exception_info.value)
 
 
 def test_run_codenarc_no_report_file():

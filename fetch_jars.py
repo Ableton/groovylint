@@ -14,6 +14,20 @@ import tarfile
 import zipfile
 
 import requests
+import yaml
+
+from jinja2 import Template
+
+
+def _urls_from_yaml(dependencies_file, section_name):
+    """Return template-rendered URLs for a given section of the dependencies YAML file."""
+    with open(dependencies_file) as yaml_file:
+        dependencies = yaml.load(yaml_file)
+
+    # Iterate over each item in the given section and process the Jinja2 URL property
+    # given the version number.
+    return [Template(x['url']).render(version=x['version'])
+            for x in dependencies[section_name]]
 
 
 def download_file(url, output_dir, force=False):
@@ -49,52 +63,26 @@ def fetch_jars(args):
     if not os.path.exists(args.output_dir):
         os.mkdir(args.output_dir)
 
-    jar_urls = [
-        (
-            'https://netcologne.dl.sourceforge.net/project/codenarc/codenarc'
-            f'/CodeNarc%20{args.codenarc_version}/CodeNarc-{args.codenarc_version}.jar'
-        ),
-        (
-            'https://github.com/dx42/gmetrics/releases/download'
-            f'/v{args.gmetrics_version}/GMetrics-{args.gmetrics_version}.jar'
-        ),
-    ]
+    if not os.path.exists(args.dependencies_file):
+        raise ValueError(f'Could not find {args.dependencies_file}')
 
-    # Note: The following URLs have been verified to be non-malicious, but you should be
-    # careful when adding items to this list. These tarballs are extracted without
-    # checking the paths, which can be dangerous according to the documentation for
-    # tarfile.extractall().
-    tar_urls = [
-        f'https://www.slf4j.org/dist/slf4j-{args.slf4j_version}.tar.gz',
-    ]
-
-    for url in jar_urls:
+    for url in _urls_from_yaml(args.dependencies_file, 'jars'):
         verify_jar(download_file(url, args.output_dir, args.force))
 
-    for url in tar_urls:
+    for url in _urls_from_yaml(args.dependencies_file, 'tars'):
         uncompress_tar(download_file(url, args.output_dir, args.force), args.output_dir)
 
 
 def parse_args():
     """Parse arguments from the command line."""
     arg_parser = argparse.ArgumentParser()
+    script_dir = os.path.abspath(os.path.curdir)
 
     arg_parser.add_argument(
-        '--codenarc-version',
-        help='Version of CodeNarc to download.',
-        required=True,
-    )
-
-    arg_parser.add_argument(
-        '--gmetrics-version',
-        help='Version of GMetrics to download.',
-        required=True,
-    )
-
-    arg_parser.add_argument(
-        '--slf4j-version',
-        help='Version of SLF4J to download.',
-        required=True,
+        '-d',
+        '--dependencies-file',
+        default=os.path.join(script_dir, 'dependencies.yml'),
+        help='Path to YAML file for dependencies',
     )
 
     arg_parser.add_argument(
@@ -107,7 +95,7 @@ def parse_args():
     arg_parser.add_argument(
         '-o',
         '--output-dir',
-        default=os.path.abspath(os.path.curdir),
+        default=script_dir,
         help='Directory to save JAR files to.',
     )
 

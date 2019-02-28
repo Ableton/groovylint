@@ -1,0 +1,19 @@
+---
+jars:
+  - name: CodeNarc
+    version: 1.2.1
+    url: "https://netcologne.dl.sourceforge.net/project/codenarc/codenarc\
+      /CodeNarc%20{{ version }}/CodeNarc-{{ version }}.jar"
+  - name: GMetrics
+    version: 1.0
+    url: "https://github.com/dx42/gmetrics/releases/download\
+      /v{{ version }}/GMetrics-{{ version }}.jar"
+
+# Note: The following URLs have been verified to be non-malicious, but you should be
+# careful when adding items to this list. These tarballs are extracted without
+# checking the paths, which can be dangerous according to the documentation for
+# tarfile.extractall().
+tars:
+  - name: slf4j
+    version: 1.7.25
+    url: "https://www.slf4j.org/dist/slf4j-{{ version }}.tar.gz"

@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 requests = "*"
-xmltodict = "*"
 
 [dev-packages]
 flake8 = "*"

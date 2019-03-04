@@ -13,7 +13,8 @@ import os
 import platform
 import subprocess
 import sys
-import xmltodict
+
+from xml.etree import ElementTree
 
 
 DEFAULT_REPORT_FILE = 'codenarc-report.xml'
@@ -88,9 +89,9 @@ def _print_violations(package_file_path, violations):
         logging.error(
             '%s:%s: %s: %s',
             package_file_path,
-            violation['@lineNumber'],
-            violation['@ruleName'],
-            violation['Message'],
+            violation.attrib['lineNumber'],
+            violation.attrib['ruleName'],
+            violation.find('Message').text,
         )
 
     return len(violations)
@@ -106,11 +107,11 @@ def _print_violations_in_files(package_path, files):
     num_violations = 0
 
     for package_file in files:
-        package_file_name = f'{package_path}/{package_file["@name"]}'
+        package_file_name = f'{package_path}/{package_file.attrib["name"]}'
         logging.debug('Parsing violations in file: %s', package_file_name)
         num_violations += _print_violations(
             package_file_name,
-            _safe_list_wrapper(package_file["Violation"]),
+            package_file.findall('Violation'),
         )
 
     return num_violations
@@ -124,20 +125,17 @@ def _print_violations_in_packages(packages):
     """
     num_violations = 0
 
-    # I believe that CodeNarc has a bug where it erroneously sets filesWithViolations
-    # to the same value in every package. Therefore rather than looking at this attribute
-    # value, we check to see if there are any File elements in the package.
-    for package in [p for p in packages if 'File' in p]:
+    for package in packages:
         # CodeNarc uses the empty string for the top-level package, which we translate to
         # '.', which prevents the violation files from appearing as belonging to '/'.
-        package_path = package['@path']
+        package_path = package.attrib['path']
         if not package_path:
             package_path = '.'
 
         logging.debug('Parsing violations in package: %s', package_path)
         num_violations += _print_violations_in_files(
             package_path,
-            _safe_list_wrapper(package['File']),
+            package.findall('File'),
         )
 
     return num_violations
@@ -147,17 +145,6 @@ def _remove_report_file(report_file):
     if os.path.exists(report_file):
         logging.debug('Removing report file %s', report_file)
         os.remove(report_file)
-
-
-def _safe_list_wrapper(element):
-    """Wrap an XML element in a list if necessary.
-
-    This function is used to safely handle data from xmltodict. If an XML element has
-    multiple children, they will be returned in a list. However, a single child is
-    returned as a dict. By wrapping single elements in a list, we can use the same code to
-    handle both cases.
-    """
-    return element if isinstance(element, list) else [element]
 
 
 def parse_args(args):
@@ -250,13 +237,11 @@ def parse_xml_report(xml_text):
     :return: 0 on success, 1 if any violations were found
     """
     logging.debug('Parsing report XML')
-    xml_doc = xmltodict.parse(xml_text)
+    xml_doc = ElementTree.fromstring(xml_text)
 
-    package_summary = xml_doc['CodeNarc']['PackageSummary']
-    logging.info('Scanned %s files', package_summary['@totalFiles'])
-    total_violations = _print_violations_in_packages(
-        _safe_list_wrapper(xml_doc['CodeNarc']['Package']),
-    )
+    package_summary = xml_doc.find('PackageSummary')
+    logging.info('Scanned %s files', package_summary.attrib['totalFiles'])
+    total_violations = _print_violations_in_packages(xml_doc.findall('Package'))
 
     if total_violations != 0:
         raise CodeNarcViolationsException(total_violations)

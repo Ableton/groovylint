@@ -9,10 +9,10 @@
   'ableton-utils@0.11',
 ]) _
 
-// Jenkins has some problems loading libraries from git references when they are
-// named 'origin/branch_name' or 'refs/heads/branch_name'. Until this behavior
-// is working, we need to strip those prefixes from the incoming HEAD_REF.
-String branch = "${env.HEAD_REF}".replace('origin/', '').replace('refs/heads/', '')
+// Jenkins can't load libraries from git references when they are named like
+// "refs/heads/branch_name". Until this behavior is fixed, we need to strip that prefix
+// from the branch name.
+String branch = "${env.HEAD_REF}".replace('refs/heads/', '')
 library "groovylint@${branch}"
 
 import com.ableton.VersionTagger as VersionTagger

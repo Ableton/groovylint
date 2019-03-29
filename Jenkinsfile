@@ -12,8 +12,7 @@
 // Jenkins can't load libraries from git references when they are named like
 // "refs/heads/branch_name". Until this behavior is fixed, we need to strip that prefix
 // from the branch name.
-String branch = "${env.HEAD_REF}".replace('refs/heads/', '')
-library "groovylint@${branch}"
+library "groovylint@${env.HEAD_REF.replace('refs/heads/', '')}"
 
 import com.ableton.VersionTagger as VersionTagger
 

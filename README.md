@@ -24,7 +24,7 @@ directory tree.
 ### Running in a container
 
 ```
-docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` --entrypoint=/bin/bash \
+docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` --entrypoint=/bin/sh \
   -i -t abletonag/groovylint
 ```
 

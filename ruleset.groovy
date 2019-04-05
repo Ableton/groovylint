@@ -17,6 +17,8 @@ ruleset {
   }
   ruleset('rulesets/exceptions.xml') {}
   ruleset('rulesets/formatting.xml') {
+    ClassEndsWithBlankLine(enabled: false)
+    ClassStartsWithBlankLine(enabled: false)
     ConsecutiveBlankLines(enabled: false)
     Indentation(spacesPerIndentLevel: 2, enabled: true)
     LineLength(length: 90)

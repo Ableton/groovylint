@@ -6,11 +6,32 @@ issues and more.
 
 ## Usage
 
-### Running as an application
+### Running with Python
 
+To use `groovylint` as a standalone Python script, you should first clone the repository
+somewhere on your hard drive. Pipenv is required to set up `groovylint`, but not to run
+it. After running `pipenv sync`, you can run the `fetch_jars.py` script:
+
+```bash
+$ pipenv run fetch_jars --codenarc 1.2.1 --gmetrics 1.0 --slf4j 1.7.25 \
+  --output-dir ./resources
 ```
-docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` abletonag/groovylint \
-  python3 /opt/run_codenarc.py -includes='foo/bar.groovy,src/**/*.groovy'
+
+The version numbers used by `groovylint`'s Docker container can be found in the
+`Dockerfile`. After this is finished, you can use `groovylint` from any directory using
+Python 3.6 or greater:
+
+```bash
+$ /path/to/groovylint/run_codenarc.py --home /path/to/groovylint/resources \
+  --codenarc 1.2.1 --gmetrics 1.0 --slf4j 1.7.25 \
+  -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"
+```
+
+### Running as a Docker application
+
+```bash
+$ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` abletonag/groovylint \
+  python3 /opt/run_codenarc.py -- -includes='foo/bar.groovy,src/**/*.groovy'
 ```
 
 By default this docker image will run CodeNarc checks on `/ws` directory, so this command
@@ -21,10 +42,10 @@ that you run the image with your own user ID to avoid permission issues.
 The above example would check the file `foo/bar.groovy`, and all Groovy files in the `src`
 directory tree.
 
-### Running in a container
+### Running in a Docker container
 
-```
-docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` --entrypoint=/bin/bash \
+```bash
+$ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` --entrypoint=/bin/bash \
   -i -t abletonag/groovylint
 ```
 
@@ -37,21 +58,33 @@ As described in the [CodeNarc documentation][codenarc-rules], you can specify yo
 ruleset file. The file's location must be relative to your workspace, and can be given in
 the command line arguments with the `-rulesetfile` flag:
 
-```
-docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` abletonag/groovylint \
-  python3 /opt/run_codenarc.py -includes='Jenkinsfile' -rulesetfiles=file:myrules.groovy
+```bash
+$ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` abletonag/groovylint \
+  python3 /opt/run_codenarc.py -- -includes='*.groovy' -rulesetfiles=file:myrules.groovy
 ```
 
 ### Usage in a Jenkinsfile
 
-Any `Jenkinsfile` which is using this library should also use the version tag, like so:
+To assist in linting on Jenkins, `groovylint` provides a pipeline library and global
+singleton. To use `groovylint` in this manner, you'll need to add it to your [Jenkins
+master configuration][jenkins-lib-config]. Any `Jenkinsfile` which is using this library
+should also use the version tag, like so:
 
 ```groovy
-@Library('codenarc@x.y.z') _
+// Example Jenkinsfile using a scripted pipeline
+@Library('groovylint@x.y.z') _
+
+node('linux') {
+  stage('Lint') {
+    groovylint.check('./Jenkinsfile,**/*.groovy')
+  }
+}
 ```
 
-Jenkins exposes the library version in the environment variables, and the library will use
-that version to find the corresponding Docker image for that release.
+Tags are available for all `major.minor.patch` versions, and branches with `major.minor`
+versions are updated whenever a new patch version is released. Jenkins exposes the library
+version in the environment variables, and the library will use that version to find the
+corresponding Docker image for that release.
 
 ## Making releases
 
@@ -59,9 +92,11 @@ In order to ensure that the library is using a compatible version of the Docker 
 file named `VERSION` exists in the top-level directory of this project. To make a release,
 this file should be updated accordingly and the commit merged to the `master` branch.
 
-Once on `master`, a new Docker image will be published by CI. A corresponding git tag
-should then be pushed to the origin.
+Once on `master`, a new Docker image will be published by Ableton's CI service, which will
+also push a corresponding git tag to the origin and update the respective `major.minor`
+branch.
 
 
 [codenarc-home]: http://codenarc.sourceforge.net
 [codenarc-rules]: http://codenarc.sourceforge.net/codenarc-configuring-rules.html
+[jenkins-lib-config]: https://jenkins.io/doc/book/pipeline/shared-libraries/#using-libraries

@@ -5,6 +5,11 @@
  * license that can be found in the LICENSE file.
  */
 
+// TODO: when the old Jenkins job has been retired, remove this block.
+if (env.HEAD_REF || env.BASE_REF) {
+  return
+}
+
 @Library([
   'ableton-utils@0.11',
 ]) _
@@ -19,9 +24,6 @@ if (env.CHANGE_BRANCH) {
 } else if (env.BRANCH_NAME) {
   // Defined for all event triggers in a multibranch pipeline job
   branch = env.BRANCH_NAME
-} else if (env.HEAD_REF) {
-  // Defined for a runthebuilds parameterized job
-  branch = "${env.HEAD_REF}".replace('origin/', '').replace('refs/heads/', '')
 }
 library "groovylint@${branch}"
 

@@ -5,30 +5,17 @@
  * license that can be found in the LICENSE file.
  */
 
-@Library([
-  'ableton-utils@0.11',
-]) _
-
-// Jenkins has some problems loading libraries from git references when they are
-// named 'origin/branch_name' or 'refs/heads/branch_name'. Until this behavior
-// is working, we need to strip those prefixes from the incoming HEAD_REF.
-String branch
-if (env.CHANGE_BRANCH) {
-  // Defined for PR-triggered events for a multibranch pipeline job
-  branch = env.CHANGE_BRANCH
-} else if (env.BRANCH_NAME) {
-  // Defined for all event triggers in a multibranch pipeline job
-  branch = env.BRANCH_NAME
-} else if (env.HEAD_REF) {
-  // Defined for a runthebuilds parameterized job
-  branch = "${env.HEAD_REF}".replace('origin/', '').replace('refs/heads/', '')
+// TODO: when the old Jenkins job has been retired, remove this block.
+if (env.HEAD_REF || env.BASE_REF) {
+  return
 }
-library "groovylint@${branch}"
 
-import com.ableton.VersionTagger as VersionTagger
+library 'ableton-utils@0.12'
+// Get groovylint library from current commit so it can test itself in this Jenkinsfile
+library "groovylint@${env.JENKINS_COMMIT}"
 
 
-runTheBuilds.runDevToolsProject(
+devToolsProject.run(
   setup: {
     sh 'pipenv sync --dev'
   },
@@ -77,7 +64,7 @@ runTheBuilds.runDevToolsProject(
     )
   },
   deploy: { data ->
-    runTheBuilds.withBranches(branches: ['master'], acceptPullRequests: false) {
+    if (runTheBuilds.isPushTo(['master'])) {
       String versionNumber = readFile('VERSION').trim()
       parallel(failFast: false,
         docker_hub: {
@@ -87,7 +74,7 @@ runTheBuilds.runDevToolsProject(
               // that call fails, then we should push this image to the registry.
               docker.image("abletonag/groovylint:${versionNumber}").pull()
             } catch (ignored) {
-              data['image'].push(VersionTagger.majorMinorVersion(versionNumber))
+              data['image'].push(version.majorMinorVersion(versionNumber))
               data['image'].push(versionNumber)
               data['image'].push('latest')
             }

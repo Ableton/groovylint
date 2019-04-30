@@ -63,6 +63,9 @@ devToolsProject.run(
       },
     )
   },
+  publish: { data ->
+    docs.publish(data['docs'], 'AbletonDevTools/groovylint')
+  },
   deploy: { data ->
     if (runTheBuilds.isPushTo(['master'])) {
       String versionNumber = readFile('VERSION').trim()
@@ -79,9 +82,6 @@ devToolsProject.run(
               data['image'].push('latest')
             }
           }
-        },
-        groovydoc: {
-          docs.publish(data['docs'], 'AbletonDevTools/groovylint')
         },
         version: {
           version.tag(versionNumber)

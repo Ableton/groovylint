@@ -58,7 +58,11 @@ devToolsProject.run(
           'GMETRICS_VERSION=test',
           'SLF4J_VERSION=test',
         ]) {
-          sh 'pipenv run python -m pytest -rXxs'
+          try {
+            sh 'pipenv run python -m pytest -rXxs --junit-xml=results.xml'
+          } finally {
+            junit 'results.xml'
+          }
         }
       },
     )

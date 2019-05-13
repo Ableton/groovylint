@@ -10,7 +10,7 @@ if (env.HEAD_REF || env.BASE_REF) {
   return
 }
 
-library 'ableton-utils@0.12'
+library 'ableton-utils@0.13'
 // Get groovylint library from current commit so it can test itself in this Jenkinsfile
 library "groovylint@${env.JENKINS_COMMIT}"
 

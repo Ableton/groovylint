@@ -10,7 +10,7 @@ if (env.HEAD_REF || env.BASE_REF) {
   return
 }
 
-library 'ableton-utils@0.12'
+library 'ableton-utils@0.13'
 // Get groovylint library from current commit so it can test itself in this Jenkinsfile
 library "groovylint@${env.JENKINS_COMMIT}"
 
@@ -58,7 +58,11 @@ devToolsProject.run(
           'GMETRICS_VERSION=test',
           'SLF4J_VERSION=test',
         ]) {
-          sh 'pipenv run python -m pytest -rXxs'
+          try {
+            sh 'pipenv run python -m pytest -rXxs --junit-xml=results.xml'
+          } finally {
+            junit 'results.xml'
+          }
         }
       },
     )
@@ -66,29 +70,28 @@ devToolsProject.run(
   publish: { data ->
     docs.publish(data['docs'], 'AbletonDevTools/groovylint')
   },
+  deployWhen: { return runTheBuilds.isPushTo(['master']) },
   deploy: { data ->
-    if (runTheBuilds.isPushTo(['master'])) {
-      String versionNumber = readFile('VERSION').trim()
-      parallel(failFast: false,
-        docker_hub: {
-          docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-password') {
-            try {
-              // Try to pull the image tagged with the contents of the VERSION file. If
-              // that call fails, then we should push this image to the registry.
-              docker.image("abletonag/groovylint:${versionNumber}").pull()
-            } catch (ignored) {
-              data['image'].push(version.majorMinorVersion(versionNumber))
-              data['image'].push(versionNumber)
-              data['image'].push('latest')
-            }
+    String versionNumber = readFile('VERSION').trim()
+    parallel(failFast: false,
+      docker_hub: {
+        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-password') {
+          try {
+            // Try to pull the image tagged with the contents of the VERSION file. If that
+            // call fails, then we should push this image to the registry.
+            docker.image("abletonag/groovylint:${versionNumber}").pull()
+          } catch (ignored) {
+            data['image'].push(version.majorMinorVersion(versionNumber))
+            data['image'].push(versionNumber)
+            data['image'].push('latest')
           }
-        },
-        version: {
-          version.tag(versionNumber)
-          version.forwardMinorBranch(versionNumber)
-        },
-      )
-    }
+        }
+      },
+      version: {
+        version.tag(versionNumber)
+        version.forwardMinorBranch(versionNumber)
+      },
+    )
   },
   cleanup: {
     try {

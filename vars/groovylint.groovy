@@ -13,10 +13,8 @@
  *        {@code groovylint} from Docker hub using the same version number corresponding
  *        to this library. (default: {@code null})
  */
-@SuppressWarnings('MethodParameterTypeRequired')
-void check(String includesPattern, groovylintImage = null) {
-  @SuppressWarnings('VariableTypeRequired')
-  def image = groovylintImage
+void check(String includesPattern, Object groovylintImage = null) {
+  Object image = groovylintImage
   if (!image) {
     String version = env['library.groovylint.version']
     if (!version) {

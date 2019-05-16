@@ -29,8 +29,8 @@ void check(String includesPattern, groovylintImage = null) {
   echo "Using groovylint Docker image: ${image.id}"
 
   image.withRun(
-      "-v ${env.WORKSPACE}:/ws",
-      "python3 /opt/run_codenarc.py -includes=${includesPattern}",
+    "-v ${env.WORKSPACE}:/ws",
+    "python3 /opt/run_codenarc.py -includes=${includesPattern}",
   ) { c ->
     sh "docker wait ${c.id}"
     sh "docker logs ${c.id}"

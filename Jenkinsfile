@@ -5,11 +5,6 @@
  * license that can be found in the LICENSE file.
  */
 
-// TODO: when the old Jenkins job has been retired, remove this block.
-if (env.HEAD_REF || env.BASE_REF) {
-  return
-}
-
 library 'ableton-utils@0.13'
 // Get groovylint library from current commit so it can test itself in this Jenkinsfile
 library "groovylint@${env.JENKINS_COMMIT}"

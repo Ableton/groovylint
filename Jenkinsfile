@@ -37,9 +37,6 @@ devToolsProject.run(
           sh 'hadolint /ws/Dockerfile'
         }
       },
-      pipenv: {
-        sh 'pipenv check'
-      },
       pydocstyle: {
         sh 'pipenv run pydocstyle -v'
       },

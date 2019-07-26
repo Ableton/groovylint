@@ -64,9 +64,7 @@ def fetch_jars(args):
     # careful when adding items to this list. These tarballs are extracted without
     # checking the paths, which can be dangerous according to the documentation for
     # tarfile.extractall().
-    tar_urls = [
-        f'https://www.slf4j.org/dist/slf4j-{args.slf4j_version}.tar.gz',
-    ]
+    tar_urls = [f'https://www.slf4j.org/dist/slf4j-{args.slf4j_version}.tar.gz']
 
     for url in jar_urls:
         verify_jar(download_file(url, args.output_dir, args.force))
@@ -80,21 +78,15 @@ def parse_args():
     arg_parser = argparse.ArgumentParser()
 
     arg_parser.add_argument(
-        '--codenarc-version',
-        help='Version of CodeNarc to download.',
-        required=True,
+        '--codenarc-version', help='Version of CodeNarc to download.', required=True
     )
 
     arg_parser.add_argument(
-        '--gmetrics-version',
-        help='Version of GMetrics to download.',
-        required=True,
+        '--gmetrics-version', help='Version of GMetrics to download.', required=True
     )
 
     arg_parser.add_argument(
-        '--slf4j-version',
-        help='Version of SLF4J to download.',
-        required=True,
+        '--slf4j-version', help='Version of SLF4J to download.', required=True
     )
 
     arg_parser.add_argument(
@@ -112,10 +104,7 @@ def parse_args():
     )
 
     arg_parser.add_argument(
-        '-v',
-        '--verbose',
-        action='store_true',
-        help='Show verbose output.',
+        '-v', '--verbose', action='store_true', help='Show verbose output.'
     )
 
     args = arg_parser.parse_args()

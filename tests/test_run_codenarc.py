@@ -19,6 +19,7 @@ from run_codenarc import (
     run_codenarc,
 )
 
+
 MOCK_CODENARC_SUMMARY = b'CodeNarc completed: (p1=0; p2=0; p3=0) 6664ms\n'
 
 

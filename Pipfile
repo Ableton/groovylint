@@ -9,6 +9,7 @@ requests = "*"
 [dev-packages]
 black = "==19.3b0"
 flake8 = "*"
+flake8-isort = "*"
 pydocstyle = "*"
 pylint = "*"
 pyparsing = "!=2.4.1"

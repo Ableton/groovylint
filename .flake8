@@ -1,4 +1,0 @@
-[flake8]
-filename = *.py
-ignore = W503
-max-line-length = 90

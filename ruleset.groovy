@@ -4,6 +4,9 @@
 ruleset {
   ruleset('rulesets/basic.xml') {}
   ruleset('rulesets/braces.xml') {}
+  ruleset('rulesets/comments.xml') {
+    ClassJavadoc(enabled: false)
+  }
   ruleset('rulesets/convention.xml') {
     NoDef(enabled: false)
     VariableTypeRequired(ignoreVariableNames: '_')
@@ -14,7 +17,8 @@ ruleset {
   }
   ruleset('rulesets/exceptions.xml') {}
   ruleset('rulesets/formatting.xml') {
-    ClassJavadoc(enabled: false)
+    ClassEndsWithBlankLine(enabled: false)
+    ClassStartsWithBlankLine(enabled: false)
     ConsecutiveBlankLines(enabled: false)
     Indentation(spacesPerIndentLevel: 2, enabled: true)
     LineLength(length: 90)

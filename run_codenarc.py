@@ -104,12 +104,14 @@ def _print_violations(package_file_path, violations):
     :return: Number of violations for the file.
     """
     for violation in violations:
+        message_element = violation.find('Message')
+        message = message_element.text if message_element else '[empty message]'
         logging.error(
             '%s:%s: %s: %s',
             package_file_path,
             violation.attrib['lineNumber'],
             violation.attrib['ruleName'],
-            violation.find('Message').text,
+            message,
         )
 
     return len(violations)

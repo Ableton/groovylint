@@ -13,15 +13,13 @@ ENV GMETRICS_VERSION=1.0
 
 RUN apk add --no-cache py3-setuptools~=39.1 python3~=3.6
 
-COPY Pipfile /opt/
-COPY Pipfile.lock /opt/
+COPY requirements.txt /opt/
 COPY fetch_jars.py /opt/
 COPY ruleset.groovy /opt/
 COPY run_codenarc.py /opt/
 
 WORKDIR /opt
-RUN pip3 install --no-cache-dir pipenv==2018.11.26
-RUN pipenv install --system --ignore-pipfile
+RUN pip3 install --no-cache-dir -r requirements.txt
 RUN python3 fetch_jars.py --output-dir /opt \
   --codenarc-version $CODENARC_VERSION \
   --gmetrics-version $GMETRICS_VERSION \

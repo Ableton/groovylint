@@ -6,13 +6,15 @@
  */
 
 library 'ableton-utils@0.13'
+library 'python-utils@0.9'
 // Get groovylint library from current commit so it can test itself in this Jenkinsfile
 library "groovylint@${env.JENKINS_COMMIT}"
 
 
 devToolsProject.run(
-  setup: {
-    sh 'pipenv sync --dev'
+  setup: { data ->
+    data['venv'] = virtualenv.create('python3.7')
+    data.venv.run('pip install -r requirements-dev.txt -r requirements.txt')
   },
   build: { data ->
     String gitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
@@ -21,10 +23,10 @@ devToolsProject.run(
   test: { data ->
     parallel(failFast: false,
       black: {
-        sh 'pipenv run black --check .'
+        data.venv.run('black --check .')
       },
       flake8: {
-        sh 'pipenv run flake8 -v'
+        data.venv.run('flake8 -v')
       },
       groovydoc: {
         data['docs'] = groovydoc.generate()
@@ -41,10 +43,10 @@ devToolsProject.run(
         }
       },
       pydocstyle: {
-        sh 'pipenv run pydocstyle -v'
+        data.venv.run('pydocstyle -v')
       },
       pylint: {
-        sh 'pipenv run pylint --max-line-length=90 *.py'
+        data.venv.run('pylint --max-line-length=90 *.py')
       },
       pytest: {
         withEnv([
@@ -54,7 +56,7 @@ devToolsProject.run(
           'SLF4J_VERSION=test',
         ]) {
           try {
-            sh 'pipenv run python -m pytest -rXxs --junit-xml=results.xml'
+            data.venv.run('python -m pytest -rXxs --junit-xml=results.xml')
           } finally {
             junit 'results.xml'
           }
@@ -88,9 +90,7 @@ devToolsProject.run(
       },
     )
   },
-  cleanup: {
-    try {
-      sh 'pipenv --rm'
-    } catch (ignored) {}
+  cleanup: { data ->
+    data.venv?.cleanup()
   },
 )

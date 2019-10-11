@@ -288,7 +288,7 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
 
     logging.debug('Executing CodeNarc command: %s', ' '.join(codenarc_call))
     output = subprocess.run(
-        codenarc_call, stderr=subprocess.STDOUT, stdout=subprocess.PIPE
+        codenarc_call, check=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE
     )
 
     # Trim out empty lines which CodeNarc prints in its output.

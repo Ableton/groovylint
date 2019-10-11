@@ -64,7 +64,7 @@ def fetch_jars(args):
     # careful when adding items to this list. These tarballs are extracted without
     # checking the paths, which can be dangerous according to the documentation for
     # tarfile.extractall().
-    tar_urls = [f'https://www.slf4j.org/dist/slf4j-{args.slf4j_version}.tar.gz']
+    tar_urls = [f'http://www.slf4j.org/dist/slf4j-{args.slf4j_version}.tar.gz']
 
     for url in jar_urls:
         verify_jar(download_file(url, args.output_dir, args.force))

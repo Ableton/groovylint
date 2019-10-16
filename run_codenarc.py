@@ -36,8 +36,8 @@ def _build_classpath(args):
         f'{args.groovy_home}/lib/*',
         f'{args.home}/CodeNarc-{args.codenarc_version}.jar',
         f'{args.home}/GMetrics-{args.gmetrics_version}.jar',
-        f'{args.home}/slf4j-{args.slf4j_version}/slf4j-api-{args.slf4j_version}.jar',
-        f'{args.home}/slf4j-{args.slf4j_version}/slf4j-simple-{args.slf4j_version}.jar',
+        f'{args.home}/slf4j-api-{args.slf4j_version}.jar',
+        f'{args.home}/slf4j-simple-{args.slf4j_version}.jar',
     ]
 
     for path in classpath:

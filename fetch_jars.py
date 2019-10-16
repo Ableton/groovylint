@@ -10,7 +10,6 @@
 import argparse
 import logging
 import os
-import tarfile
 import zipfile
 
 import requests
@@ -58,19 +57,18 @@ def fetch_jars(args):
             'https://github.com/dx42/gmetrics/releases/download'
             f'/v{args.gmetrics_version}/GMetrics-{args.gmetrics_version}.jar'
         ),
+        (
+            f'http://repo1.maven.org/maven2/org/slf4j/slf4j-api/{args.slf4j_version}'
+            f'/slf4j-api-{args.slf4j_version}.jar'
+        ),
+        (
+            f'http://repo1.maven.org/maven2/org/slf4j/slf4j-simple/{args.slf4j_version}'
+            f'/slf4j-simple-{args.slf4j_version}.jar'
+        ),
     ]
-
-    # Note: The following URLs have been verified to be non-malicious, but you should be
-    # careful when adding items to this list. These tarballs are extracted without
-    # checking the paths, which can be dangerous according to the documentation for
-    # tarfile.extractall().
-    tar_urls = [f'http://www.slf4j.org/dist/slf4j-{args.slf4j_version}.tar.gz']
 
     for url in jar_urls:
         verify_jar(download_file(url, args.output_dir, args.force))
-
-    for url in tar_urls:
-        uncompress_tar(download_file(url, args.output_dir, args.force), args.output_dir)
 
 
 def parse_args():
@@ -113,14 +111,6 @@ def parse_args():
     logging.basicConfig(level=log_level)
 
     return args
-
-
-def uncompress_tar(file_path, output_dir):
-    """Uncompress a tarball to the given output directory."""
-    logging.debug('Uncompressing %s', file_path)
-    with tarfile.open(file_path) as tar:
-        tar.extractall(path=output_dir)
-    logging.info('Uncompressed %s', file_path)
 
 
 def verify_jar(file_path):

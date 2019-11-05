@@ -3,5 +3,4 @@ flake8
 flake8-isort
 pydocstyle
 pylint
-pyparsing!=2.4.1
 pytest

@@ -50,8 +50,8 @@ def fetch_jars(args):
 
     jar_urls = [
         (
-            'https://netcologne.dl.sourceforge.net/project/codenarc/codenarc'
-            f'/CodeNarc%20{args.codenarc_version}/CodeNarc-{args.codenarc_version}.jar'
+            'https://github.com/CodeNarc/CodeNarc/releases/download'
+            f'/v{args.codenarc_version}/CodeNarc-{args.codenarc_version}.jar'
         ),
         (
             'https://github.com/dx42/gmetrics/releases/download'

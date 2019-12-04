@@ -8,6 +8,7 @@ ruleset {
     ClassJavadoc(enabled: false)
   }
   ruleset('rulesets/convention.xml') {
+    CompileStatic(enabled: false)
     NoDef(enabled: false)
     VariableTypeRequired(ignoreVariableNames: '_')
   }

@@ -12,8 +12,10 @@
  *        {@code groovylint}. If {@code null}, then this function will try to fetch
  *        {@code groovylint} from Docker hub using the same version number corresponding
  *        to this library. (default: {@code null})
+ * @param extraArgs Extra arguments to pass to CodeNarc. Callers will have to escape these
+ *        arguments if necessary.
  */
-void check(String includesPattern, Object groovylintImage = null) {
+void check(String includesPattern, Object groovylintImage = null, String extraArgs = '') {
   Object image = groovylintImage
   if (!image) {
     String version = env['library.groovylint.version']
@@ -26,6 +28,6 @@ void check(String includesPattern, Object groovylintImage = null) {
   echo "Using groovylint Docker image: ${image.id}"
 
   image.inside("-v ${env.WORKSPACE}:/ws") {
-    sh "python3 /opt/run_codenarc.py -- -includes=${includesPattern}"
+    sh "python3 /opt/run_codenarc.py -- -includes=${includesPattern} ${extraArgs}"
   }
 }

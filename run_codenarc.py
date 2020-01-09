@@ -183,8 +183,12 @@ def parse_args(args):
         help='GMetrics version to use',
     )
 
+    default_groovy_home = _guess_groovy_home()
     arg_parser.add_argument(
-        '--groovy-home', default=_guess_groovy_home(), help='Groovy home directory'
+        '--groovy-home',
+        default=default_groovy_home,
+        required=(default_groovy_home is None),
+        help='Groovy home directory',
     )
 
     arg_parser.add_argument(

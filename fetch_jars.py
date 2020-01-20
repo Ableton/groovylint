@@ -32,8 +32,7 @@ def download_file(url, output_dir, force=False):
     logging.debug('Downloading %s to %s', url, output_file_path)
     response = requests.get(url, stream=True)
 
-    if not response.ok:
-        raise ValueError(f'Failed to fetch {url}')
+    response.raise_for_status()
 
     with open(output_file_path, mode='wb') as output_file:
         for chunk in response.iter_content(chunk_size=256):

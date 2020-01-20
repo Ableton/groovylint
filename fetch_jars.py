@@ -32,8 +32,7 @@ def download_file(url, output_dir, force=False):
     logging.debug('Downloading %s to %s', url, output_file_path)
     response = requests.get(url, stream=True)
 
-    if not response.ok:
-        raise ValueError(f'Failed to fetch {url}')
+    response.raise_for_status()
 
     with open(output_file_path, mode='wb') as output_file:
         for chunk in response.iter_content(chunk_size=256):
@@ -58,11 +57,11 @@ def fetch_jars(args):
             f'/v{args.gmetrics_version}/GMetrics-{args.gmetrics_version}.jar'
         ),
         (
-            f'http://repo1.maven.org/maven2/org/slf4j/slf4j-api/{args.slf4j_version}'
+            f'https://repo1.maven.org/maven2/org/slf4j/slf4j-api/{args.slf4j_version}'
             f'/slf4j-api-{args.slf4j_version}.jar'
         ),
         (
-            f'http://repo1.maven.org/maven2/org/slf4j/slf4j-simple/{args.slf4j_version}'
+            f'https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/{args.slf4j_version}'
             f'/slf4j-simple-{args.slf4j_version}.jar'
         ),
     ]

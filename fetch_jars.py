@@ -57,11 +57,11 @@ def fetch_jars(args):
             f'/v{args.gmetrics_version}/GMetrics-{args.gmetrics_version}.jar'
         ),
         (
-            f'http://repo1.maven.org/maven2/org/slf4j/slf4j-api/{args.slf4j_version}'
+            f'https://repo1.maven.org/maven2/org/slf4j/slf4j-api/{args.slf4j_version}'
             f'/slf4j-api-{args.slf4j_version}.jar'
         ),
         (
-            f'http://repo1.maven.org/maven2/org/slf4j/slf4j-simple/{args.slf4j_version}'
+            f'https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/{args.slf4j_version}'
             f'/slf4j-simple-{args.slf4j_version}.jar'
         ),
     ]

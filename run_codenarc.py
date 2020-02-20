@@ -105,7 +105,10 @@ def _print_violations(package_file_path, violations):
     """
     for violation in violations:
         message_element = violation.find('Message')
-        message = message_element.text if message_element else '[empty message]'
+        if message_element is not None:
+            message = message_element.text
+        else:
+            message = '[empty message]'
         logging.error(
             '%s:%s: %s: %s',
             package_file_path,

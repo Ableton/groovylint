@@ -97,6 +97,6 @@ also push a corresponding git tag to the origin and update the respective `major
 branch.
 
 
-[codenarc-home]: http://codenarc.sourceforge.net
-[codenarc-rules]: http://codenarc.sourceforge.net/codenarc-configuring-rules.html
+[codenarc-home]: https://codenarc.github.io/CodeNarc/
+[codenarc-rules]: https://codenarc.github.io/CodeNarc/codenarc-rule-index.html
 [jenkins-lib-config]: https://jenkins.io/doc/book/pipeline/shared-libraries/#using-libraries

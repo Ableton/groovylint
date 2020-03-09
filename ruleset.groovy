@@ -43,6 +43,7 @@ ruleset {
     NestedBlockDepth(maxNestedBlockDepth: 8)
   }
   ruleset('rulesets/unnecessary.xml') {
+    UnnecessaryGetter(ignoreMethodNames: 'isUnix')
     UnnecessaryReturnKeyword(enabled: false)
   }
   ruleset('rulesets/unused.xml') {

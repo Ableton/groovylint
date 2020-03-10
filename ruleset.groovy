@@ -1,5 +1,5 @@
 // For a complete list of rules, see:
-// http://codenarc.sourceforge.net/codenarc-rule-index.html
+// https://codenarc.github.io/CodeNarc/codenarc-rule-index.html
 
 ruleset {
   ruleset('rulesets/basic.xml') {}
@@ -43,6 +43,7 @@ ruleset {
     NestedBlockDepth(maxNestedBlockDepth: 8)
   }
   ruleset('rulesets/unnecessary.xml') {
+    UnnecessaryGetter(ignoreMethodNames: 'isUnix')
     UnnecessaryReturnKeyword(enabled: false)
   }
   ruleset('rulesets/unused.xml') {

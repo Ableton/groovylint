@@ -10,7 +10,7 @@ attrs==19.2.0             # via black, pytest
 black==19.10b0            # via -r requirements-dev.in
 click==7.0                # via black
 entrypoints==0.3          # via flake8
-flake8-isort==2.8.0       # via -r requirements-dev.in
+flake8-isort==2.9.0       # via -r requirements-dev.in
 flake8==3.7.9             # via -r requirements-dev.in, flake8-isort
 isort[pyproject]==4.3.21  # via flake8-isort, pylint
 lazy-object-proxy==1.4.2  # via astroid

@@ -12,9 +12,9 @@ ENV SLF4J_VERSION=1.7.29
 ENV GMETRICS_VERSION=1.0
 
 RUN apt-get update && apt-get install --no-install-recommends --no-upgrade  -y \
-  python3-setuptools \
-  python3 \
-  python3-pip && \
+  python3-setuptools=39.0.1\* \
+  python3=3.6.7\* \
+  python3-pip=9.0.1\* && \
   rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /opt/

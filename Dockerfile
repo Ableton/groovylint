@@ -29,7 +29,7 @@ RUN python3 fetch_jars.py --output-dir /opt \
   --gmetrics-version $GMETRICS_VERSION \
   --slf4j-version $SLF4J_VERSION
 
-RUN useradd -ms /bin/bash -G staff jenkins
+RUN useradd -ms /bin/bash jenkins
 
 RUN mkdir /ws && \
   chown -R jenkins:jenkins /ws && \

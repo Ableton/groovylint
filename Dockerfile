@@ -3,7 +3,7 @@
 # Use of this source code is governed by a MIT-style
 # license that can be found in the LICENSE file.
 
-FROM groovy:2.4-alpine
+FROM groovy:jre8
 
 USER root
 
@@ -11,7 +11,10 @@ ENV CODENARC_VERSION=1.5
 ENV SLF4J_VERSION=1.7.29
 ENV GMETRICS_VERSION=1.0
 
-RUN apk add --no-cache py3-setuptools~=39.1 python3~=3.6
+RUN apt-get update \
+    && apt-get install -y python3.8=3.8.0-* python3-pip=9.0.1-* --no-install-recommends \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /opt/
 COPY fetch_jars.py /opt/
@@ -25,7 +28,7 @@ RUN python3 fetch_jars.py --output-dir /opt \
   --gmetrics-version $GMETRICS_VERSION \
   --slf4j-version $SLF4J_VERSION
 
-RUN adduser -D jenkins
+RUN groupadd -r jenkins && useradd --no-log-init -r -g jenkins jenkins
 USER jenkins
 
 WORKDIR /ws

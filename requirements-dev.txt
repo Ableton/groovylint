@@ -25,7 +25,7 @@ pydocstyle==5.0.2         # via -r requirements-dev.in
 pyflakes==2.1.1           # via flake8
 pylint==2.5.2             # via -r requirements-dev.in
 pyparsing==2.4.3          # via packaging
-pytest==5.4.1             # via -r requirements-dev.in
+pytest==5.4.2             # via -r requirements-dev.in
 regex==2019.8.19          # via black
 six==1.12                 # via astroid, packaging
 snowballstemmer==2.0.0    # via pydocstyle

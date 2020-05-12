@@ -9,9 +9,8 @@ astroid==2.4.0            # via pylint
 attrs==19.2.0             # via black, pytest
 black==19.10b0            # via -r requirements-dev.in
 click==7.0                # via black
-entrypoints==0.3          # via flake8
 flake8-isort==3.0.0       # via -r requirements-dev.in
-flake8==3.7.9             # via -r requirements-dev.in, flake8-isort
+flake8==3.8.1             # via -r requirements-dev.in, flake8-isort
 isort[pyproject]==4.3.21  # via flake8-isort, pylint
 lazy-object-proxy==1.4.2  # via astroid
 mccabe==0.6.1             # via flake8, pylint
@@ -20,9 +19,9 @@ packaging==19.2           # via pytest
 pathspec==0.6.0           # via black
 pluggy==0.13.0            # via pytest
 py==1.8.0                 # via pytest
-pycodestyle==2.5.0        # via flake8
+pycodestyle==2.6.0        # via flake8
 pydocstyle==5.0.2         # via -r requirements-dev.in
-pyflakes==2.1.1           # via flake8
+pyflakes==2.2.0           # via flake8
 pylint==2.5.2             # via -r requirements-dev.in
 pyparsing==2.4.3          # via packaging
 pytest==5.4.2             # via -r requirements-dev.in

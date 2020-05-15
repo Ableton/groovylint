@@ -1,6 +1,7 @@
 black==19.10b0
 flake8
 flake8-isort
+flake8-sfs
 pydocstyle
 pylint
 pytest

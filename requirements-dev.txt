@@ -22,7 +22,7 @@ py==1.8.0                 # via pytest
 pycodestyle==2.6.0        # via flake8
 pydocstyle==5.0.2         # via -r requirements-dev.in
 pyflakes==2.2.0           # via flake8
-pylint==2.5.2             # via -r requirements-dev.in
+pylint==2.5.3             # via -r requirements-dev.in
 pyparsing==2.4.3          # via packaging
 pytest==5.4.3             # via -r requirements-dev.in
 regex==2019.8.19          # via black

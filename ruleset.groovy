@@ -24,7 +24,7 @@ ruleset {
     Indentation(spacesPerIndentLevel: 2, enabled: true)
     LineLength(length: 90)
     SpaceAfterOpeningBrace(ignoreEmptyBlock: true)
-    SpaceAroundMapEntryColon(enabled: false)
+    SpaceAroundMapEntryColon(characterAfterColonRegex: /\s/)
     SpaceBeforeClosingBrace(ignoreEmptyBlock: true)
   }
   ruleset('rulesets/generic.xml') {}

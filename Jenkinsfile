@@ -5,7 +5,7 @@
  * license that can be found in the LICENSE file.
  */
 
-library 'ableton-utils@0.13'
+library 'ableton-utils@0.16'
 library 'python-utils@0.9'
 // Get groovylint library from current commit so it can test itself in this Jenkinsfile
 library "groovylint@${env.JENKINS_COMMIT}"

@@ -22,8 +22,8 @@ COPY ruleset.groovy /opt/
 COPY run_codenarc.py /opt/
 
 WORKDIR /opt
-RUN pip3 install --no-cache-dir -r requirements.txt
-RUN python3 fetch_jars.py --output-dir /opt \
+RUN python3.8 -m pip install --no-cache-dir -r requirements.txt
+RUN python3.8 fetch_jars.py --output-dir /opt \
   --codenarc-version $CODENARC_VERSION \
   --gmetrics-version $GMETRICS_VERSION \
   --slf4j-version $SLF4J_VERSION
@@ -33,4 +33,4 @@ USER jenkins
 
 WORKDIR /ws
 
-CMD ["python3", "/opt/run_codenarc.py"]
+CMD ["python3.8", "/opt/run_codenarc.py"]

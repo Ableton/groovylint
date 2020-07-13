@@ -63,6 +63,15 @@ $ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` abletonag/groovylint \
   python3 /opt/run_codenarc.py -- -includes='*.groovy' -rulesetfiles=file:myrules.groovy
 ```
 
+### Using a codenarc.properties file
+
+As described in the [CodeNarc documentation][codenarc-properties], you can configure a ruleset by applying *.properties files. property files must be available on groovy classpath. the groovy classpath of the docker image is set to `/opt` in the docker image, so we mount the properties file there:
+
+```bash
+$ docker run --rm -v `pwd`:/ws -v `pwd`/codnearc.properties:/opt/codenarc.properties -u `id -u`:`id -g` abletonag/groovylint \
+  python3 /opt/run_codenarc.py -- -includes='*.groovy' -rulesetfiles=file:myrules.groovy
+```
+
 ### Usage in a Jenkinsfile
 
 To assist in linting on Jenkins, `groovylint` provides a pipeline library and global
@@ -99,4 +108,5 @@ branch.
 
 [codenarc-home]: https://codenarc.github.io/CodeNarc/
 [codenarc-rules]: https://codenarc.github.io/CodeNarc/codenarc-rule-index.html
+[codenarc-properties]: https://codenarc.github.io/CodeNarc/codenarc-configuring-rules.html#configuring-rules-using-a-properties-file
 [jenkins-lib-config]: https://jenkins.io/doc/book/pipeline/shared-libraries/#using-libraries

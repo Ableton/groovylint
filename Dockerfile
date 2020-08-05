@@ -7,9 +7,9 @@ FROM groovy:jre8
 
 USER root
 
-ENV CODENARC_VERSION=1.6
-ENV SLF4J_VERSION=1.7.29
-ENV GMETRICS_VERSION=1.0
+ENV CODENARC_VERSION=1.6.1
+ENV SLF4J_VERSION=1.7.30
+ENV GMETRICS_VERSION=1.1
 
 RUN apt-get update \
     && apt-get install -y python3.8=3.8.0-* python3-pip=9.0.1-* --no-install-recommends \

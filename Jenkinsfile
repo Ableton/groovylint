@@ -65,7 +65,7 @@ devToolsProject.run(
     )
   },
   publish: { data ->
-    docs.publish(data['docs'], 'AbletonDevTools/groovylint')
+    docs.publish("${data['docs']}/", 'AbletonDevTools/groovylint')
   },
   deployWhen: { return devToolsProject.shouldDeploy() },
   deploy: { data ->

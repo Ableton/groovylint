@@ -6,9 +6,9 @@
 #
 appdirs==1.4.3            # via black
 astroid==2.4.0            # via pylint
-attrs==19.2.0             # via black, pytest
-black==19.10b0            # via -r requirements-dev.in
-click==7.0                # via black
+attrs==19.2.0             # via pytest
+black==20.8b1             # via -r requirements-dev.in
+click==7.1.2              # via black
 flake8-isort==4.0.0       # via -r requirements-dev.in
 flake8==3.8.3             # via -r requirements-dev.in, flake8-isort
 iniconfig==1.0.0          # via pytest
@@ -16,6 +16,7 @@ isort==4.3.21             # via flake8-isort, pylint
 lazy-object-proxy==1.4.2  # via astroid
 mccabe==0.6.1             # via flake8, pylint
 more-itertools==7.2.0     # via pytest
+mypy-extensions==0.4.3    # via black
 packaging==19.2           # via pytest
 pathspec==0.6.0           # via black
 pluggy==0.13.0            # via pytest
@@ -26,10 +27,11 @@ pyflakes==2.2.0           # via flake8
 pylint==2.6.0             # via -r requirements-dev.in
 pyparsing==2.4.3          # via packaging
 pytest==6.0.1             # via -r requirements-dev.in
-regex==2019.8.19          # via black
+regex==2020.7.14          # via black
 six==1.12                 # via astroid, packaging
 snowballstemmer==2.0.0    # via pydocstyle
 testfixtures==6.10.0      # via flake8-isort
-toml==0.10.0              # via black, pylint, pytest
+toml==0.10.1              # via black, pylint, pytest
 typed-ast==1.4.0          # via black
+typing-extensions==3.7.4.3  # via black
 wrapt==1.11.2             # via astroid

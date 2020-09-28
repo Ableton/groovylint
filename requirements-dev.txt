@@ -15,7 +15,6 @@ iniconfig==1.0.0          # via pytest
 isort==4.3.21             # via flake8-isort, pylint
 lazy-object-proxy==1.4.2  # via astroid
 mccabe==0.6.1             # via flake8, pylint
-more-itertools==7.2.0     # via pytest
 mypy-extensions==0.4.3    # via black
 packaging==19.2           # via pytest
 pathspec==0.6.0           # via black
@@ -26,7 +25,7 @@ pydocstyle==5.1.1         # via -r requirements-dev.in
 pyflakes==2.2.0           # via flake8
 pylint==2.6.0             # via -r requirements-dev.in
 pyparsing==2.4.3          # via packaging
-pytest==6.0.2             # via -r requirements-dev.in
+pytest==6.1.0             # via -r requirements-dev.in
 regex==2020.7.14          # via black
 six==1.12                 # via astroid, packaging
 snowballstemmer==2.0.0    # via pydocstyle

@@ -12,7 +12,7 @@ ENV SLF4J_VERSION=1.7.30
 ENV GMETRICS_VERSION=1.1
 
 RUN apt-get update \
-    && apt-get install -y python3.8=3.8.0-* python3-pip=9.0.1-* --no-install-recommends \
+    && apt-get install -y python3.8=3.8.* python3-pip=20.0.* --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

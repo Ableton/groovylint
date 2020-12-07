@@ -67,7 +67,7 @@ devToolsProject.run(
   publish: { data ->
     docs.publish("${data['docs']}/", 'AbletonDevTools/groovylint')
   },
-  deployWhen: { return devToolsProject.shouldDeploy() },
+  deployWhen: { return true },
   deploy: { data ->
     String versionNumber = readFile('VERSION').trim()
     parallel(failFast: false,
@@ -81,11 +81,13 @@ devToolsProject.run(
             org: 'devtools',
             credential: 'dtr-password',
           ],
+/*
           'Docker Hub': [
             url: 'https://registry.hub.docker.com',
             org: 'abletonag',
             credential: 'docker-hub-password',
           ],
+*/
         ]
 
         registries.each { registry, values ->

@@ -6,17 +6,44 @@
  */
 
 /**
- * Check a set of files with the {@code groovylint} Docker image.
- * @param includesPattern A comma-separated list of Ant-style file patterns to check.
- * @param groovylintImage If specified, use this Docker image handle to run
- *        {@code groovylint}. If {@code null}, then this function will try to fetch
- *        {@code groovylint} from Docker hub using the same version number corresponding
- *        to this library. (default: {@code null})
- * @param extraArgs Extra arguments to pass to CodeNarc. Callers will have to escape these
- *        arguments if necessary.
+ * Check a set of files with the {@code groovylint} Docker image. This function is
+ * provided for backwards compatibility and will be removed in a future release.
+ * @deprecated Use {@code check#Map}
  */
 void check(String includesPattern, Object groovylintImage = null, String extraArgs = '') {
-  Object image = groovylintImage
+  check(
+    includesPattern: includesPattern,
+    groovylintImage: groovylintImage,
+    extraArgs: extraArgs,
+  )
+}
+
+
+/**
+ * Check a set of files with the {@code groovylint} Docker image.
+ * @param Map of arguments, which may include:
+ *        <ul>
+ *          <li>
+ *            {@code includesPattern}: A comma-separated list of Ant-style file patterns
+ *            to check <strong>(required)</strong>.
+ *          </li>
+ *          <li>
+ *            {@code groovylintImage}: If specified, use this Docker image handle to run
+ *            {@code groovylint}. Otherwise, this function will try to fetch
+ *            {@code groovylint} from Docker hub using the same version number
+ *            corresponding to this library.
+ *          </li>
+ *          <li>
+ *            {@code extraArgs}: Extra arguments to pass to CodeNarc. Callers will have to
+ *            escape these arguments if necessary.
+ *          </li>
+ *        </ul>
+ */
+void check(Map args) {
+  assert args
+  assert args.includesPattern
+
+  Object image = args.groovylintImage
   if (!image) {
     String version = env['library.groovylint.version']
     if (!version) {
@@ -28,6 +55,7 @@ void check(String includesPattern, Object groovylintImage = null, String extraAr
   echo "Using groovylint Docker image: ${image.id}"
 
   image.inside("-v ${env.WORKSPACE}:/ws") {
-    sh "python3 /opt/run_codenarc.py -- -includes=${includesPattern} ${extraArgs}"
+    sh "python3 /opt/run_codenarc.py -- -includes=${args.includesPattern}" +
+      " ${args.extraArgs}"
   }
 }

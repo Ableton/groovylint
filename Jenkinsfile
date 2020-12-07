@@ -17,8 +17,8 @@ devToolsProject.run(
     data.venv.run('pip install -r requirements-dev.txt -r requirements.txt')
   },
   build: { data ->
-    String gitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-    data['image'] = docker.build("abletonag/groovylint:${gitHash}")
+    data['gitHash'] = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+    data['image'] = docker.build("groovylint:${data.gitHash}")
   },
   test: { data ->
     parallel(failFast: false,
@@ -71,16 +71,35 @@ devToolsProject.run(
   deploy: { data ->
     String versionNumber = readFile('VERSION').trim()
     parallel(failFast: false,
-      docker_hub: {
-        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-password') {
-          try {
-            // Try to pull the image tagged with the contents of the VERSION file. If that
-            // call fails, then we should push this image to the registry.
-            docker.image("abletonag/groovylint:${versionNumber}").pull()
-          } catch (ignored) {
-            data['image'].push(version.majorMinorVersion(versionNumber))
-            data['image'].push(versionNumber)
-            data['image'].push('latest')
+      'docker registries': {
+        Map registries = [
+          'Ableton': [
+            url: encryptedFile.read(
+              path: 'ableton-registry.enc',
+              credentialsId: 'devtools-data-password',
+            ),
+            org: 'devtools',
+            credential: 'dtr-password',
+          ],
+          'Docker Hub': [
+            url: 'https://registry.hub.docker.com',
+            org: 'abletonag',
+            credential: 'docker-hub-password',
+          ],
+        ]
+
+        registries.each { registry, values ->
+          echo "Publishing Docker image to ${registry}"
+          docker.withRegistry(values.url, values.credential) {
+            try {
+              // Try to pull the image tagged with the contents of the VERSION file. If
+              // that call fails, then we should push this image to the registry.
+              docker.image("${values.org}/groovylint:${versionNumber}").pull()
+            } catch (ignored) {
+              data['image'].push(version.majorMinorVersion(versionNumber))
+              data['image'].push(versionNumber)
+              data['image'].push('latest')
+            }
           }
         }
       },

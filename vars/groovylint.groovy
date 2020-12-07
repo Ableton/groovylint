@@ -30,13 +30,15 @@ void check(String includesPattern, Object groovylintImage = null, String extraAr
  *          <li>
  *            {@code groovylintImage}: If specified, use this Docker image handle to run
  *            {@code groovylint}. Otherwise, this function will try to fetch
- *            {@code groovylint} from Docker hub using the same version number
- *            corresponding to this library.
+ *            {@code groovylint} from Docker hub (or a custom registry by using the {@code
+ *            registry} argument) using the same version number corresponding to this
+ *            library.
  *          </li>
  *          <li>
  *            {@code extraArgs}: Extra arguments to pass to CodeNarc. Callers will have to
  *            escape these arguments if necessary.
  *          </li>
+ *          <li>{@code registry}: Use this Docker registry instead of Docker hub.</li>
  *        </ul>
  */
 void check(Map args) {
@@ -54,8 +56,10 @@ void check(Map args) {
   }
   echo "Using groovylint Docker image: ${image.id}"
 
-  image.inside("-v ${env.WORKSPACE}:/ws") {
-    sh "python3 /opt/run_codenarc.py -- -includes=${args.includesPattern}" +
-      " ${args.extraArgs}"
+  docker.withRegistry(args.registry ?: 'https://registry.hub.docker.com') {
+    image.inside("-v ${env.WORKSPACE}:/ws") {
+      sh "python3 /opt/run_codenarc.py -- -includes=${args.includesPattern}" +
+        " ${args.extraArgs}"
+    }
   }
 }

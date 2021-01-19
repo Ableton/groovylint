@@ -37,4 +37,4 @@ typing-extensions==3.7.4.3  # via black
 wrapt==1.11.2             # via astroid
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==20.2.4               # via -r requirements-dev.in, pip-tools
+pip==20.3.3               # via -r requirements-dev.in, pip-tools

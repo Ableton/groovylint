@@ -2,13 +2,7 @@ black==20.8b1
 flake8
 flake8-isort
 isort
-
-# pip-tools >= 5.4.0 changes the output format in a way that is currently incompatible
-# with Dependabot, so we'll pin it to a version that doesn't cause the issue. We also
-# need to pin pip itself, as pip-tools<5.4.0 is incompatible with pip>=20.3.
-pip<20.3
-pip-tools<5.4.0
-
+pip-tools
 pydocstyle
 pylint
 pytest

@@ -1,7 +1,7 @@
 all: update sync
 
 sync:
-	pip-sync requirements.txt
+	pip-sync requirements-dev.txt requirements.txt
 
 update:
 	pip-compile --allow-unsafe --upgrade --quiet requirements.in --output-file requirements.txt

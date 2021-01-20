@@ -18,7 +18,7 @@ mccabe==0.6.1             # via flake8, pylint
 mypy-extensions==0.4.3    # via black
 packaging==20.8           # via pytest
 pathspec==0.8.1           # via black
-pip-tools==5.3.1          # via -r requirements-dev.in
+pip-tools==5.5.0          # via -r requirements-dev.in
 pluggy==0.13.1            # via pytest
 py==1.10.0                # via pytest
 pycodestyle==2.6.0        # via flake8
@@ -28,7 +28,7 @@ pylint==2.6.0             # via -r requirements-dev.in
 pyparsing==2.4.7          # via packaging
 pytest==6.2.1             # via -r requirements-dev.in
 regex==2020.11.13         # via black
-six==1.15.0               # via astroid, pip-tools
+six==1.15.0               # via astroid
 snowballstemmer==2.0.0    # via pydocstyle
 testfixtures==6.17.1      # via flake8-isort
 toml==0.10.2              # via black, pylint, pytest
@@ -37,4 +37,4 @@ typing-extensions==3.7.4.3  # via black
 wrapt==1.12.1             # via astroid
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==20.2.4               # via -r requirements-dev.in, pip-tools
+pip==20.3.3               # via pip-tools

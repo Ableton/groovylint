@@ -49,7 +49,7 @@ py==1.10.0
     # via pytest
 pycodestyle==2.7.0
     # via flake8
-pydocstyle==5.1.1
+pydocstyle==6.0.0
     # via -r requirements-dev.in
 pyflakes==2.3.0
     # via flake8

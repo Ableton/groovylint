@@ -10,6 +10,7 @@
 import argparse
 import logging
 import os
+import re
 import shutil
 import zipfile
 
@@ -66,20 +67,40 @@ def fetch_jars(args):
         verify_jar(download_file(url, args.output_dir, args.force))
 
 
+def jar_version_from_dockerfile(dockerfile, version_env_var):
+    """Extract the version for a JAR file from the Dockerfile."""
+    with open(dockerfile, 'r') as dockerfile_fp:
+        for line in dockerfile_fp.readlines():
+            line_match = re.search(f'ENV {version_env_var}=(.*)', line)
+            if line_match:
+                return line_match.group(1)
+
+    raise ValueError(f'Could not find version for {version_env_var} in {dockerfile}')
+
+
 def parse_args():
     """Parse arguments from the command line."""
     arg_parser = argparse.ArgumentParser()
 
     arg_parser.add_argument(
-        '--codenarc-version', help='Version of CodeNarc to download.', required=True
+        '--codenarc-version',
+        help='Version of CodeNarc to download. Required if --dockerfile is not given.',
     )
 
     arg_parser.add_argument(
-        '--gmetrics-version', help='Version of GMetrics to download.', required=True
+        '-d',
+        '--dockerfile',
+        help='Parse all versions from Dockerfile.',
     )
 
     arg_parser.add_argument(
-        '--slf4j-version', help='Version of SLF4J to download.', required=True
+        '--gmetrics-version',
+        help='Version of GMetrics to download. Required if --dockerfile is not given.',
+    )
+
+    arg_parser.add_argument(
+        '--slf4j-version',
+        help='Version of SLF4J to download. Required if --dockerfile is not given.',
     )
 
     arg_parser.add_argument(
@@ -101,6 +122,21 @@ def parse_args():
     )
 
     args = arg_parser.parse_args()
+
+    if args.dockerfile:
+        args.codenarc_version = jar_version_from_dockerfile(
+            args.dockerfile, 'CODENARC_VERSION'
+        )
+        args.gmetrics_version = jar_version_from_dockerfile(
+            args.dockerfile, 'GMETRICS_VERSION'
+        )
+        args.slf4j_version = jar_version_from_dockerfile(
+            args.dockerfile, 'SLF4J_VERSION'
+        )
+    else:
+        assert args.codenarc_version
+        assert args.gmetrics_version
+        assert args.slf4j_version
 
     log_level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(level=log_level)

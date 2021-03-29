@@ -31,13 +31,20 @@ devToolsProject.run(
       groovydoc: {
         data['docs'] = groovydoc.generate()
       },
-      groovylint: {
+      'groovylint docker': {
         // Use the Docker image created in the Build stage above. This ensures that the
         // we are checking our own Groovy code with the same library and image which would
         // be published to production.
         groovylint.check(
           includesPattern: './Jenkinsfile,**/*.groovy',
           groovylintImage: data['image'],
+        )
+      },
+      'groovylint native': {
+        groovylint.check(
+          includesPattern: './Jenkinsfile,**/*.groovy',
+          resourcesDir: "${pwd()}/.groovylint-native-check",
+          scriptArgs: '--groovy-home /usr/share/groovy',
         )
       },
       hadolint: {

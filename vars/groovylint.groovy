@@ -24,26 +24,41 @@
  *            {@code groovylint} from Docker hub using the same version number
  *            corresponding to this library.
  *          </li>
+ *          <li>
+ *            {@code resourcesDir}: If specified, then download JAR files to this
+ *            directory and run Python <strong>without Docker</strong>. This requires
+ *            Python 3.6 (or newer), Java, and Groovy to be installed on the agent.
+ *          </li>
+ *          <li>{@code scriptArgs}: Arguments to pass to {@code run_codenarc.py}.</li>
  *        </ul>
  */
 void check(Map args = [:]) {
   assert args.includesPattern
   String includesPattern = args.includesPattern
   String extraArgs = args.extraArgs ?: ''
+  String scriptArgs = args.scriptArgs ?: ''
 
-  Object image = args.groovylintImage
-  if (!image) {
-    String version = env['library.groovylint.version']
-    if (!version) {
-      error 'Could not find groovylint version in environment'
+  if (args.resourcesDir) {
+    writeFile(file: 'pom.xml', text: libraryResource('pom.xml'))
+    writeFile(file: 'run_codenarc.py', text: libraryResource('run_codenarc.py'))
+    writeFile(file: 'ruleset.groovy', text: libraryResource('ruleset.groovy'))
+    sh "python3 run_codenarc.py ${scriptArgs} " +
+      "-- -includes=${includesPattern} ${extraArgs}"
+  } else {
+    Object image = args.groovylintImage
+    if (!image) {
+      String version = env['library.groovylint.version']
+      if (!version) {
+        error 'Could not find groovylint version in environment'
+      }
+      image = docker.image("abletonag/groovylint:${version}")
+      image.pull()
     }
-    image = docker.image("abletonag/groovylint:${version}")
-    image.pull()
-  }
-  echo "Using groovylint Docker image: ${image.id}"
+    echo "Using groovylint Docker image: ${image.id}"
 
-  image.inside("-v ${env.WORKSPACE}:/ws") {
-    sh "python3 /opt/run_codenarc.py -- -includes=${includesPattern} ${extraArgs}"
+    image.inside("-v ${env.WORKSPACE}:/ws") {
+      sh "python3 /opt/run_codenarc.py -- -includes=${includesPattern} ${extraArgs}"
+    }
   }
 }
 

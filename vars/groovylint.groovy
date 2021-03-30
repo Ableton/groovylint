@@ -5,18 +5,33 @@
  * license that can be found in the LICENSE file.
  */
 
+
 /**
  * Check a set of files with the {@code groovylint} Docker image.
- * @param includesPattern A comma-separated list of Ant-style file patterns to check.
- * @param groovylintImage If specified, use this Docker image handle to run
- *        {@code groovylint}. If {@code null}, then this function will try to fetch
- *        {@code groovylint} from Docker hub using the same version number corresponding
- *        to this library. (default: {@code null})
- * @param extraArgs Extra arguments to pass to CodeNarc. Callers will have to escape these
- *        arguments if necessary.
+ * @param args Map of arguments, which may include:
+ *        <ul>
+ *          <li>
+ *            {@code includesPattern}: A comma-separated list of Ant-style file patterns
+ *            to check. <strong>(required)</strong>.
+ *          </li>
+ *          <li>
+ *            {@code extraArgs}: Extra arguments to pass to CodeNarc. Callers will have to
+ *            escape these arguments if necessary.
+ *          </li>
+ *          <li>
+ *            {@code groovylintImage}: If specified, use this Docker image handle to run
+ *            {@code groovylint}. If {@code null}, then this function will try to fetch
+ *            {@code groovylint} from Docker hub using the same version number
+ *            corresponding to this library.
+ *          </li>
+ *        </ul>
  */
-void check(String includesPattern, Object groovylintImage = null, String extraArgs = '') {
-  Object image = groovylintImage
+void check(Map args = [:]) {
+  assert args.includesPattern
+  String includesPattern = args.includesPattern
+  String extraArgs = args.extraArgs ?: ''
+
+  Object image = args.groovylintImage
   if (!image) {
     String version = env['library.groovylint.version']
     if (!version) {
@@ -30,4 +45,24 @@ void check(String includesPattern, Object groovylintImage = null, String extraAr
   image.inside("-v ${env.WORKSPACE}:/ws") {
     sh "python3 /opt/run_codenarc.py -- -includes=${includesPattern} ${extraArgs}"
   }
+}
+
+
+/**
+ * Check a set of files with the {@code groovylint} Docker image.
+ * @param includesPattern A comma-separated list of Ant-style file patterns to check.
+ * @param groovylintImage If specified, use this Docker image handle to run
+ *        {@code groovylint}. If {@code null}, then this function will try to fetch
+ *        {@code groovylint} from Docker hub using the same version number corresponding
+ *        to this library. (default: {@code null})
+ * @param extraArgs Extra arguments to pass to CodeNarc. Callers will have to escape these
+ *        arguments if necessary.
+ * @deprecated Use check(Map) instead.
+ */
+void check(String includesPattern, Object groovylintImage = null, String extraArgs = '') {
+  check(
+    extraArgs: extraArgs,
+    includesPattern: includesPattern,
+    groovylintImage: groovylintImage,
+  )
 }

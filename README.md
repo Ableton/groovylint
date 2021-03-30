@@ -9,12 +9,11 @@ issues and more.
 ### Running with Python
 
 To use `groovylint` as a standalone Python script, you should first clone the repository
-somewhere on your hard drive. Pipenv is required to set up `groovylint`, but not to run
-it. After running `pipenv sync`, you can run the `fetch_jars.py` script:
+somewhere on your hard drive. Next, run the `fetch_jars.py` script to fetch CodeNarc's JAR
+files:
 
 ```bash
-$ pipenv run fetch_jars --codenarc 1.2.1 --gmetrics 1.0 --slf4j 1.7.25 \
-  --output-dir ./resources
+$ ./fetch_jars.py --codenarc 1.2.1 --gmetrics 1.0 --slf4j 1.7.25 --output-dir ./resources
 ```
 
 The version numbers used by `groovylint`'s Docker container can be found in the

@@ -10,9 +10,10 @@
 import argparse
 import logging
 import os
+import shutil
 import zipfile
 
-import requests
+from urllib.request import urlopen
 
 
 def download_file(url, output_dir, force=False):
@@ -30,13 +31,8 @@ def download_file(url, output_dir, force=False):
         return output_file_path
 
     logging.debug('Downloading %s to %s', url, output_file_path)
-    response = requests.get(url, stream=True)
-
-    response.raise_for_status()
-
-    with open(output_file_path, mode='wb') as output_file:
-        for chunk in response.iter_content(chunk_size=256):
-            output_file.write(chunk)
+    with urlopen(url) as response, open(output_file_path, 'wb') as out_fp:
+        shutil.copyfileobj(response, out_fp)
 
     logging.info('Downloaded %s', output_file_name)
     return output_file_path

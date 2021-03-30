@@ -16,13 +16,11 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /opt/
 COPY fetch_jars.py /opt/
 COPY ruleset.groovy /opt/
 COPY run_codenarc.py /opt/
 
 WORKDIR /opt
-RUN python3.8 -m pip install --no-cache-dir -r requirements.txt
 RUN python3.8 fetch_jars.py --output-dir /opt \
   --codenarc-version $CODENARC_VERSION \
   --gmetrics-version $GMETRICS_VERSION \

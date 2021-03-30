@@ -35,7 +35,10 @@ devToolsProject.run(
         // Use the Docker image created in the Build stage above. This ensures that the
         // we are checking our own Groovy code with the same library and image which would
         // be published to production.
-        groovylint.check('./Jenkinsfile,**/*.groovy', data['image'])
+        groovylint.check(
+          includesPattern: './Jenkinsfile,**/*.groovy',
+          groovylintImage: data['image'],
+        )
       },
       hadolint: {
         docker.image('hadolint/hadolint:v1.13.0-debian').inside("-v ${pwd()}:/ws") {

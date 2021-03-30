@@ -14,7 +14,7 @@ library "groovylint@${params.JENKINS_COMMIT}"
 devToolsProject.run(
   setup: { data ->
     data['venv'] = virtualenv.create('python3.8')
-    data.venv.run('pip install -r requirements-dev.txt -r requirements.txt')
+    data.venv.run('pip install -r requirements-dev.txt')
   },
   build: { data ->
     String gitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()

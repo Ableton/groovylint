@@ -177,13 +177,13 @@ def parse_args(args):
     arg_parser.add_argument(
         '--codenarc-version',
         default=os.environ.get('CODENARC_VERSION'),
-        help='CodeNarc version to use',
+        help='CodeNarc version to use.',
     )
 
     arg_parser.add_argument(
         '--gmetrics-version',
         default=os.environ.get('GMETRICS_VERSION'),
-        help='GMetrics version to use',
+        help='GMetrics version to use.',
     )
 
     default_groovy_home = _guess_groovy_home()
@@ -191,7 +191,7 @@ def parse_args(args):
         '--groovy-home',
         default=default_groovy_home,
         required=(default_groovy_home is None),
-        help='Groovy home directory',
+        help='Groovy home directory.',
     )
 
     arg_parser.add_argument(
@@ -203,7 +203,7 @@ def parse_args(args):
     arg_parser.add_argument(
         '--slf4j-version',
         default=os.environ.get('SLF4J_VERSION'),
-        help='SLF4J version to use',
+        help='SLF4J version to use.',
     )
 
     arg_parser.add_argument(

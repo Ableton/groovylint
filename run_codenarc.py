@@ -59,6 +59,11 @@ def _guess_groovy_home():
         brew_groovy_home = '/usr/local/opt/groovysdk/libexec'
         if os.path.exists(brew_groovy_home):
             return brew_groovy_home
+    if platform.system() == 'Linux':
+        # Many Linux distros have Groovy packages which use this location.
+        linux_groovy_home = '/usr/share/groovy'
+        if os.path.exists(linux_groovy_home):
+            return linux_groovy_home
 
     return None
 

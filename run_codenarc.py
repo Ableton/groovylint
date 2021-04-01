@@ -30,7 +30,7 @@ class CodeNarcViolationsException(Exception):
 
 
 def _build_classpath(args):
-    """Construct the classpath from the Groovy/Groovylint homes and JAR versions."""
+    """Construct the classpath to use for running CodeNarc."""
     classpath = [
         args.resources,
         f'{args.groovy_home}/lib/*',

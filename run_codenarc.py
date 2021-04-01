@@ -21,6 +21,7 @@ from xml.etree import ElementTree
 
 
 DEFAULT_REPORT_FILE = 'codenarc-report.xml'
+GROOVYLINT_HOME = os.path.dirname(os.path.realpath(__file__))
 
 
 class CodeNarcViolationsException(Exception):
@@ -257,7 +258,7 @@ def parse_args(args):
 
     arg_parser.add_argument(
         '--resources',
-        default=os.path.realpath(os.path.join(os.path.dirname(__file__), 'resources')),
+        default=os.path.join(GROOVYLINT_HOME, 'resources'),
         help='Path to Groovylint resources directory.',
     )
 

@@ -21,7 +21,7 @@ The version numbers used by `groovylint`'s Docker container can be found in the
 Python 3.6 or greater:
 
 ```bash
-$ /path/to/groovylint/run_codenarc.py --home /path/to/groovylint/resources \
+$ /path/to/groovylint/run_codenarc.py --resources /path/to/groovylint/resources \
   --codenarc 1.2.1 --gmetrics 1.0 --slf4j 1.7.25 \
   -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"
 ```

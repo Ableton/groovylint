@@ -16,12 +16,11 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY fetch_jars.py /opt/
 COPY ruleset.groovy /opt/resources/
 COPY run_codenarc.py /opt/
 
 WORKDIR /opt
-RUN python3.8 fetch_jars.py --output-dir /opt/resources \
+RUN python3.8 run_codenarc.py --resources /opt/resources \
   --codenarc-version $CODENARC_VERSION \
   --gmetrics-version $GMETRICS_VERSION \
   --slf4j-version $SLF4J_VERSION

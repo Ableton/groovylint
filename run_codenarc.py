@@ -236,26 +236,26 @@ def parse_args(args):
         help='All options after "--" will be passed to CodeNarc',
     )
 
-    parsed_args = arg_parser.parse_args(args)
+    args = arg_parser.parse_args(args)
 
-    if not parsed_args.codenarc_version:
+    if not args.codenarc_version:
         raise ValueError('Could not determine CodeNarc version')
-    if not parsed_args.gmetrics_version:
+    if not args.gmetrics_version:
         raise ValueError('Could not determine GMetrics version')
-    if not parsed_args.slf4j_version:
+    if not args.slf4j_version:
         raise ValueError('Could not determine SLF4J version')
 
-    parsed_args.codenarc_options = [
-        option for sublist in parsed_args.codenarc_options for option in sublist
+    args.codenarc_options = [
+        option for sublist in args.codenarc_options for option in sublist
     ]
 
     logging.basicConfig(
         format='%(levelname)s %(message)s',
-        level=parsed_args.log_level or logging.INFO,
+        level=args.log_level or logging.INFO,
         stream=sys.stdout,
     )
 
-    return parsed_args
+    return args
 
 
 def parse_xml_report(xml_text):

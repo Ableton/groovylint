@@ -108,6 +108,14 @@ Once on `master`, a new Docker image will be published by Ableton's CI service, 
 also push a corresponding git tag to the origin and update the respective `major.minor`
 branch.
 
+## Maintainers
+
+This project is maintained by the following GitHub users:
+
+- [@ala-ableton](https://github.com/ala-ableton)
+- [@mst-ableton](https://github.com/mst-ableton)
+- [@nre-ableton](https://github.com/nre-ableton)
+
 
 [codenarc-home]: https://codenarc.github.io/CodeNarc/
 [codenarc-rules]: https://codenarc.github.io/CodeNarc/codenarc-rule-index.html

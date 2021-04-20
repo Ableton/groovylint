@@ -9,11 +9,11 @@ issues and more.
 ### Running with Python
 
 To use `groovylint` as a standalone Python script, you should first clone the repository
-somewhere on your hard drive. Next, run the `fetch_jars.py` script to fetch CodeNarc's JAR
-files:
+somewhere on your hard drive. Next, run the `run_codenarc.py` script once to download all
+JAR dependencies:
 
 ```bash
-$ ./fetch_jars.py --codenarc 1.2.1 --gmetrics 1.0 --slf4j 1.7.25 --output-dir ./resources
+$ ./run_codenarc.py --codenarc 1.2.1 --gmetrics 1.0 --slf4j 1.7.25 --resources ./resources
 ```
 
 The version numbers used by `groovylint`'s Docker container can be found in the

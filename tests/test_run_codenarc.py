@@ -111,20 +111,6 @@ def test_run_codenarc_failure_code():
             run_codenarc(args=parse_args(args=[]))
 
 
-def test_run_codenarc_missing_jar():
-    """Test that run_codenarc raises an error if a JAR file could not be found.
-
-    Calling run_codenarc with no valid version arguments should result in no files found,
-    which should cause _build_classpath to raise.
-    """
-    with pytest.raises(ValueError) as exception_info:
-        run_codenarc(
-            args=parse_args(args=['--codenarc-version', '6.6.6']), report_file='invalid'
-        )
-    # Ensure that the exception message contained the name of the invalid JAR file
-    assert 'CodeNarc-6.6.6.jar' in str(exception_info.value)
-
-
 def test_run_codenarc_no_report_file():
     """Test that run_codenarc raises an error if CodeNarc did not produce a report."""
     with patch('subprocess.run') as subprocess_mock:

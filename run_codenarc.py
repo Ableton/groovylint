@@ -11,9 +11,12 @@ import argparse
 import logging
 import os
 import platform
+import shutil
 import subprocess
 import sys
+import zipfile
 
+from urllib.request import urlopen
 from xml.etree import ElementTree
 
 
@@ -45,6 +48,51 @@ def _build_classpath(args):
             raise ValueError(f'Classpath element {path} does not exist')
 
     return ':'.join(classpath)
+
+
+def _download_file(url, output_dir):
+    """Download a file from a URL to the download directory."""
+    output_file_name = url.split('/')[-1]
+    output_file_path = os.path.join(output_dir, output_file_name)
+
+    if os.path.exists(output_file_path):
+        logging.debug('%s already exists, skipping download', output_file_path)
+        return output_file_path
+
+    logging.debug('Downloading %s to %s', url, output_file_path)
+    with urlopen(url) as response, open(output_file_path, 'wb') as out_fp:
+        shutil.copyfileobj(response, out_fp)
+
+    logging.info('Downloaded %s', output_file_name)
+    return output_file_path
+
+
+def _fetch_jars(args):
+    """Fetch JAR file dependencies."""
+    if not os.path.exists(args.resources):
+        os.mkdir(args.resources)
+
+    jar_urls = [
+        (
+            'https://github.com/CodeNarc/CodeNarc/releases/download'
+            f'/v{args.codenarc_version}/CodeNarc-{args.codenarc_version}.jar'
+        ),
+        (
+            'https://github.com/dx42/gmetrics/releases/download'
+            f'/v{args.gmetrics_version}/GMetrics-{args.gmetrics_version}.jar'
+        ),
+        (
+            f'https://repo1.maven.org/maven2/org/slf4j/slf4j-api/{args.slf4j_version}'
+            f'/slf4j-api-{args.slf4j_version}.jar'
+        ),
+        (
+            f'https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/{args.slf4j_version}'
+            f'/slf4j-simple-{args.slf4j_version}.jar'
+        ),
+    ]
+
+    for url in jar_urls:
+        _verify_jar(_download_file(url, args.resources))
 
 
 def _guess_groovy_home():
@@ -173,6 +221,14 @@ def _remove_report_file(report_file):
         os.remove(report_file)
 
 
+def _verify_jar(file_path):
+    """Verify that a file is a valid JAR file."""
+    logging.debug('Verifying %s', file_path)
+    with zipfile.ZipFile(file_path, 'r') as jar_file:
+        if 'META-INF/MANIFEST.MF' not in jar_file.namelist():
+            raise ValueError(f'{file_path} does not appear to be a valid JAR')
+
+
 def parse_args(args):
     """Parse arguments from the command line."""
     arg_parser = argparse.ArgumentParser(
@@ -236,26 +292,26 @@ def parse_args(args):
         help='All options after "--" will be passed to CodeNarc',
     )
 
-    parsed_args = arg_parser.parse_args(args)
+    args = arg_parser.parse_args(args)
 
-    if not parsed_args.codenarc_version:
+    if not args.codenarc_version:
         raise ValueError('Could not determine CodeNarc version')
-    if not parsed_args.gmetrics_version:
+    if not args.gmetrics_version:
         raise ValueError('Could not determine GMetrics version')
-    if not parsed_args.slf4j_version:
+    if not args.slf4j_version:
         raise ValueError('Could not determine SLF4J version')
 
-    parsed_args.codenarc_options = [
-        option for sublist in parsed_args.codenarc_options for option in sublist
+    args.codenarc_options = [
+        option for sublist in args.codenarc_options for option in sublist
     ]
 
     logging.basicConfig(
         format='%(levelname)s %(message)s',
-        level=parsed_args.log_level or logging.INFO,
+        level=args.log_level or logging.INFO,
         stream=sys.stdout,
     )
 
-    return parsed_args
+    return args
 
 
 def parse_xml_report(xml_text):
@@ -344,7 +400,9 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
 
 if __name__ == '__main__':
     try:
-        parse_xml_report(run_codenarc(parse_args(sys.argv[1:])))
+        parsed_args = parse_args(sys.argv[1:])
+        _fetch_jars(parsed_args)
+        parse_xml_report(run_codenarc(parsed_args))
         logging.info('No violations found')
     except CodeNarcViolationsException as exception:
         logging.error('Found %s violation(s)', exception.num_violations)

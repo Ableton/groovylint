@@ -8,48 +8,47 @@ issues and more.
 
 ### Running with Python
 
-To use `groovylint` as a standalone Python script, you should first clone the repository
-somewhere on your hard drive. Next, run the `run_codenarc.py` script once to download all
-JAR dependencies:
+To use `groovylint` as a standalone Python script, simply, run the `run_codenarc.py`
+script like so:
 
 ```bash
-$ ./run_codenarc.py --codenarc 1.2.1 --gmetrics 1.0 --slf4j 1.7.25 --resources ./resources
+$ /path/to/run_codenarc.py --codenarc 1.2.1 --gmetrics 1.0 --slf4j 1.7.25 --resources \
+    /path/to/groovylint/resources -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"
 ```
 
-The version numbers used by `groovylint`'s Docker container can be found in the
-`Dockerfile`. After this is finished, you can use `groovylint` from any directory using
-Python 3.6 or greater:
+The `--resources` argument should point to the `resources` directory underneath
+where you've cloned the `groovylint` sources. The version numbers used by
+`groovylint`'s Docker container can be found in the `Dockerfile`. `groovylint`
+will download any JAR dependencies it needs to this location.
 
-```bash
-$ /path/to/groovylint/run_codenarc.py --resources /path/to/groovylint/resources \
-  --codenarc 1.2.1 --gmetrics 1.0 --slf4j 1.7.25 \
-  -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"
-```
+Note that the `run_codenarc.py` script requires Python 3.6 or greater to be installed on
+the local system.
 
 ### Running as a Docker application
 
+`groovylint` is also published as a Docker container [on Docker Hub][docker-hub-home]. To
+run `groovylint` from the container, that would look something like this:
+
 ```bash
 $ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` abletonag/groovylint \
-  python3 /opt/run_codenarc.py -- -includes='foo/bar.groovy,src/**/*.groovy'
+    /opt/run_codenarc.py -- -includes='foo/bar.groovy,src/**/*.groovy'
 ```
 
-By default this docker image will run CodeNarc checks on `/ws` directory, so this command
-mounts the current working directory to that location, and then runs CodeNarc checks on
-the files, and exits when finished. Since the default user is `groovy`, it is recommended
-that you run the image with your own user ID to avoid permission issues.
+By default, the Docker image will run CodeNarc checks on the `/ws` directory, so
+this command uses a volume mapping from the current working directory to that
+location. The above example would check the file `foo/bar.groovy`, and all
+Groovy files in the `src` directory tree.
 
-The above example would check the file `foo/bar.groovy`, and all Groovy files in the `src`
-directory tree.
 
 ### Running in a Docker container
 
 ```bash
-$ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` --entrypoint=/bin/sh \
-  -i -t abletonag/groovylint
+$ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` --entrypoint=/bin/sh -i -t \
+    abletonag/groovylint
 ```
 
 This command will run the CodeNarc image and override the entry point. You can then run
-`codenarc` inside the container as a regular program.
+`run_codenarc.py` inside the container as a regular program.
 
 ### Specifying the ruleset
 
@@ -59,20 +58,20 @@ the command line arguments with the `-rulesetfile` flag:
 
 ```bash
 $ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` abletonag/groovylint \
-  python3 /opt/run_codenarc.py -- -includes='*.groovy' -rulesetfiles=file:myrules.groovy
+    /opt/run_codenarc.py -- -includes='*.groovy' -rulesetfiles=file:myrules.groovy
 ```
 
 ### Using a codenarc.properties file
 
-As described in the [CodeNarc documentation][codenarc-properties], you can
-configure a ruleset with `*.properties` files. Property files must be available
-on the Groovy classpath. The Groovy classpath of the docker image is set to
-`/opt` in the docker image, so you must mount the properties file there:
+As described in the [CodeNarc documentation][codenarc-properties], you can configure a
+ruleset with `*.properties` files. Property files must be available on the Groovy
+classpath. The Groovy classpath of the docker image is set to `/opt` in the docker image,
+so you must mount the properties file there:
 
 ```bash
 $ docker run --rm -v `pwd`:/ws -v `pwd`/codnearc.properties:/opt/codenarc.properties \
--u `id -u`:`id -g` abletonag/groovylint python3 /opt/run_codenarc.py \
--- -includes='*.groovy' -rulesetfiles=file:myrules.groovy
+    -u `id -u`:`id -g` abletonag/groovylint /opt/run_codenarc.py -- -includes='*.groovy' \
+    -rulesetfiles=file:myrules.groovy
 ```
 
 ### Usage in a Jenkinsfile
@@ -120,4 +119,5 @@ This project is maintained by the following GitHub users:
 [codenarc-home]: https://codenarc.github.io/CodeNarc/
 [codenarc-rules]: https://codenarc.github.io/CodeNarc/codenarc-rule-index.html
 [codenarc-properties]: https://codenarc.github.io/CodeNarc/codenarc-configuring-rules.html#configuring-rules-using-a-properties-file
+[docker-hub-home]: https://hub.docker.com/r/abletonag/groovylint
 [jenkins-lib-config]: https://jenkins.io/doc/book/pipeline/shared-libraries/#using-libraries

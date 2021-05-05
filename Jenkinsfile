@@ -49,7 +49,7 @@ devToolsProject.run(
         data.venv.run('pydocstyle -v')
       },
       pylint: {
-        data.venv.run('pylint --max-line-length=90 *.py')
+        data.venv.run('pylint --max-line-length=90 resources/*.py')
       },
       pytest: {
         withEnv([

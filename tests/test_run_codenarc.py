@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 import pytest
 
-from run_codenarc import (
+from resources.run_codenarc import (
     CodeNarcViolationsException,
     parse_args,
     parse_xml_report,

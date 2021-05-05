@@ -12,7 +12,7 @@ To use `groovylint` as a standalone Python script, simply, run the `run_codenarc
 script like so:
 
 ```bash
-$ /path/to/run_codenarc.py -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"
+$ /path/to/groovylint/resources/run_codenarc.py -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"
 ```
 
 The `--resources` argument should point to the `resources` directory underneath

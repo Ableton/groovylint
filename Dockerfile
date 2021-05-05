@@ -12,12 +12,12 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY pom.xml /opt/
-COPY ruleset.groovy /opt/resources/
-COPY run_codenarc.py /opt/
+COPY resources/pom.xml /opt/
+COPY resources/ruleset.groovy /opt/
+COPY resources/run_codenarc.py /opt/
 
 WORKDIR /opt
-RUN python3.8 run_codenarc.py --resources /opt/resources
+RUN python3.8 run_codenarc.py
 RUN groupadd -r jenkins && useradd --no-log-init -r -g jenkins jenkins
 USER jenkins
 

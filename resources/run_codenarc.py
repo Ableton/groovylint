@@ -258,7 +258,7 @@ def parse_args(args, default_jar_versions):
 
     arg_parser.add_argument(
         '--resources',
-        default=os.path.join(GROOVYLINT_HOME, 'resources'),
+        default=os.path.join(GROOVYLINT_HOME),
         help='Path to Groovylint resources directory.',
     )
 

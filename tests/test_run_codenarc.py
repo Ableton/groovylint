@@ -58,7 +58,7 @@ def test_parse_xml_report_failed(report_file, num_violations):
 
 
 @patch('os.remove')
-def test_run_codenarc(remove_mock):
+def test_run_codenarc(remove_mock, default_jar_versions):
     """Test that run_codenarc exits without errors if CodeNarc ran successfully."""
     with patch('os.path.exists') as path_exists_mock:
         path_exists_mock.return_value = True
@@ -68,23 +68,14 @@ def test_run_codenarc(remove_mock):
             )
 
             output = run_codenarc(
-                args=parse_args(
-                    args=[
-                        '--codenarc-version',
-                        '1.0',
-                        '--gmetrics-version',
-                        '1.0',
-                        '--slf4j-version',
-                        '1.0',
-                    ]
-                ),
+                args=parse_args(args=[], default_jar_versions=default_jar_versions),
                 report_file=_report_file_path('success.xml'),
             )
 
     assert _report_file_contents('success.xml') == output
 
 
-def test_run_codenarc_compilation_failure():
+def test_run_codenarc_compilation_failure(default_jar_versions):
     """Test that run_codenarc raises an error if CodeNarc found compilation errors."""
     with patch('subprocess.run') as subprocess_mock:
         subprocess_mock.return_value = subprocess.CompletedProcess(
@@ -97,10 +88,12 @@ def test_run_codenarc_compilation_failure():
         )
 
         with pytest.raises(ValueError):
-            run_codenarc(args=parse_args(args=[]))
+            run_codenarc(
+                args=parse_args(args=[], default_jar_versions=default_jar_versions)
+            )
 
 
-def test_run_codenarc_failure_code():
+def test_run_codenarc_failure_code(default_jar_versions):
     """Test that run_codenarc raises an error if CodeNarc failed to run."""
     with patch('subprocess.run') as subprocess_mock:
         subprocess_mock.return_value = subprocess.CompletedProcess(
@@ -108,10 +101,12 @@ def test_run_codenarc_failure_code():
         )
 
         with pytest.raises(ValueError):
-            run_codenarc(args=parse_args(args=[]))
+            run_codenarc(
+                args=parse_args(args=[], default_jar_versions=default_jar_versions)
+            )
 
 
-def test_run_codenarc_no_report_file():
+def test_run_codenarc_no_report_file(default_jar_versions):
     """Test that run_codenarc raises an error if CodeNarc did not produce a report."""
     with patch('subprocess.run') as subprocess_mock:
         subprocess_mock.return_value = subprocess.CompletedProcess(
@@ -119,4 +114,7 @@ def test_run_codenarc_no_report_file():
         )
 
         with pytest.raises(ValueError):
-            run_codenarc(args=parse_args(args=[]), report_file='invalid')
+            run_codenarc(
+                args=parse_args(args=[], default_jar_versions=default_jar_versions),
+                report_file='invalid',
+            )

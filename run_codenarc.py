@@ -21,6 +21,7 @@ from xml.etree import ElementTree
 
 
 DEFAULT_REPORT_FILE = 'codenarc-report.xml'
+GROOVYLINT_HOME = os.path.dirname(os.path.realpath(__file__))
 
 
 class CodeNarcViolationsException(Exception):
@@ -229,7 +230,7 @@ def _verify_jar(file_path):
             raise ValueError(f'{file_path} does not appear to be a valid JAR')
 
 
-def parse_args(args):
+def parse_args(args, default_jar_versions):
     """Parse arguments from the command line."""
     arg_parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
@@ -237,13 +238,13 @@ def parse_args(args):
 
     arg_parser.add_argument(
         '--codenarc-version',
-        default=os.environ.get('CODENARC_VERSION'),
+        default=default_jar_versions['CodeNarc'],
         help='CodeNarc version to use.',
     )
 
     arg_parser.add_argument(
         '--gmetrics-version',
-        default=os.environ.get('GMETRICS_VERSION'),
+        default=default_jar_versions['GMetrics'],
         help='GMetrics version to use.',
     )
 
@@ -257,13 +258,13 @@ def parse_args(args):
 
     arg_parser.add_argument(
         '--resources',
-        default=os.path.realpath(os.path.join(os.path.dirname(__file__), 'resources')),
+        default=os.path.join(GROOVYLINT_HOME, 'resources'),
         help='Path to Groovylint resources directory.',
     )
 
     arg_parser.add_argument(
         '--slf4j-version',
-        default=os.environ.get('SLF4J_VERSION'),
+        default=default_jar_versions['slf4j-api'],
         help='SLF4J version to use.',
     )
 
@@ -312,6 +313,20 @@ def parse_args(args):
     )
 
     return args
+
+
+def parse_pom():
+    """Parse the pom.xml file and extract default JAR versions."""
+    jar_versions = {}
+
+    namespace = {'project': 'http://maven.apache.org/POM/4.0.0'}
+    pom_root = ElementTree.parse(os.path.join(GROOVYLINT_HOME, 'pom.xml')).getroot()
+    for dependency in pom_root.find('project:dependencies', namespace):
+        name = dependency.find('project:artifactId', namespace)
+        version = dependency.find('project:version', namespace)
+        jar_versions[name.text] = version.text
+
+    return jar_versions
 
 
 def parse_xml_report(xml_text):
@@ -400,7 +415,7 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
 
 if __name__ == '__main__':
     try:
-        parsed_args = parse_args(sys.argv[1:])
+        parsed_args = parse_args(sys.argv[1:], parse_pom())
         _fetch_jars(parsed_args)
         parse_xml_report(run_codenarc(parsed_args))
         logging.info('No violations found')

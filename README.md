@@ -102,6 +102,7 @@ corresponding Docker image for that release.
 In order to ensure that the library is using a compatible version of the Docker image, a
 file named `VERSION` exists in the top-level directory of this project. To make a release,
 this file should be updated accordingly and the commit merged to the `master` branch.
+Please also update the groovylint version in `pom.xml`.
 
 Once on `master`, a new Docker image will be published by Ableton's CI service, which will
 also push a corresponding git tag to the origin and update the respective `major.minor`

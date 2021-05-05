@@ -15,13 +15,12 @@ script like so:
 $ /path/to/groovylint/resources/run_codenarc.py -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"
 ```
 
-The `--resources` argument should point to the `resources` directory underneath
-where you've cloned the `groovylint` sources. The version numbers used by
-`groovylint`'s Docker container can be found in the `Dockerfile`. `groovylint`
-will download any JAR dependencies it needs to this location.
-
 Note that the `run_codenarc.py` script requires Python 3.6 or greater to be installed on
 the local system.
+
+The `--resources` argument (which by default points to the `resources` directory where the
+`run_codenarc.py` script lives) contains `groovylint`'s ruleset file and is also used to
+store JAR dependencies which are downloaded by the script at runtime.
 
 ### Running as a Docker application
 

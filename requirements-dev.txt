@@ -6,7 +6,7 @@
 #
 appdirs==1.4.4
     # via black
-astroid==2.5.2
+astroid==2.5.6
     # via pylint
 attrs==20.3.0
     # via pytest
@@ -53,7 +53,7 @@ pydocstyle==6.1.1
     # via -r requirements-dev.in
 pyflakes==2.3.0
     # via flake8
-pylint==2.7.4
+pylint==2.8.2
     # via -r requirements-dev.in
 pyparsing==2.4.7
     # via packaging

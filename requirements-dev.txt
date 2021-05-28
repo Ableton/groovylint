@@ -57,7 +57,7 @@ pylint==2.8.2
     # via -r requirements-dev.in
 pyparsing==2.4.7
     # via packaging
-pytest==6.2.3
+pytest==6.2.4
     # via -r requirements-dev.in
 regex==2020.11.13
     # via black

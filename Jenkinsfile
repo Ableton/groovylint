@@ -6,7 +6,7 @@
  */
 
 library 'ableton-utils@0.21'
-library 'python-utils@0.10'
+library 'python-utils@0.11'
 // Get groovylint library from current commit so it can test itself in this Jenkinsfile
 library "groovylint@${params.JENKINS_COMMIT}"
 
@@ -92,8 +92,5 @@ devToolsProject.run(
         version.forwardMinorBranch(versionNumber)
       },
     )
-  },
-  cleanup: { data ->
-    data.venv?.cleanup()
   },
 )

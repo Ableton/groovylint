@@ -5,8 +5,8 @@
  * license that can be found in the LICENSE file.
  */
 
-library 'ableton-utils@0.19'
-library 'python-utils@0.10'
+library 'ableton-utils@0.21'
+library 'python-utils@0.11'
 // Get groovylint library from current commit so it can test itself in this Jenkinsfile
 library "groovylint@${params.JENKINS_COMMIT}"
 
@@ -68,7 +68,7 @@ devToolsProject.run(
     )
   },
   publish: { data ->
-    docs.publish("${data['docs']}/", 'AbletonDevTools/groovylint')
+    jupiter.publishDocs("${data['docs']}/", 'AbletonDevTools/groovylint')
   },
   deployWhen: { return devToolsProject.shouldDeploy() },
   deploy: { data ->
@@ -92,8 +92,5 @@ devToolsProject.run(
         version.forwardMinorBranch(versionNumber)
       },
     )
-  },
-  cleanup: { data ->
-    data.venv?.cleanup()
   },
 )

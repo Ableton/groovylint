@@ -10,7 +10,7 @@ astroid==2.5.6
     # via pylint
 attrs==20.3.0
     # via pytest
-black==20.8b1
+black==21.6b0
     # via -r requirements-dev.in
 click==7.1.2
     # via
@@ -70,10 +70,6 @@ toml==0.10.2
     #   black
     #   pylint
     #   pytest
-typed-ast==1.4.2
-    # via black
-typing-extensions==3.7.4.3
-    # via black
 wrapt==1.12.1
     # via astroid
 

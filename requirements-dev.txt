@@ -6,7 +6,7 @@
 #
 appdirs==1.4.4
     # via black
-astroid==2.5.6
+astroid==2.6.5
     # via pylint
 attrs==20.3.0
     # via pytest
@@ -53,7 +53,7 @@ pydocstyle==6.1.1
     # via -r requirements-dev.in
 pyflakes==2.3.0
     # via flake8
-pylint==2.8.2
+pylint==2.9.6
     # via -r requirements-dev.in
 pyparsing==2.4.7
     # via packaging
@@ -77,3 +77,5 @@ wrapt==1.12.1
 # The following packages are considered to be unsafe in a requirements file:
 pip==20.3.3
     # via pip-tools
+setuptools==57.4.0
+    # via astroid

@@ -14,6 +14,7 @@ import platform
 import shutil
 import subprocess
 import sys
+import tempfile
 import zipfile
 
 from urllib.request import urlopen
@@ -263,6 +264,15 @@ def parse_args(args, default_jar_versions):
     )
 
     arg_parser.add_argument(
+        '--single-file',
+        help=(
+            'When given, copy this file to a temporary directory and lint it. This may'
+            ' improve performance in large repositories. This option cannot be used with'
+            ' "--" to pass options to CodeNarc.'
+        ),
+    )
+
+    arg_parser.add_argument(
         '--slf4j-version',
         default=default_jar_versions['slf4j-api'],
         help='SLF4J version to use.',
@@ -301,6 +311,9 @@ def parse_args(args, default_jar_versions):
         raise ValueError('Could not determine GMetrics version')
     if not args.slf4j_version:
         raise ValueError('Could not determine SLF4J version')
+
+    if args.single_file and len(args.codenarc_options) > 1:
+        arg_parser.error('--single-file cannot be used with "--"')
 
     args.codenarc_options = [
         option for sublist in args.codenarc_options for option in sublist
@@ -357,6 +370,15 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
         args.log_level
     ]
 
+    if args.single_file:
+        extra_args = [f'-includes={os.path.basename(args.single_file)}']
+        cwd = tempfile.mkdtemp()
+        logging.debug('Copying %s into %s', args.single_file, cwd)
+        shutil.copy(args.single_file, cwd)
+    else:
+        extra_args = args.codenarc_options
+        cwd = os.getcwd()
+
     # -rulesetfiles must not be an absolute path, only a relative one to the CLASSPATH
     codenarc_call = [
         'java',
@@ -366,12 +388,16 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
         _build_classpath(args),
         'org.codenarc.CodeNarc',
         '-rulesetfiles=ruleset.groovy',
-        f'-report=xml:{report_file}',
-    ] + args.codenarc_options
+        f'-report=xml:{os.path.abspath(report_file)}',
+    ] + extra_args
 
     logging.debug('Executing CodeNarc command: %s', ' '.join(codenarc_call))
     output = subprocess.run(
-        codenarc_call, check=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE
+        codenarc_call,
+        check=True,
+        cwd=cwd,
+        stderr=subprocess.STDOUT,
+        stdout=subprocess.PIPE,
     )
 
     # Trim out empty lines which CodeNarc prints in its output.
@@ -409,6 +435,9 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
     with open(report_file) as xml_file:
         xml_text = xml_file.read()
     _remove_report_file(report_file)
+
+    if args.single_file:
+        shutil.rmtree(cwd)
 
     return xml_text
 

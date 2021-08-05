@@ -96,7 +96,11 @@ should also use the version tag, like so:
 
 node('linux') {
   stage('Lint') {
+    // Example linting of multiple files and directories
     groovylint.check('./Jenkinsfile,**/*.groovy')
+
+    // Example linting of a single file
+    groovylint.checkSingleFile('Jenkinsfile')
   }
 }
 ```

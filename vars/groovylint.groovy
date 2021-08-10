@@ -66,3 +66,38 @@ void check(String includesPattern, Object groovylintImage = null, String extraAr
     groovylintImage: groovylintImage,
   )
 }
+
+
+/**
+ * Check a single file with the {@code groovylint} Docker image.
+ * @param args Map of arguments, which may include:
+ *        <ul>
+ *          <li>
+ *            {@code path}: Path to the single file to lint <strong>(required)</strong>.
+ *          </li>
+ *          <li>
+ *            {@code groovylintImage}: If specified, use this Docker image handle to run
+ *            {@code groovylint}. If {@code null}, then this function will try to fetch
+ *            {@code groovylint} from Docker hub using the same version number
+ *            corresponding to this library.
+ *          </li>
+ *        </ul>
+ */
+void checkSingleFile(Map args = [:]) {
+  assert args.path
+
+  Object image = args.groovylintImage
+  if (!image) {
+    String version = env['library.groovylint.version']
+    if (!version) {
+      error 'Could not find groovylint version in environment'
+    }
+    image = docker.image("abletonag/groovylint:${version}")
+    image.pull()
+  }
+  echo "Using groovylint Docker image: ${image.id}"
+
+  image.inside("-v ${env.WORKSPACE}:/ws") {
+    sh "python3 /opt/run_codenarc.py --single-file ${path}"
+  }
+}

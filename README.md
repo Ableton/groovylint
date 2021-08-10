@@ -40,6 +40,15 @@ location. The above example would check the file `foo/bar.groovy`, and all
 Groovy files in the `src` directory tree.
 
 
+`groovylint` also has a `--single-file` option which can be used to lint a single file.
+When using this option, you can't pass any other options directly to CodeNarc:
+
+```bash
+$ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` abletonag/groovylint \
+    /opt/run_codenarc.py --single-file Jenkinsfile
+```
+
+
 ### Running in a Docker container
 
 ```bash
@@ -87,7 +96,11 @@ should also use the version tag, like so:
 
 node('linux') {
   stage('Lint') {
+    // Example linting of multiple files and directories
     groovylint.check('./Jenkinsfile,**/*.groovy')
+
+    // Example linting of a single file
+    groovylint.checkSingleFile('Jenkinsfile')
   }
 }
 ```

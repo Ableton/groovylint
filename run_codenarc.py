@@ -432,7 +432,7 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
         raise ValueError(f'{report_file} was not generated, aborting!')
 
     logging.debug('Reading report file %s', report_file)
-    with open(report_file) as xml_file:
+    with open(report_file, encoding='utf-8') as xml_file:
         xml_text = xml_file.read()
     _remove_report_file(report_file)
 

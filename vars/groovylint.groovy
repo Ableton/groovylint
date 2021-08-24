@@ -98,6 +98,6 @@ void checkSingleFile(Map args = [:]) {
   echo "Using groovylint Docker image: ${image.id}"
 
   image.inside("-v ${env.WORKSPACE}:/ws") {
-    sh "python3 /opt/run_codenarc.py --single-file ${path}"
+    sh "python3 /opt/run_codenarc.py --single-file ${args.path}"
   }
 }

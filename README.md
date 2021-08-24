@@ -100,7 +100,7 @@ node('linux') {
     groovylint.check('./Jenkinsfile,**/*.groovy')
 
     // Example linting of a single file
-    groovylint.checkSingleFile('Jenkinsfile')
+    groovylint.checkSingleFile(path: 'Jenkinsfile')
   }
 }
 ```

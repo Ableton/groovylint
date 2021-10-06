@@ -371,7 +371,7 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
     ]
 
     if args.single_file:
-        extra_args = [f'-includes={os.path.basename(args.single_file)}']
+        extra_args = [f'-includes=./{os.path.basename(args.single_file)}']
         cwd = tempfile.mkdtemp()
         logging.debug('Copying %s into %s', args.single_file, cwd)
         shutil.copy(args.single_file, cwd)

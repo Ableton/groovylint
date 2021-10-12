@@ -20,7 +20,7 @@ from run_codenarc import (
 )
 
 
-MOCK_CODENARC_SUMMARY = b'CodeNarc completed: (p1=0; p2=0; p3=0) 6664ms\n'
+MOCK_CODENARC_SUMMARY = b"CodeNarc completed: (p1=0; p2=0; p3=0) 6664ms\n"
 
 
 def _report_file_contents(name):
@@ -29,22 +29,22 @@ def _report_file_contents(name):
 
 
 def _report_file_path(name):
-    return os.path.join(os.path.dirname(__file__), 'xml-reports', name)
+    return os.path.join(os.path.dirname(__file__), "xml-reports", name)
 
 
 def test_parse_xml_report():
     """Test that parse_xml_report handles a successful report file as expected."""
-    parse_xml_report(_report_file_contents('success.xml'))
+    parse_xml_report(_report_file_contents("success.xml"))
 
 
 @pytest.mark.parametrize(
-    'report_file, num_violations',
+    "report_file, num_violations",
     [
-        ('multiple-violations-multiple-files-2.xml', 5),
-        ('multiple-violations-multiple-files.xml', 3),
-        ('multiple-violations-single-file.xml', 3),
-        ('single-violation-multiple-files.xml', 2),
-        ('single-violation-single-file.xml', 1),
+        ("multiple-violations-multiple-files-2.xml", 5),
+        ("multiple-violations-multiple-files.xml", 3),
+        ("multiple-violations-single-file.xml", 3),
+        ("single-violation-multiple-files.xml", 2),
+        ("single-violation-single-file.xml", 1),
     ],
 )
 def test_parse_xml_report_failed(report_file, num_violations):
@@ -57,34 +57,34 @@ def test_parse_xml_report_failed(report_file, num_violations):
     assert raised_error.value.num_violations == num_violations
 
 
-@patch('os.remove')
+@patch("os.remove")
 def test_run_codenarc(remove_mock, default_jar_versions):
     """Test that run_codenarc exits without errors if CodeNarc ran successfully."""
-    with patch('os.path.exists') as path_exists_mock:
+    with patch("os.path.exists") as path_exists_mock:
         path_exists_mock.return_value = True
-        with patch('subprocess.run') as subprocess_mock:
+        with patch("subprocess.run") as subprocess_mock:
             subprocess_mock.return_value = subprocess.CompletedProcess(
-                args='', returncode=0, stdout=MOCK_CODENARC_SUMMARY
+                args="", returncode=0, stdout=MOCK_CODENARC_SUMMARY
             )
 
             output = run_codenarc(
                 args=parse_args(args=[], default_jar_versions=default_jar_versions),
-                report_file=_report_file_path('success.xml'),
+                report_file=_report_file_path("success.xml"),
             )
 
-    assert _report_file_contents('success.xml') == output
+    assert _report_file_contents("success.xml") == output
 
 
 def test_run_codenarc_compilation_failure(default_jar_versions):
     """Test that run_codenarc raises an error if CodeNarc found compilation errors."""
-    with patch('subprocess.run') as subprocess_mock:
+    with patch("subprocess.run") as subprocess_mock:
         subprocess_mock.return_value = subprocess.CompletedProcess(
-            args='',
+            args="",
             returncode=0,
-            stdout=b'INFO org.codenarc.source.AbstractSourceCode - Compilation'
-            b' failed because of'
-            b' [org.codehaus.groovy.control.CompilationErrorsException] with'
-            b' message: [startup failed:\n' + MOCK_CODENARC_SUMMARY,
+            stdout=b"INFO org.codenarc.source.AbstractSourceCode - Compilation"
+            b" failed because of"
+            b" [org.codehaus.groovy.control.CompilationErrorsException] with"
+            b" message: [startup failed:\n" + MOCK_CODENARC_SUMMARY,
         )
 
         with pytest.raises(ValueError):
@@ -95,9 +95,9 @@ def test_run_codenarc_compilation_failure(default_jar_versions):
 
 def test_run_codenarc_failure_code(default_jar_versions):
     """Test that run_codenarc raises an error if CodeNarc failed to run."""
-    with patch('subprocess.run') as subprocess_mock:
+    with patch("subprocess.run") as subprocess_mock:
         subprocess_mock.return_value = subprocess.CompletedProcess(
-            args='', returncode=1, stdout=MOCK_CODENARC_SUMMARY
+            args="", returncode=1, stdout=MOCK_CODENARC_SUMMARY
         )
 
         with pytest.raises(ValueError):
@@ -108,13 +108,13 @@ def test_run_codenarc_failure_code(default_jar_versions):
 
 def test_run_codenarc_no_report_file(default_jar_versions):
     """Test that run_codenarc raises an error if CodeNarc did not produce a report."""
-    with patch('subprocess.run') as subprocess_mock:
+    with patch("subprocess.run") as subprocess_mock:
         subprocess_mock.return_value = subprocess.CompletedProcess(
-            args='', returncode=0, stdout=MOCK_CODENARC_SUMMARY
+            args="", returncode=0, stdout=MOCK_CODENARC_SUMMARY
         )
 
         with pytest.raises(ValueError):
             run_codenarc(
                 args=parse_args(args=[], default_jar_versions=default_jar_versions),
-                report_file='invalid',
+                report_file="invalid",
             )

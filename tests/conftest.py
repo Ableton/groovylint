@@ -9,8 +9,8 @@ import pytest
 def default_jar_versions():
     """Return a dict for default JAR versions."""
     return {
-        'CodeNarc': '1.0.0',
-        'GMetrics': '1.0.0',
-        'slf4j-api': '1.0.0',
-        'slf4j-simple': '1.0.0',
+        "CodeNarc": "1.0.0",
+        "GMetrics": "1.0.0",
+        "slf4j-api": "1.0.0",
+        "slf4j-simple": "1.0.0",
     }

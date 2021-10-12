@@ -21,7 +21,7 @@ from urllib.request import urlopen
 from xml.etree import ElementTree
 
 
-DEFAULT_REPORT_FILE = 'codenarc-report.xml'
+DEFAULT_REPORT_FILE = "codenarc-report.xml"
 GROOVYLINT_HOME = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -38,34 +38,34 @@ def _build_classpath(args):
     """Construct the classpath to use for running CodeNarc."""
     classpath = [
         args.resources,
-        f'{args.groovy_home}/lib/*',
-        f'{args.resources}/CodeNarc-{args.codenarc_version}.jar',
-        f'{args.resources}/GMetrics-{args.gmetrics_version}.jar',
-        f'{args.resources}/slf4j-api-{args.slf4j_version}.jar',
-        f'{args.resources}/slf4j-simple-{args.slf4j_version}.jar',
+        f"{args.groovy_home}/lib/*",
+        f"{args.resources}/CodeNarc-{args.codenarc_version}.jar",
+        f"{args.resources}/GMetrics-{args.gmetrics_version}.jar",
+        f"{args.resources}/slf4j-api-{args.slf4j_version}.jar",
+        f"{args.resources}/slf4j-simple-{args.slf4j_version}.jar",
     ]
 
     for path in classpath:
-        if not (os.path.exists(path) or path.endswith('*')):
-            raise ValueError(f'Classpath element {path} does not exist')
+        if not (os.path.exists(path) or path.endswith("*")):
+            raise ValueError(f"Classpath element {path} does not exist")
 
-    return ':'.join(classpath)
+    return ":".join(classpath)
 
 
 def _download_file(url, output_dir):
     """Download a file from a URL to the download directory."""
-    output_file_name = url.split('/')[-1]
+    output_file_name = url.split("/")[-1]
     output_file_path = os.path.join(output_dir, output_file_name)
 
     if os.path.exists(output_file_path):
-        logging.debug('%s already exists, skipping download', output_file_path)
+        logging.debug("%s already exists, skipping download", output_file_path)
         return output_file_path
 
-    logging.debug('Downloading %s to %s', url, output_file_path)
-    with urlopen(url) as response, open(output_file_path, 'wb') as out_fp:
+    logging.debug("Downloading %s to %s", url, output_file_path)
+    with urlopen(url) as response, open(output_file_path, "wb") as out_fp:
         shutil.copyfileobj(response, out_fp)
 
-    logging.info('Downloaded %s', output_file_name)
+    logging.info("Downloaded %s", output_file_name)
     return output_file_path
 
 
@@ -76,20 +76,20 @@ def _fetch_jars(args):
 
     jar_urls = [
         (
-            'https://github.com/CodeNarc/CodeNarc/releases/download'
-            f'/v{args.codenarc_version}/CodeNarc-{args.codenarc_version}.jar'
+            "https://github.com/CodeNarc/CodeNarc/releases/download"
+            f"/v{args.codenarc_version}/CodeNarc-{args.codenarc_version}.jar"
         ),
         (
-            'https://github.com/dx42/gmetrics/releases/download'
-            f'/v{args.gmetrics_version}/GMetrics-{args.gmetrics_version}.jar'
+            "https://github.com/dx42/gmetrics/releases/download"
+            f"/v{args.gmetrics_version}/GMetrics-{args.gmetrics_version}.jar"
         ),
         (
-            f'https://repo1.maven.org/maven2/org/slf4j/slf4j-api/{args.slf4j_version}'
-            f'/slf4j-api-{args.slf4j_version}.jar'
+            f"https://repo1.maven.org/maven2/org/slf4j/slf4j-api/{args.slf4j_version}"
+            f"/slf4j-api-{args.slf4j_version}.jar"
         ),
         (
-            f'https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/{args.slf4j_version}'
-            f'/slf4j-simple-{args.slf4j_version}.jar'
+            f"https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/{args.slf4j_version}"
+            f"/slf4j-simple-{args.slf4j_version}.jar"
         ),
     ]
 
@@ -102,16 +102,16 @@ def _guess_groovy_home():
 
     :return: Path of the Groovy installation, or None if it can't be determined.
     """
-    if 'GROOVY_HOME' in os.environ:
-        return os.environ['GROOVY_HOME']
+    if "GROOVY_HOME" in os.environ:
+        return os.environ["GROOVY_HOME"]
 
-    if platform.system() == 'Darwin':
-        brew_groovy_home = '/usr/local/opt/groovysdk/libexec'
+    if platform.system() == "Darwin":
+        brew_groovy_home = "/usr/local/opt/groovysdk/libexec"
         if os.path.exists(brew_groovy_home):
             return brew_groovy_home
-    if platform.system() == 'Linux':
+    if platform.system() == "Linux":
         # Many Linux distros have Groovy packages which use this location.
-        linux_groovy_home = '/usr/share/groovy'
+        linux_groovy_home = "/usr/share/groovy"
         if os.path.exists(linux_groovy_home):
             return linux_groovy_home
 
@@ -124,7 +124,7 @@ def _is_slf4j_line(line):
     CodeNarc in some cases prints things to stdout, or uses multi-line logging calls which
     cannot be parsed correctly when we attempt to re-log them in _log_codenarc_output.
     """
-    return isinstance(logging.getLevelName(line.split(' ')[0]), int)
+    return isinstance(logging.getLevelName(line.split(" ")[0]), int)
 
 
 def _log_codenarc_output(lines):
@@ -136,10 +136,10 @@ def _log_codenarc_output(lines):
     """
     log_level = logging.INFO
     for line in lines:
-        line_words = line.split(' ')
+        line_words = line.split(" ")
         if _is_slf4j_line(line):
             log_level = logging.getLevelName(line_words[0])
-            log_message = ' '.join(line_words[1:])
+            log_message = " ".join(line_words[1:])
         else:
             # If we can't determine the log level, that likely means that this line is a
             # continuation of the previous line. This occurs when CodeNarc is logging
@@ -159,16 +159,16 @@ def _print_violations(package_file_path, violations):
     :return: Number of violations for the file.
     """
     for violation in violations:
-        message_element = violation.find('Message')
+        message_element = violation.find("Message")
         if message_element is not None:
             message = message_element.text
         else:
-            message = '[empty message]'
+            message = "[empty message]"
         logging.error(
-            '%s:%s: %s: %s',
+            "%s:%s: %s: %s",
             package_file_path,
-            violation.attrib['lineNumber'],
-            violation.attrib['ruleName'],
+            violation.attrib["lineNumber"],
+            violation.attrib["ruleName"],
             message,
         )
 
@@ -186,9 +186,9 @@ def _print_violations_in_files(package_path, files):
 
     for package_file in files:
         package_file_name = f'{package_path}/{package_file.attrib["name"]}'
-        logging.debug('Parsing violations in file: %s', package_file_name)
+        logging.debug("Parsing violations in file: %s", package_file_name)
         num_violations += _print_violations(
-            package_file_name, package_file.findall('Violation')
+            package_file_name, package_file.findall("Violation")
         )
 
     return num_violations
@@ -205,13 +205,13 @@ def _print_violations_in_packages(packages):
     for package in packages:
         # CodeNarc uses the empty string for the top-level package, which we translate to
         # '.', which prevents the violation files from appearing as belonging to '/'.
-        package_path = package.attrib['path']
+        package_path = package.attrib["path"]
         if not package_path:
-            package_path = '.'
+            package_path = "."
 
-        logging.debug('Parsing violations in package: %s', package_path)
+        logging.debug("Parsing violations in package: %s", package_path)
         num_violations += _print_violations_in_files(
-            package_path, package.findall('File')
+            package_path, package.findall("File")
         )
 
     return num_violations
@@ -219,16 +219,16 @@ def _print_violations_in_packages(packages):
 
 def _remove_report_file(report_file):
     if os.path.exists(report_file):
-        logging.debug('Removing report file %s', report_file)
+        logging.debug("Removing report file %s", report_file)
         os.remove(report_file)
 
 
 def _verify_jar(file_path):
     """Verify that a file is a valid JAR file."""
-    logging.debug('Verifying %s', file_path)
-    with zipfile.ZipFile(file_path, 'r') as jar_file:
-        if 'META-INF/MANIFEST.MF' not in jar_file.namelist():
-            raise ValueError(f'{file_path} does not appear to be a valid JAR')
+    logging.debug("Verifying %s", file_path)
+    with zipfile.ZipFile(file_path, "r") as jar_file:
+        if "META-INF/MANIFEST.MF" not in jar_file.namelist():
+            raise ValueError(f"{file_path} does not appear to be a valid JAR")
 
 
 def parse_args(args, default_jar_versions):
@@ -238,79 +238,79 @@ def parse_args(args, default_jar_versions):
     )
 
     arg_parser.add_argument(
-        '--codenarc-version',
-        default=default_jar_versions['CodeNarc'],
-        help='CodeNarc version to use.',
+        "--codenarc-version",
+        default=default_jar_versions["CodeNarc"],
+        help="CodeNarc version to use.",
     )
 
     arg_parser.add_argument(
-        '--gmetrics-version',
-        default=default_jar_versions['GMetrics'],
-        help='GMetrics version to use.',
+        "--gmetrics-version",
+        default=default_jar_versions["GMetrics"],
+        help="GMetrics version to use.",
     )
 
     default_groovy_home = _guess_groovy_home()
     arg_parser.add_argument(
-        '--groovy-home',
+        "--groovy-home",
         default=default_groovy_home,
         required=(default_groovy_home is None),
-        help='Groovy home directory.',
+        help="Groovy home directory.",
     )
 
     arg_parser.add_argument(
-        '--resources',
-        default=os.path.join(GROOVYLINT_HOME, 'resources'),
-        help='Path to Groovylint resources directory.',
+        "--resources",
+        default=os.path.join(GROOVYLINT_HOME, "resources"),
+        help="Path to Groovylint resources directory.",
     )
 
     arg_parser.add_argument(
-        '--single-file',
+        "--single-file",
         help=(
-            'When given, copy this file to a temporary directory and lint it. This may'
-            ' improve performance in large repositories. This option cannot be used with'
+            "When given, copy this file to a temporary directory and lint it. This may"
+            " improve performance in large repositories. This option cannot be used with"
             ' "--" to pass options to CodeNarc.'
         ),
     )
 
     arg_parser.add_argument(
-        '--slf4j-version',
-        default=default_jar_versions['slf4j-api'],
-        help='SLF4J version to use.',
+        "--slf4j-version",
+        default=default_jar_versions["slf4j-api"],
+        help="SLF4J version to use.",
     )
 
     arg_parser.add_argument(
-        '-q',
-        '--quiet',
-        action='store_const',
+        "-q",
+        "--quiet",
+        action="store_const",
         const=logging.WARN,
-        dest='log_level',
-        help='Show less output',
+        dest="log_level",
+        help="Show less output",
     )
 
     arg_parser.add_argument(
-        '-v',
-        '--verbose',
-        action='store_const',
+        "-v",
+        "--verbose",
+        action="store_const",
         const=logging.DEBUG,
-        dest='log_level',
-        help='Show extra output',
+        dest="log_level",
+        help="Show extra output",
     )
 
     arg_parser.add_argument(
-        'codenarc_options',
-        nargs='*',
-        action='append',
+        "codenarc_options",
+        nargs="*",
+        action="append",
         help='All options after "--" will be passed to CodeNarc',
     )
 
     args = arg_parser.parse_args(args)
 
     if not args.codenarc_version:
-        raise ValueError('Could not determine CodeNarc version')
+        raise ValueError("Could not determine CodeNarc version")
     if not args.gmetrics_version:
-        raise ValueError('Could not determine GMetrics version')
+        raise ValueError("Could not determine GMetrics version")
     if not args.slf4j_version:
-        raise ValueError('Could not determine SLF4J version')
+        raise ValueError("Could not determine SLF4J version")
 
     if args.single_file and len(args.codenarc_options) > 1:
         arg_parser.error('--single-file cannot be used with "--"')
@@ -320,7 +320,7 @@ def parse_args(args, default_jar_versions):
     ]
 
     logging.basicConfig(
-        format='%(levelname)s %(message)s',
+        format="%(levelname)s %(message)s",
         level=args.log_level or logging.INFO,
         stream=sys.stdout,
     )
@@ -332,11 +332,11 @@ def parse_pom():
     """Parse the pom.xml file and extract default JAR versions."""
     jar_versions = {}
 
-    namespace = {'project': 'http://maven.apache.org/POM/4.0.0'}
-    pom_root = ElementTree.parse(os.path.join(GROOVYLINT_HOME, 'pom.xml')).getroot()
-    for dependency in pom_root.find('project:dependencies', namespace):
-        name = dependency.find('project:artifactId', namespace)
-        version = dependency.find('project:version', namespace)
+    namespace = {"project": "http://maven.apache.org/POM/4.0.0"}
+    pom_root = ElementTree.parse(os.path.join(GROOVYLINT_HOME, "pom.xml")).getroot()
+    for dependency in pom_root.find("project:dependencies", namespace):
+        name = dependency.find("project:artifactId", namespace)
+        version = dependency.find("project:version", namespace)
         jar_versions[name.text] = version.text
 
     return jar_versions
@@ -348,12 +348,12 @@ def parse_xml_report(xml_text):
     :param xml_text: Raw XML text of CodeNarc report.
     :return: 0 on success, 1 if any violations were found
     """
-    logging.debug('Parsing report XML')
+    logging.debug("Parsing report XML")
     xml_doc = ElementTree.fromstring(xml_text)
 
-    package_summary = xml_doc.find('PackageSummary')
-    logging.info('Scanned %s files', package_summary.attrib['totalFiles'])
-    total_violations = _print_violations_in_packages(xml_doc.findall('Package'))
+    package_summary = xml_doc.find("PackageSummary")
+    logging.info("Scanned %s files", package_summary.attrib["totalFiles"])
+    total_violations = _print_violations_in_packages(xml_doc.findall("Package"))
 
     if total_violations != 0:
         raise CodeNarcViolationsException(total_violations)
@@ -366,14 +366,14 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
     :param report_file: Name of report file to generate.
     :return: Raw XML text report generated by CodeNarc.
     """
-    slf4j_log_level = {logging.DEBUG: 'debug', logging.WARN: 'warn', None: 'info'}[
+    slf4j_log_level = {logging.DEBUG: "debug", logging.WARN: "warn", None: "info"}[
         args.log_level
     ]
 
     if args.single_file:
-        extra_args = [f'-includes=./{os.path.basename(args.single_file)}']
+        extra_args = [f"-includes=./{os.path.basename(args.single_file)}"]
         cwd = tempfile.mkdtemp()
-        logging.debug('Copying %s into %s', args.single_file, cwd)
+        logging.debug("Copying %s into %s", args.single_file, cwd)
         shutil.copy(args.single_file, cwd)
     else:
         extra_args = args.codenarc_options
@@ -381,17 +381,17 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
 
     # -rulesetfiles must not be an absolute path, only a relative one to the CLASSPATH
     codenarc_call = [
-        'java',
-        '-Dorg.slf4j.simpleLogger.showThreadName=false',
-        f'-Dorg.slf4j.simpleLogger.defaultLogLevel={slf4j_log_level}',
-        '-classpath',
+        "java",
+        "-Dorg.slf4j.simpleLogger.showThreadName=false",
+        f"-Dorg.slf4j.simpleLogger.defaultLogLevel={slf4j_log_level}",
+        "-classpath",
         _build_classpath(args),
-        'org.codenarc.CodeNarc',
-        '-rulesetfiles=ruleset.groovy',
-        f'-report=xml:{os.path.abspath(report_file)}',
+        "org.codenarc.CodeNarc",
+        "-rulesetfiles=ruleset.groovy",
+        f"-report=xml:{os.path.abspath(report_file)}",
     ] + extra_args
 
-    logging.debug('Executing CodeNarc command: %s', ' '.join(codenarc_call))
+    logging.debug("Executing CodeNarc command: %s", " ".join(codenarc_call))
     output = subprocess.run(
         codenarc_call,
         check=True,
@@ -401,38 +401,38 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
     )
 
     # Trim out empty lines which CodeNarc prints in its output.
-    codenarc_output = [x for x in output.stdout.decode().split('\n') if x != '']
+    codenarc_output = [x for x in output.stdout.decode().split("\n") if x != ""]
     # The last line of CodeNarc's output is (usually) a summary line, which is printed to
     # stdout and not through SLF4J. We save it to a variable and log it with an assigned
     # log level after printing out everything else. If CodeNarc fails due to some other
     # problem, it will not print this line, however.
     codenarc_summary = None
-    if codenarc_output[-1].startswith('CodeNarc completed:'):
+    if codenarc_output[-1].startswith("CodeNarc completed:"):
         codenarc_summary = codenarc_output.pop()
 
     _log_codenarc_output(codenarc_output)
 
     if codenarc_summary:
         logging.debug(codenarc_summary)
-    logging.debug('CodeNarc returned with code %d', output.returncode)
+    logging.debug("CodeNarc returned with code %d", output.returncode)
 
     # CodeNarc doesn't fail on compilation errors, it just logs a message for each file
     # that could not be compiled and generates a report for everything else. It also does
     # not return a non-zero code in such cases. For our purposes, we want to treat syntax
     # errors (and similar problems) as a failure condition.
-    if 'Compilation failed' in str(output.stdout):
+    if "Compilation failed" in str(output.stdout):
         _remove_report_file(report_file)
-        raise ValueError('Error when compiling files!')
+        raise ValueError("Error when compiling files!")
 
     if output.returncode != 0:
         _remove_report_file(report_file)
-        raise ValueError(f'CodeNarc failed with return code {output.returncode}')
+        raise ValueError(f"CodeNarc failed with return code {output.returncode}")
     if not os.path.exists(report_file):
         _remove_report_file(report_file)
-        raise ValueError(f'{report_file} was not generated, aborting!')
+        raise ValueError(f"{report_file} was not generated, aborting!")
 
-    logging.debug('Reading report file %s', report_file)
-    with open(report_file, encoding='utf-8') as xml_file:
+    logging.debug("Reading report file %s", report_file)
+    with open(report_file, encoding="utf-8") as xml_file:
         xml_text = xml_file.read()
     _remove_report_file(report_file)
 
@@ -442,12 +442,12 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
     return xml_text
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         parsed_args = parse_args(sys.argv[1:], parse_pom())
         _fetch_jars(parsed_args)
         parse_xml_report(run_codenarc(parsed_args))
-        logging.info('No violations found')
+        logging.info("No violations found")
     except CodeNarcViolationsException as exception:
-        logging.error('Found %s violation(s)', exception.num_violations)
+        logging.error("Found %s violation(s)", exception.num_violations)
         sys.exit(1)

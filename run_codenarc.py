@@ -392,13 +392,20 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
     ] + extra_args
 
     logging.debug("Executing CodeNarc command: %s", " ".join(codenarc_call))
-    output = subprocess.run(
-        codenarc_call,
-        check=True,
-        cwd=cwd,
-        stderr=subprocess.STDOUT,
-        stdout=subprocess.PIPE,
-    )
+    try:
+        output = subprocess.run(
+            codenarc_call,
+            check=True,
+            cwd=cwd,
+            stderr=subprocess.STDOUT,
+            stdout=subprocess.PIPE,
+        )
+    except subprocess.CalledProcessError as error:
+        logging.error("Failed executing command: %s", " ".join(codenarc_call))
+        logging.error(
+            "CodeNarc exited with code %d: %s", error.returncode, error.stdout.decode()
+        )
+        raise
 
     # Trim out empty lines which CodeNarc prints in its output.
     codenarc_output = [x for x in output.stdout.decode().split("\n") if x != ""]

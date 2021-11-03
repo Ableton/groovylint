@@ -1,4 +1,4 @@
-black==21.9b0
+black
 flake8
 flake8-isort
 isort

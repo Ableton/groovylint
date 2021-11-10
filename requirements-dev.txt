@@ -22,7 +22,7 @@ flake8-isort==4.1.1
     # via -r requirements-dev.in
 iniconfig==1.1.1
     # via pytest
-isort==5.10.0
+isort==5.10.1
     # via
     #   -r requirements-dev.in
     #   flake8-isort

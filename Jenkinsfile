@@ -6,7 +6,7 @@
  */
 
 library(identifier: 'ableton-utils@0.22', changelog: false)
-library(identifier: 'python-utils@0.11', changelog: false)
+library(identifier: 'python-utils@0.12', changelog: false)
 // Get groovylint library from current commit so it can test itself in this Jenkinsfile
 library "groovylint@${params.JENKINS_COMMIT}"
 

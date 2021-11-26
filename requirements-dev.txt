@@ -4,7 +4,7 @@
 #
 #    pip-compile --allow-unsafe --output-file=requirements-dev.txt requirements-dev.in
 #
-astroid==2.8.2
+astroid==2.9.0
     # via pylint
 attrs==20.3.0
     # via pytest
@@ -55,7 +55,7 @@ pydocstyle==6.1.1
     # via -r requirements-dev.in
 pyflakes==2.4.0
     # via flake8
-pylint==2.11.1
+pylint==2.12.1
     # via -r requirements-dev.in
 pyparsing==2.4.7
     # via packaging

@@ -42,7 +42,7 @@ void check(Map args = [:]) {
   }
   echo "Using groovylint Docker image: ${image.id}"
 
-  image.inside("-v ${env.WORKSPACE}:/ws") {
+  image.inside {
     sh "python3 /opt/run_codenarc.py -- -includes=${includesPattern} ${extraArgs}"
   }
 }
@@ -97,7 +97,7 @@ void checkSingleFile(Map args = [:]) {
   }
   echo "Using groovylint Docker image: ${image.id}"
 
-  image.inside("-v ${env.WORKSPACE}:/ws") {
+  image.inside {
     sh "python3 /opt/run_codenarc.py --single-file ${args.path}"
   }
 }

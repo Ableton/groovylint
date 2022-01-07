@@ -388,7 +388,7 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
         _build_classpath(args),
         "org.codenarc.CodeNarc",
         "-rulesetfiles=ruleset.groovy",
-        f"-report=xml:{os.path.abspath(report_file)}",
+        f"-report=xml:{report_file}",
     ] + extra_args
 
     logging.debug("Executing CodeNarc command: %s", " ".join(codenarc_call))

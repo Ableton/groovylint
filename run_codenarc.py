@@ -359,7 +359,7 @@ def parse_xml_report(xml_text):
         raise CodeNarcViolationsException(total_violations)
 
 
-def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
+def run_codenarc(args, report_file=None):
     """Run CodeNarc on specified code.
 
     :param args: Parsed command line arguments.
@@ -371,6 +371,9 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
     ]
 
     with tempfile.TemporaryDirectory() as tempdir:
+        if report_file is None:
+            report_file = os.path.join(tempdir, DEFAULT_REPORT_FILE)
+
         if args.single_file:
             extra_args = [f"-includes=./{os.path.basename(args.single_file)}"]
             cwd = tempdir

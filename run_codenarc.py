@@ -370,81 +370,81 @@ def run_codenarc(args, report_file=DEFAULT_REPORT_FILE):
         args.log_level
     ]
 
-    if args.single_file:
-        extra_args = [f"-includes=./{os.path.basename(args.single_file)}"]
-        cwd = tempfile.mkdtemp()
-        logging.debug("Copying %s into %s", args.single_file, cwd)
-        shutil.copy(args.single_file, cwd)
-    else:
-        extra_args = args.codenarc_options
-        cwd = os.getcwd()
+    with tempfile.TemporaryDirectory() as tempdir:
+        if args.single_file:
+            extra_args = [f"-includes=./{os.path.basename(args.single_file)}"]
+            cwd = tempdir
+            logging.debug("Copying %s into %s", args.single_file, cwd)
+            shutil.copy(args.single_file, cwd)
+        else:
+            extra_args = args.codenarc_options
+            cwd = os.getcwd()
 
-    # -rulesetfiles must not be an absolute path, only a relative one to the CLASSPATH
-    codenarc_call = [
-        "java",
-        "-Dorg.slf4j.simpleLogger.showThreadName=false",
-        f"-Dorg.slf4j.simpleLogger.defaultLogLevel={slf4j_log_level}",
-        "-classpath",
-        _build_classpath(args),
-        "org.codenarc.CodeNarc",
-        "-rulesetfiles=ruleset.groovy",
-        f"-report=xml:{os.path.abspath(report_file)}",
-    ] + extra_args
+        # -rulesetfiles must not be an absolute path, only a relative one to the CLASSPATH
+        codenarc_call = [
+            "java",
+            "-Dorg.slf4j.simpleLogger.showThreadName=false",
+            f"-Dorg.slf4j.simpleLogger.defaultLogLevel={slf4j_log_level}",
+            "-classpath",
+            _build_classpath(args),
+            "org.codenarc.CodeNarc",
+            "-rulesetfiles=ruleset.groovy",
+            f"-report=xml:{os.path.abspath(report_file)}",
+        ] + extra_args
 
-    logging.debug("Executing CodeNarc command: %s", " ".join(codenarc_call))
-    try:
-        output = subprocess.run(
-            codenarc_call,
-            check=True,
-            cwd=cwd,
-            stderr=subprocess.STDOUT,
-            stdout=subprocess.PIPE,
-        )
-    except subprocess.CalledProcessError as error:
-        logging.error("Failed executing command: %s", " ".join(codenarc_call))
-        logging.error(
-            "CodeNarc exited with code %d: %s", error.returncode, error.stdout.decode()
-        )
-        raise
+        logging.debug("Executing CodeNarc command: %s", " ".join(codenarc_call))
+        try:
+            output = subprocess.run(
+                codenarc_call,
+                check=True,
+                cwd=cwd,
+                stderr=subprocess.STDOUT,
+                stdout=subprocess.PIPE,
+            )
+        except subprocess.CalledProcessError as error:
+            logging.error("Failed executing command: %s", " ".join(codenarc_call))
+            logging.error(
+                "CodeNarc exited with code %d: %s",
+                error.returncode,
+                error.stdout.decode(),
+            )
+            raise
 
-    # Trim out empty lines which CodeNarc prints in its output.
-    codenarc_output = [x for x in output.stdout.decode().split("\n") if x != ""]
-    # The last line of CodeNarc's output is (usually) a summary line, which is printed to
-    # stdout and not through SLF4J. We save it to a variable and log it with an assigned
-    # log level after printing out everything else. If CodeNarc fails due to some other
-    # problem, it will not print this line, however.
-    codenarc_summary = None
-    if codenarc_output[-1].startswith("CodeNarc completed:"):
-        codenarc_summary = codenarc_output.pop()
+        # Trim out empty lines which CodeNarc prints in its output.
+        codenarc_output = [x for x in output.stdout.decode().split("\n") if x != ""]
+        # The last line of CodeNarc's output is (usually) a summary line, which is printed
+        # to stdout and not through SLF4J. We save it to a variable and log it with an
+        # assigned log level after printing out everything else. If CodeNarc fails due to
+        # some other problem, it will not print this line, however.
+        codenarc_summary = None
+        if codenarc_output[-1].startswith("CodeNarc completed:"):
+            codenarc_summary = codenarc_output.pop()
 
-    _log_codenarc_output(codenarc_output)
+        _log_codenarc_output(codenarc_output)
 
-    if codenarc_summary:
-        logging.debug(codenarc_summary)
-    logging.debug("CodeNarc returned with code %d", output.returncode)
+        if codenarc_summary:
+            logging.debug(codenarc_summary)
+        logging.debug("CodeNarc returned with code %d", output.returncode)
 
-    # CodeNarc doesn't fail on compilation errors, it just logs a message for each file
-    # that could not be compiled and generates a report for everything else. It also does
-    # not return a non-zero code in such cases. For our purposes, we want to treat syntax
-    # errors (and similar problems) as a failure condition.
-    if "Compilation failed" in str(output.stdout):
+        # CodeNarc doesn't fail on compilation errors, it just logs a message for each
+        # file that could not be compiled and generates a report for everything else. It
+        # also does not return a non-zero code in such cases. For our purposes, we want to
+        # treat syntax errors (and similar problems) as a failure condition.
+        if "Compilation failed" in str(output.stdout):
+            _remove_report_file(report_file)
+            raise ValueError("Error when compiling files!")
+
+        if output.returncode != 0:
+            _remove_report_file(report_file)
+            raise ValueError(f"CodeNarc failed with return code {output.returncode}")
+        if not os.path.exists(report_file):
+            _remove_report_file(report_file)
+            raise ValueError(f"{report_file} was not generated, aborting!")
+
+        logging.debug("Reading report file %s", report_file)
+        with open(report_file, encoding="utf-8") as xml_file:
+            xml_text = xml_file.read()
         _remove_report_file(report_file)
-        raise ValueError("Error when compiling files!")
-
-    if output.returncode != 0:
-        _remove_report_file(report_file)
-        raise ValueError(f"CodeNarc failed with return code {output.returncode}")
-    if not os.path.exists(report_file):
-        _remove_report_file(report_file)
-        raise ValueError(f"{report_file} was not generated, aborting!")
-
-    logging.debug("Reading report file %s", report_file)
-    with open(report_file, encoding="utf-8") as xml_file:
-        xml_text = xml_file.read()
-    _remove_report_file(report_file)
-
-    if args.single_file:
-        shutil.rmtree(cwd)
 
     return xml_text
 

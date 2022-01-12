@@ -217,12 +217,6 @@ def _print_violations_in_packages(packages):
     return num_violations
 
 
-def _remove_report_file(report_file):
-    if os.path.exists(report_file):
-        logging.debug("Removing report file %s", report_file)
-        os.remove(report_file)
-
-
 def _verify_jar(file_path):
     """Verify that a file is a valid JAR file."""
     logging.debug("Verifying %s", file_path)
@@ -434,20 +428,16 @@ def run_codenarc(args, report_file=None):
         # also does not return a non-zero code in such cases. For our purposes, we want to
         # treat syntax errors (and similar problems) as a failure condition.
         if "Compilation failed" in str(output.stdout):
-            _remove_report_file(report_file)
             raise ValueError("Error when compiling files!")
 
         if output.returncode != 0:
-            _remove_report_file(report_file)
             raise ValueError(f"CodeNarc failed with return code {output.returncode}")
         if not os.path.exists(report_file):
-            _remove_report_file(report_file)
             raise ValueError(f"{report_file} was not generated, aborting!")
 
         logging.debug("Reading report file %s", report_file)
         with open(report_file, encoding="utf-8") as xml_file:
             xml_text = xml_file.read()
-        _remove_report_file(report_file)
 
     return xml_text
 

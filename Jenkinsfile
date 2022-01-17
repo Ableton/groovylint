@@ -40,6 +40,13 @@ devToolsProject.run(
           groovylintImage: data['image'],
         )
       },
+      'groovylint native': {
+        // Run groovylint using the system Python. This is not a recommended use-case for
+        // Jenkins CI installations, but is often more useful for developers running
+        // groovylint locally.
+        sh "python3 run_codenarc.py --resources ${env.WORKSPACE}/resources" +
+          ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
+      },
       hadolint: {
         docker.image('hadolint/hadolint:v1.13.0-debian').inside("-v ${pwd()}:/ws") {
           sh 'hadolint /ws/Dockerfile'

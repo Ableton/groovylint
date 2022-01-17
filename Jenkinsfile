@@ -31,7 +31,7 @@ devToolsProject.run(
       groovydoc: {
         data['docs'] = groovydoc.generate()
       },
-      groovylint: {
+      'groovylint docker': {
         // Use the Docker image created in the Build stage above. This ensures that the
         // we are checking our own Groovy code with the same library and image which would
         // be published to production.
@@ -39,6 +39,13 @@ devToolsProject.run(
           includesPattern: './Jenkinsfile,**/*.groovy',
           groovylintImage: data['image'],
         )
+      },
+      'groovylint native': {
+        // Run groovylint using the system Python. This is not a recommended use-case for
+        // Jenkins CI installations, but is often more useful for developers running
+        // groovylint locally.
+        sh "python3 run_codenarc.py --resources ${env.WORKSPACE}/resources" +
+          ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
       },
       hadolint: {
         docker.image('hadolint/hadolint:v1.13.0-debian').inside("-v ${pwd()}:/ws") {

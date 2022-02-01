@@ -8,9 +8,9 @@ astroid==2.9.0
     # via pylint
 attrs==20.3.0
     # via pytest
-black==21.12b0
+black==22.1.0
     # via -r requirements-dev.in
-click==7.1.2
+click==8.0.3
     # via
     #   black
     #   pip-tools
@@ -69,10 +69,13 @@ toml==0.10.2
     # via
     #   pylint
     #   pytest
-tomli==1.0.4
+tomli==2.0.0
     # via black
 typing-extensions==3.10.0.2
-    # via black
+    # via
+    #   astroid
+    #   black
+    #   pylint
 wrapt==1.12.1
     # via astroid
 

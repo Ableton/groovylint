@@ -59,18 +59,18 @@ pylint==2.12.2
     # via -r requirements-dev.in
 pyparsing==2.4.7
     # via packaging
-pytest==6.2.5
+pytest==7.0.0
     # via -r requirements-dev.in
 snowballstemmer==2.0.0
     # via pydocstyle
 testfixtures==6.17.1
     # via flake8-isort
 toml==0.10.2
-    # via
-    #   pylint
-    #   pytest
+    # via pylint
 tomli==2.0.0
-    # via black
+    # via
+    #   black
+    #   pytest
 typing-extensions==3.10.0.2
     # via
     #   astroid

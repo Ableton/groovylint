@@ -4,7 +4,7 @@
 #
 #    pip-compile --allow-unsafe --output-file=requirements-dev.txt requirements-dev.in
 #
-astroid==2.9.0
+astroid==2.11.1
     # via pylint
 attrs==20.3.0
     # via pytest
@@ -14,6 +14,8 @@ click==8.0.3
     # via
     #   black
     #   pip-tools
+dill==0.3.4
+    # via pylint
 flake8==4.0.1
     # via
     #   -r requirements-dev.in
@@ -55,7 +57,7 @@ pydocstyle==6.1.1
     # via -r requirements-dev.in
 pyflakes==2.4.0
     # via flake8
-pylint==2.12.2
+pylint==2.13.0
     # via -r requirements-dev.in
 pyparsing==2.4.7
     # via packaging
@@ -65,11 +67,10 @@ snowballstemmer==2.0.0
     # via pydocstyle
 testfixtures==6.17.1
     # via flake8-isort
-toml==0.10.2
-    # via pylint
 tomli==2.0.0
     # via
     #   black
+    #   pylint
     #   pytest
 typing-extensions==3.10.0.2
     # via

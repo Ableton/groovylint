@@ -15,6 +15,11 @@ devToolsProject.run(
   setup: { data ->
     data['venv'] = virtualenv.createWithPyenv('3.10.3')
     data.venv.run('pip install -r requirements-dev.txt')
+
+    String zipName = 'apache-groovy-binary-3.0.10.zip'
+    String mirrorHost = 'groovy.jfrog.io/artifactory/dist-release-local/groovy-zips'
+    sh "curl -o ${zipName} https://${mirrorHost}/${zipName}"
+    unzip(zipFile: zipName)
   },
   build: { data ->
     String gitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
@@ -45,6 +50,7 @@ devToolsProject.run(
         // Jenkins CI installations, but is often more useful for developers running
         // groovylint locally.
         sh "python3 run_codenarc.py --resources ${env.WORKSPACE}/resources" +
+          " --groovy-home ${pwd()}/groovy-3.0.10" +
           ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
       },
       hadolint: {

@@ -4,6 +4,8 @@ This repository provides a way to run [CodeNarc][codenarc-home] checks from a do
 image. CodeNarc analyzes Groovy code for defects, bad practices, inconsistencies, style
 issues and more.
 
+CodeNarc, and Groovylint by extension, require Groovy 3.0 or greater.
+
 ## Usage
 
 ### Running with Python

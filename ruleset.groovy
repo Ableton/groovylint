@@ -23,9 +23,6 @@ ruleset {
     ConsecutiveBlankLines(enabled: false)
     Indentation(spacesPerIndentLevel: 2, enabled: true)
     LineLength(length: 90)
-    // TODO: Re-enable after this rule has been fixed
-    // See https://github.com/CodeNarc/CodeNarc/issues/608
-    SpaceAfterMethodCallName(enabled: false)
     SpaceAfterOpeningBrace(ignoreEmptyBlock: true)
     SpaceAroundMapEntryColon(characterAfterColonRegex: /\s/)
     SpaceBeforeClosingBrace(ignoreEmptyBlock: true)

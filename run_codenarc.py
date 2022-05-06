@@ -41,6 +41,8 @@ def _build_classpath(args):
         f"{args.groovy_home}/lib/*",
         f"{args.resources}/CodeNarc-{args.codenarc_version}.jar",
         f"{args.resources}/GMetrics-{args.gmetrics_version}.jar",
+        f"{args.resources}/activation-{args.activation_version}.jar",
+        f"{args.resources}/jaxb-api-{args.jaxb_api_version}.jar",
         f"{args.resources}/slf4j-api-{args.slf4j_version}.jar",
         f"{args.resources}/slf4j-simple-{args.slf4j_version}.jar",
     ]
@@ -82,6 +84,14 @@ def _fetch_jars(args):
         (
             "https://github.com/dx42/gmetrics/releases/download"
             f"/v{args.gmetrics_version}/GMetrics-{args.gmetrics_version}.jar"
+        ),
+        (
+            "https://repo1.maven.org/maven2/javax/activation/activation"
+            f"/{args.activation_version}/activation-{args.activation_version}.jar"
+        ),
+        (
+            "https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api"
+            f"/{args.jaxb_api_version}/jaxb-api-{args.jaxb_api_version}.jar"
         ),
         (
             f"https://repo1.maven.org/maven2/org/slf4j/slf4j-api/{args.slf4j_version}"
@@ -232,9 +242,21 @@ def parse_args(args, default_jar_versions):
     )
 
     arg_parser.add_argument(
+        "--activation-version",
+        default=default_jar_versions["activation"],
+        help="Activation Framework version to use (required for JDK11 + Groovy 3.x).",
+    )
+
+    arg_parser.add_argument(
         "--codenarc-version",
         default=default_jar_versions["CodeNarc"],
         help="CodeNarc version to use.",
+    )
+
+    arg_parser.add_argument(
+        "--jaxb-api-version",
+        default=default_jar_versions["jaxb-api"],
+        help="JAXB API version to use (required for JDK11 + Groovy 3.x).",
     )
 
     arg_parser.add_argument(

@@ -17,10 +17,14 @@ devToolsProject.run(
     data.venv.run('pip install -r requirements-dev.txt')
 
     data['groovy3Version'] = '3.0.10'
-    String groovy3Zip = "apache-groovy-binary-${data.groovy3Version}.zip"
-    String mirrorHost = 'groovy.jfrog.io/artifactory/dist-release-local/groovy-zips'
-    sh "curl -o ${groovy3Zip} https://${mirrorHost}/${groovy3Zip}"
-    unzip(zipFile: groovy3Zip)
+    data['groovy4Version'] = '4.0.2'
+
+    [data.groovy3Version, data.groovy4Version].each { groovyVersion ->
+      String groovyZip = "apache-groovy-binary-${groovyVersion}.zip"
+      String mirrorHost = 'groovy.jfrog.io/artifactory/dist-release-local/groovy-zips'
+      sh "curl -o ${groovyZip} https://${mirrorHost}/${groovyZip}"
+      unzip(zipFile: groovyZip)
+    }
   },
   build: { data ->
     String gitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
@@ -52,6 +56,11 @@ devToolsProject.run(
         // groovylint locally.
         sh "python3 run_codenarc.py --resources ${env.WORKSPACE}/resources" +
           " --groovy-home ${pwd()}/groovy-${data.groovy3Version}" +
+          ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
+      },
+      'groovylint native 4.x': {
+        sh "python3 run_codenarc.py --resources ${env.WORKSPACE}/resources" +
+          " --groovy-home ${pwd()}/groovy-${data.groovy4Version}" +
           ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
       },
       hadolint: {

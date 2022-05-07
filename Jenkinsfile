@@ -16,10 +16,15 @@ devToolsProject.run(
     data['venv'] = virtualenv.createWithPyenv('3.10.3')
     data.venv.run('pip install -r requirements-dev.txt')
 
-    String zipName = 'apache-groovy-binary-3.0.10.zip'
-    String mirrorHost = 'groovy.jfrog.io/artifactory/dist-release-local/groovy-zips'
-    sh "curl -o ${zipName} https://${mirrorHost}/${zipName}"
-    unzip(zipFile: zipName)
+    data['groovy3Version'] = '3.0.10'
+    data['groovy4Version'] = '4.0.2'
+
+    [data.groovy3Version, data.groovy4Version].each { groovyVersion ->
+      String groovyZip = "apache-groovy-binary-${groovyVersion}.zip"
+      String mirrorHost = 'groovy.jfrog.io/artifactory/dist-release-local/groovy-zips'
+      sh "curl -o ${groovyZip} https://${mirrorHost}/${groovyZip}"
+      unzip(zipFile: groovyZip)
+    }
   },
   build: { data ->
     String gitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
@@ -45,12 +50,17 @@ devToolsProject.run(
           groovylintImage: data['image'],
         )
       },
-      'groovylint native': {
+      'groovylint native 3.x': {
         // Run groovylint using the system Python. This is not a recommended use-case for
         // Jenkins CI installations, but is often more useful for developers running
         // groovylint locally.
         sh "python3 run_codenarc.py --resources ${env.WORKSPACE}/resources" +
-          " --groovy-home ${pwd()}/groovy-3.0.10" +
+          " --groovy-home ${pwd()}/groovy-${data.groovy3Version}" +
+          ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
+      },
+      'groovylint native 4.x': {
+        sh "python3 run_codenarc.py --resources ${env.WORKSPACE}/resources" +
+          " --groovy-home ${pwd()}/groovy-${data.groovy4Version}" +
           ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
       },
       hadolint: {

@@ -57,7 +57,7 @@ pydocstyle==6.1.1
     # via -r requirements-dev.in
 pyflakes==2.4.0
     # via flake8
-pylint==2.13.9
+pylint==2.14.0
     # via -r requirements-dev.in
 pyparsing==2.4.7
     # via packaging
@@ -72,6 +72,8 @@ tomli==2.0.0
     #   black
     #   pylint
     #   pytest
+tomlkit==0.11.0
+    # via pylint
 typing-extensions==3.10.0.2
     # via
     #   astroid

@@ -82,7 +82,7 @@ devToolsProject.run(
           'SLF4J_VERSION=test',
         ]) {
           try {
-            data.venv.run('python -m pytest -rXxs --junit-xml=results.xml')
+            data.venv.run('python -m pytest -Werror -rXxs --junit-xml=results.xml')
           } finally {
             junit 'results.xml'
           }

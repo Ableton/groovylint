@@ -36,10 +36,11 @@ class CodeNarcViolationsException(Exception):
 
 def _build_classpath(args):
     """Construct the classpath to use for running CodeNarc."""
+    codenarc_version = _codenarc_version(args.codenarc_version, args.groovy4)
     classpath = [
         args.resources,
         f"{args.groovy_home}/lib/*",
-        f"{args.resources}/CodeNarc-{args.codenarc_version}.jar",
+        f"{args.resources}/CodeNarc-{codenarc_version}.jar",
         f"{args.resources}/GMetrics-{args.gmetrics_version}.jar",
         f"{args.resources}/activation-{args.activation_version}.jar",
         f"{args.resources}/jaxb-api-{args.jaxb_api_version}.jar",
@@ -52,6 +53,11 @@ def _build_classpath(args):
             raise ValueError(f"Classpath element {path} does not exist")
 
     return ":".join(classpath)
+
+
+def _codenarc_version(version, is_groovy4):
+    """Get the CodeNarc version depending on the version of Groovy being used."""
+    return f"Groovy4-${version}" if is_groovy4 else version
 
 
 def _download_file(url, output_dir):
@@ -76,10 +82,11 @@ def _fetch_jars(args):
     if not os.path.exists(args.resources):
         os.mkdir(args.resources)
 
+    codenarc_version = _codenarc_version(args.codenarc_version, args.groovy4)
     jar_urls = [
         (
             "https://github.com/CodeNarc/CodeNarc/releases/download"
-            f"/v{args.codenarc_version}/CodeNarc-{args.codenarc_version}.jar"
+            f"/v{codenarc_version}/CodeNarc-{codenarc_version}.jar"
         ),
         (
             "https://github.com/dx42/gmetrics/releases/download"
@@ -271,6 +278,12 @@ def parse_args(args, default_jar_versions):
         default=default_groovy_home,
         required=(default_groovy_home is None),
         help="Groovy home directory.",
+    )
+
+    arg_parser.add_argument(
+        "--groovy4",
+        action="store_true",
+        help="When given, use a JAR of CodeNarc that is compatible with Groovy 4",
     )
 
     arg_parser.add_argument(

@@ -58,8 +58,8 @@ devToolsProject.run(
           ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
       },
       hadolint: {
-        docker.image('hadolint/hadolint:v1.13.0-debian').inside("-v ${pwd()}:/ws") {
-          sh 'hadolint /ws/Dockerfile'
+        docker.image('hadolint/hadolint:v1.13.0-debian').inside {
+          sh 'hadolint Dockerfile'
         }
       },
       pydocstyle: { data.venv.run('pydocstyle -v') },

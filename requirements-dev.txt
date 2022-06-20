@@ -57,7 +57,7 @@ pydocstyle==6.1.1
     # via -r requirements-dev.in
 pyflakes==2.4.0
     # via flake8
-pylint==2.14.2
+pylint==2.14.3
     # via -r requirements-dev.in
 pyparsing==2.4.7
     # via packaging

@@ -32,15 +32,9 @@ devToolsProject.run(
   },
   test: { data ->
     parallel(failFast: false,
-      black: {
-        data.venv.run('black --check .')
-      },
-      flake8: {
-        data.venv.run('flake8 -v')
-      },
-      groovydoc: {
-        data['docs'] = groovydoc.generate()
-      },
+      black: { data.venv.run('black --check .') },
+      flake8: { data.venv.run('flake8 -v') },
+      groovydoc: { data['docs'] = groovydoc.generate() },
       'groovylint docker': {
         // Use the Docker image created in the Build stage above. This ensures that the
         // we are checking our own Groovy code with the same library and image which would
@@ -68,12 +62,8 @@ devToolsProject.run(
           sh 'hadolint /ws/Dockerfile'
         }
       },
-      pydocstyle: {
-        data.venv.run('pydocstyle -v')
-      },
-      pylint: {
-        data.venv.run('pylint --max-line-length=90 *.py')
-      },
+      pydocstyle: { data.venv.run('pydocstyle -v') },
+      pylint: { data.venv.run('pylint --max-line-length=90 *.py') },
       pytest: {
         withEnv([
           'GROOVY_HOME=test',
@@ -90,9 +80,7 @@ devToolsProject.run(
       },
     )
   },
-  publish: { data ->
-    jupiter.publishDocs("${data['docs']}/", 'Ableton/groovylint')
-  },
+  publish: { data -> jupiter.publishDocs("${data['docs']}/", 'Ableton/groovylint') },
   deployWhen: { return devToolsProject.shouldDeploy() },
   deploy: { data ->
     String versionNumber = readFile('VERSION').trim()

@@ -420,6 +420,7 @@ def run_codenarc(args, report_file=None):
             "-classpath",
             _build_classpath(args),
             "org.codenarc.CodeNarc",
+            "-failOnError=true",
             "-rulesetfiles=ruleset.groovy",
             f"-report=xml:{os.path.abspath(report_file)}",
         ] + extra_args

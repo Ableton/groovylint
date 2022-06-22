@@ -86,7 +86,7 @@ def _fetch_jars(args):
     jar_urls = [
         (
             "https://github.com/CodeNarc/CodeNarc/releases/download"
-            f"/v{codenarc_version}/CodeNarc-{codenarc_version}.jar"
+            f"/v{args.codenarc_version}/CodeNarc-{codenarc_version}.jar"
         ),
         (
             "https://github.com/dx42/gmetrics/releases/download"

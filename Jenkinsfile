@@ -54,7 +54,7 @@ devToolsProject.run(
       },
       'groovylint native 4.x': {
         sh "python3 run_codenarc.py --resources ${env.WORKSPACE}/resources" +
-          " --groovy-home ${pwd()}/groovy-${data.groovy4Version}" +
+          " --groovy-home ${pwd()}/groovy-${data.groovy4Version} --groovy4" +
           ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
       },
       hadolint: {

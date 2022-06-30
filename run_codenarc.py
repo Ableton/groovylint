@@ -57,7 +57,7 @@ def _build_classpath(args):
 
 def _codenarc_version(version, is_groovy4):
     """Get the CodeNarc version depending on the version of Groovy being used."""
-    return f"Groovy4-${version}" if is_groovy4 else version
+    return f"Groovy4-{version}" if is_groovy4 else version
 
 
 def _download_file(url, output_dir):
@@ -86,7 +86,7 @@ def _fetch_jars(args):
     jar_urls = [
         (
             "https://github.com/CodeNarc/CodeNarc/releases/download"
-            f"/v{codenarc_version}/CodeNarc-{codenarc_version}.jar"
+            f"/v{args.codenarc_version}/CodeNarc-{codenarc_version}.jar"
         ),
         (
             "https://github.com/dx42/gmetrics/releases/download"
@@ -420,6 +420,7 @@ def run_codenarc(args, report_file=None):
             "-classpath",
             _build_classpath(args),
             "org.codenarc.CodeNarc",
+            "-failOnError=true",
             "-rulesetfiles=ruleset.groovy",
             f"-report=xml:{os.path.abspath(report_file)}",
         ] + extra_args

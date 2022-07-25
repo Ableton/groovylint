@@ -20,7 +20,7 @@ flake8==4.0.1
     # via
     #   -r requirements-dev.in
     #   flake8-isort
-flake8-isort==4.1.1
+flake8-isort==4.1.2.post0
     # via -r requirements-dev.in
 iniconfig==1.1.1
     # via pytest
@@ -65,8 +65,6 @@ pytest==7.1.2
     # via -r requirements-dev.in
 snowballstemmer==2.0.0
     # via pydocstyle
-testfixtures==6.17.1
-    # via flake8-isort
 tomli==2.0.0
     # via
     #   black

@@ -57,7 +57,7 @@ def _build_classpath(args):
 
 def _codenarc_version(version, is_groovy4):
     """Get the CodeNarc version depending on the version of Groovy being used."""
-    return f"Groovy4-{version}" if is_groovy4 else version
+    return f"{version}-groovy-4.0" if is_groovy4 else version
 
 
 def _download_file(url, output_dir):

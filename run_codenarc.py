@@ -144,7 +144,8 @@ def _fetch_jars(args):
     ]
 
     for url in jar_urls:
-        _verify_jar(_download_file_with_retry(url, args.resources))
+        if not _is_valid_jar(_download_file_with_retry(url, args.resources)):
+            raise ValueError("Failed to verify JAR file")
 
 
 def _guess_groovy_home():
@@ -175,6 +176,17 @@ def _is_slf4j_line(line):
     cannot be parsed correctly when we attempt to re-log them in _log_codenarc_output.
     """
     return isinstance(logging.getLevelName(line.split(" ")[0]), int)
+
+
+def _is_valid_jar(file_path):
+    """Determine if a file is a valid JAR file."""
+    logging.debug("Verifying %s", file_path)
+    with zipfile.ZipFile(file_path, "r") as jar_file:
+        if "META-INF/MANIFEST.MF" not in jar_file.namelist():
+            logging.warning("%s does not appear to be a valid JAR", file_path)
+            return False
+
+    return True
 
 
 def _log_codenarc_output(lines):
@@ -265,14 +277,6 @@ def _print_violations_in_packages(packages):
         )
 
     return num_violations
-
-
-def _verify_jar(file_path):
-    """Verify that a file is a valid JAR file."""
-    logging.debug("Verifying %s", file_path)
-    with zipfile.ZipFile(file_path, "r") as jar_file:
-        if "META-INF/MANIFEST.MF" not in jar_file.namelist():
-            raise ValueError(f"{file_path} does not appear to be a valid JAR")
 
 
 def parse_args(args, default_jar_versions):

@@ -186,10 +186,14 @@ def _is_slf4j_line(line):
 def _is_valid_jar(file_path):
     """Determine if a file is a valid JAR file."""
     logging.debug("Verifying %s", file_path)
-    with zipfile.ZipFile(file_path, "r") as jar_file:
-        if "META-INF/MANIFEST.MF" not in jar_file.namelist():
-            logging.warning("%s does not appear to be a valid JAR", file_path)
-            return False
+    try:
+        with zipfile.ZipFile(file_path, "r") as jar_file:
+            if "META-INF/MANIFEST.MF" not in jar_file.namelist():
+                logging.warning("%s does not appear to be a valid JAR", file_path)
+                return False
+    except zipfile.BadZipfile:
+        logging.warning("%s is not a valid zipfile", file_path)
+        return False
 
     return True
 

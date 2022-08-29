@@ -92,14 +92,20 @@ def _download_file(url, output_dir):
     return output_file_path
 
 
-def _download_file_with_retry(url, output_dir):
-    """Download a file but retry in case of failure."""
+def _download_jar_with_retry(url, output_dir):
+    """Download a JAR file but retry in case of failure."""
     download_attempt = MAX_DOWNLOAD_ATTEMPTS
     sleep_duration = 1
 
     while download_attempt > 0:
         try:
-            return _download_file(url, output_dir)
+            output_file_path = _download_file(url, output_dir)
+            if not _is_valid_jar(output_file_path):
+                logging.warning("%s is not a valid JAR file", output_file_path)
+                os.unlink(output_file_path)
+                raise FileDownloadFailure("Invalid JAR file")
+
+            return output_file_path
         except FileDownloadFailure:
             download_attempt -= 1
             sleep_duration *= 2
@@ -144,8 +150,7 @@ def _fetch_jars(args):
     ]
 
     for url in jar_urls:
-        if not _is_valid_jar(_download_file_with_retry(url, args.resources)):
-            raise ValueError("Failed to verify JAR file")
+        _download_jar_with_retry(url, args.resources)
 
 
 def _guess_groovy_home():

@@ -44,6 +44,14 @@ def test_download_file_4xx():
             _download_file("http://example.com/mock", "/tmp")
 
 
+def test_download_file_5xx():
+    """Test that _download_file handles HTTP 5xx errors as expected."""
+    with patch("run_codenarc.urlopen") as urlopen_mock:
+        urlopen_mock.side_effect = HTTPError("url", 500, "Whoops", None, None)
+        with pytest.raises(FileDownloadFailure):
+            _download_file("http://example.com/mock", "/tmp")
+
+
 @patch("time.sleep")
 def test_download_file_with_retry_always_fail(sleep_mock):
     """Test that _download_file_with_retry fails when the download also fails."""

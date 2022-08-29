@@ -15,6 +15,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 
 from urllib.request import urlopen
@@ -23,6 +24,7 @@ from xml.etree import ElementTree
 
 DEFAULT_REPORT_FILE = "codenarc-report.xml"
 GROOVYLINT_HOME = os.path.dirname(os.path.realpath(__file__))
+MAX_DOWNLOAD_ATTEMPTS = 5
 
 
 class CodeNarcViolationsException(Exception):
@@ -32,6 +34,10 @@ class CodeNarcViolationsException(Exception):
         """Create a new instance of the CodeNarcViolationsException class."""
         super().__init__()
         self.num_violations = num_violations
+
+
+class FileDownloadFailure(Exception):
+    """Raised if a file fails to download."""
 
 
 def _build_classpath(args):
@@ -77,6 +83,24 @@ def _download_file(url, output_dir):
     return output_file_path
 
 
+def _download_file_with_retry(url, output_dir):
+    """Download a file but retry in case of failure."""
+    download_attempt = MAX_DOWNLOAD_ATTEMPTS
+    sleep_duration = 1
+
+    while download_attempt > 0:
+        try:
+            return _download_file(url, output_dir)
+        except FileDownloadFailure:
+            download_attempt -= 1
+            sleep_duration *= 2
+            logging.debug("Sleeping %d seconds until next retry...", sleep_duration)
+            time.sleep(sleep_duration)
+
+    logging.error("Failed to download %s after %d attempts", url, MAX_DOWNLOAD_ATTEMPTS)
+    raise FileDownloadFailure(f"Failed to download {url}")
+
+
 def _fetch_jars(args):
     """Fetch JAR file dependencies."""
     if not os.path.exists(args.resources):
@@ -111,7 +135,7 @@ def _fetch_jars(args):
     ]
 
     for url in jar_urls:
-        _verify_jar(_download_file(url, args.resources))
+        _verify_jar(_download_file_with_retry(url, args.resources))
 
 
 def _guess_groovy_home():

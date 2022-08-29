@@ -13,7 +13,9 @@ from unittest.mock import patch
 import pytest
 
 from run_codenarc import (
+    _download_file_with_retry,
     CodeNarcViolationsException,
+    FileDownloadFailure,
     parse_args,
     parse_xml_report,
     run_codenarc,
@@ -30,6 +32,23 @@ def _report_file_contents(name):
 
 def _report_file_path(name):
     return os.path.join(os.path.dirname(__file__), "xml-reports", name)
+
+
+@patch("time.sleep")
+def test_download_file_with_retry_always_fail(sleep_mock):
+    """Test that _download_file_with_retry fails when the download also fails."""
+    with patch("run_codenarc._download_file") as _download_file_mock:
+        _download_file_mock.side_effect = FileDownloadFailure()
+        with pytest.raises(FileDownloadFailure):
+            _download_file_with_retry("http://example.com/mock", "/tmp")
+
+
+@patch("time.sleep")
+def test_download_file_with_retry_survival(sleep_mock):
+    """Test that _download_file_with_retry can survive a single failure."""
+    with patch("run_codenarc._download_file") as _download_file_mock:
+        _download_file_mock.side_effect = [FileDownloadFailure(), "outfile"]
+        assert _download_file_with_retry("http://example.com/mock", "/tmp") == "outfile"
 
 
 def test_parse_xml_report():

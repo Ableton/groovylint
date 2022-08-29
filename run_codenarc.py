@@ -18,6 +18,7 @@ import tempfile
 import time
 import zipfile
 
+from urllib.error import HTTPError
 from urllib.request import urlopen
 from xml.etree import ElementTree
 
@@ -76,8 +77,13 @@ def _download_file(url, output_dir):
         return output_file_path
 
     logging.debug("Downloading %s to %s", url, output_file_path)
-    with urlopen(url) as response, open(output_file_path, "wb") as out_fp:
-        shutil.copyfileobj(response, out_fp)
+    try:
+        with urlopen(url) as response, open(output_file_path, "wb") as out_fp:
+            shutil.copyfileobj(response, out_fp)
+    except HTTPError as http_error:
+        if 400 <= http_error.code < 500:
+            logging.error("Download of %s failed with code %d", url, http_error.code)
+            raise FileDownloadFailure("Download failed") from http_error
 
     logging.info("Downloaded %s", output_file_name)
     return output_file_path

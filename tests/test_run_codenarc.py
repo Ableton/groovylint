@@ -9,10 +9,12 @@ import os
 import subprocess
 
 from unittest.mock import patch
+from urllib.error import HTTPError
 
 import pytest
 
 from run_codenarc import (
+    _download_file,
     _download_file_with_retry,
     CodeNarcViolationsException,
     FileDownloadFailure,
@@ -32,6 +34,14 @@ def _report_file_contents(name):
 
 def _report_file_path(name):
     return os.path.join(os.path.dirname(__file__), "xml-reports", name)
+
+
+def test_download_file_4xx():
+    """Test that _download_file handles HTTP 4xx errors as expected."""
+    with patch("run_codenarc.urlopen") as urlopen_mock:
+        urlopen_mock.side_effect = HTTPError("url", 404, "Not found", None, None)
+        with pytest.raises(FileDownloadFailure):
+            _download_file("http://example.com/mock", "/tmp")
 
 
 @patch("time.sleep")

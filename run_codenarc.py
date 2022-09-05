@@ -15,14 +15,17 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 
+from urllib.error import HTTPError
 from urllib.request import urlopen
 from xml.etree import ElementTree
 
 
 DEFAULT_REPORT_FILE = "codenarc-report.xml"
 GROOVYLINT_HOME = os.path.dirname(os.path.realpath(__file__))
+MAX_DOWNLOAD_ATTEMPTS = 5
 
 
 class CodeNarcViolationsException(Exception):
@@ -32,6 +35,10 @@ class CodeNarcViolationsException(Exception):
         """Create a new instance of the CodeNarcViolationsException class."""
         super().__init__()
         self.num_violations = num_violations
+
+
+class FileDownloadFailure(Exception):
+    """Raised if a file fails to download."""
 
 
 def _build_classpath(args):
@@ -70,11 +77,43 @@ def _download_file(url, output_dir):
         return output_file_path
 
     logging.debug("Downloading %s to %s", url, output_file_path)
-    with urlopen(url) as response, open(output_file_path, "wb") as out_fp:
-        shutil.copyfileobj(response, out_fp)
+    try:
+        with urlopen(url) as response, open(output_file_path, "wb") as out_fp:
+            shutil.copyfileobj(response, out_fp)
+    except HTTPError as http_error:
+        if 400 <= http_error.code < 500:
+            logging.error("Download of %s failed with code %d", url, http_error.code)
+            raise FileDownloadFailure("Download failed") from http_error
+        if 500 <= http_error.code < 600:
+            logging.warning("Download of %s failed with code %d", url, http_error.code)
+            raise FileDownloadFailure("Download failed") from http_error
 
     logging.info("Downloaded %s", output_file_name)
     return output_file_path
+
+
+def _download_jar_with_retry(url, output_dir):
+    """Download a JAR file but retry in case of failure."""
+    download_attempt = MAX_DOWNLOAD_ATTEMPTS
+    sleep_duration = 1
+
+    while download_attempt > 0:
+        try:
+            output_file_path = _download_file(url, output_dir)
+            if not _is_valid_jar(output_file_path):
+                logging.warning("%s is not a valid JAR file", output_file_path)
+                os.unlink(output_file_path)
+                raise FileDownloadFailure("Invalid JAR file")
+
+            return output_file_path
+        except FileDownloadFailure:
+            download_attempt -= 1
+            sleep_duration *= 2
+            logging.debug("Sleeping %d seconds until next retry...", sleep_duration)
+            time.sleep(sleep_duration)
+
+    logging.error("Failed to download %s after %d attempts", url, MAX_DOWNLOAD_ATTEMPTS)
+    raise FileDownloadFailure(f"Failed to download {url}")
 
 
 def _fetch_jars(args):
@@ -111,7 +150,7 @@ def _fetch_jars(args):
     ]
 
     for url in jar_urls:
-        _verify_jar(_download_file(url, args.resources))
+        _download_jar_with_retry(url, args.resources)
 
 
 def _guess_groovy_home():
@@ -142,6 +181,21 @@ def _is_slf4j_line(line):
     cannot be parsed correctly when we attempt to re-log them in _log_codenarc_output.
     """
     return isinstance(logging.getLevelName(line.split(" ")[0]), int)
+
+
+def _is_valid_jar(file_path):
+    """Determine if a file is a valid JAR file."""
+    logging.debug("Verifying %s", file_path)
+    try:
+        with zipfile.ZipFile(file_path, "r") as jar_file:
+            if "META-INF/MANIFEST.MF" not in jar_file.namelist():
+                logging.warning("%s does not appear to be a valid JAR", file_path)
+                return False
+    except zipfile.BadZipfile:
+        logging.warning("%s is not a valid zipfile", file_path)
+        return False
+
+    return True
 
 
 def _log_codenarc_output(lines):
@@ -232,14 +286,6 @@ def _print_violations_in_packages(packages):
         )
 
     return num_violations
-
-
-def _verify_jar(file_path):
-    """Verify that a file is a valid JAR file."""
-    logging.debug("Verifying %s", file_path)
-    with zipfile.ZipFile(file_path, "r") as jar_file:
-        if "META-INF/MANIFEST.MF" not in jar_file.namelist():
-            raise ValueError(f"{file_path} does not appear to be a valid JAR")
 
 
 def parse_args(args, default_jar_versions):

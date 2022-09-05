@@ -9,11 +9,15 @@ import os
 import subprocess
 
 from unittest.mock import patch
+from urllib.error import HTTPError
 
 import pytest
 
 from run_codenarc import (
+    _download_file,
+    _download_jar_with_retry,
     CodeNarcViolationsException,
+    FileDownloadFailure,
     parse_args,
     parse_xml_report,
     run_codenarc,
@@ -30,6 +34,55 @@ def _report_file_contents(name):
 
 def _report_file_path(name):
     return os.path.join(os.path.dirname(__file__), "xml-reports", name)
+
+
+def test_download_file_4xx():
+    """Test that _download_file handles HTTP 4xx errors as expected."""
+    with patch("run_codenarc.urlopen") as urlopen_mock:
+        urlopen_mock.side_effect = HTTPError("url", 404, "Not found", None, None)
+        with pytest.raises(FileDownloadFailure):
+            _download_file("http://example.com/mock", "/tmp")
+
+
+def test_download_file_5xx():
+    """Test that _download_file handles HTTP 5xx errors as expected."""
+    with patch("run_codenarc.urlopen") as urlopen_mock:
+        urlopen_mock.side_effect = HTTPError("url", 500, "Whoops", None, None)
+        with pytest.raises(FileDownloadFailure):
+            _download_file("http://example.com/mock", "/tmp")
+
+
+@patch("time.sleep")
+def test_download_jar_with_retry_always_fail(sleep_mock):
+    """Test that _download_jar_with_retry fails when the download also fails."""
+    with patch("run_codenarc._download_file") as _download_file_mock:
+        _download_file_mock.side_effect = FileDownloadFailure()
+        with pytest.raises(FileDownloadFailure):
+            _download_jar_with_retry("http://example.com/mock", "/tmp")
+
+
+@patch("time.sleep")
+def test_download_jar_with_retry_fail_verification(sleep_mock):
+    """Test that _download_jar_with_retry fails properly when a JAR fails to verify."""
+    with patch("run_codenarc._download_file") as _download_file_mock:
+        _download_file_mock.return_value = "outfile"
+        with patch("run_codenarc._is_valid_jar") as _is_valid_jar_mock:
+            with patch("os.unlink"):
+                _is_valid_jar_mock.return_value = False
+                with pytest.raises(FileDownloadFailure):
+                    _download_jar_with_retry("http://example.com/mock", "/tmp")
+
+
+@patch("time.sleep")
+def test_download_jar_with_retry_survival(sleep_mock):
+    """Test that _download_jar_with_retry can survive a single failure."""
+    with patch("run_codenarc._download_file") as _download_file_mock:
+        _download_file_mock.side_effect = [FileDownloadFailure(), "outfile"]
+        with patch("run_codenarc._is_valid_jar") as _is_valid_jar_mock:
+            _is_valid_jar_mock.return_value = True
+            assert (
+                _download_jar_with_retry("http://example.com/mock", "/tmp") == "outfile"
+            )
 
 
 def test_parse_xml_report():

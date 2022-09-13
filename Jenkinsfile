@@ -13,7 +13,7 @@ library "groovylint@${params.JENKINS_COMMIT}"
 
 devToolsProject.run(
   setup: { data ->
-    data['venv'] = virtualenv.createWithPyenv('3.10.3')
+    data['venv'] = virtualenv.createWithPyenv(readFile('.python-version'))
     data.venv.run('pip install -r requirements-dev.txt')
 
     data['groovy3Version'] = '3.0.10'

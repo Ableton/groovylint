@@ -81,12 +81,8 @@ def _download_file(url, output_dir):
         with urlopen(url) as response, open(output_file_path, "wb") as out_fp:
             shutil.copyfileobj(response, out_fp)
     except HTTPError as http_error:
-        if 400 <= http_error.code < 500:
-            logging.error("Download of %s failed with code %d", url, http_error.code)
-            raise FileDownloadFailure("Download failed") from http_error
-        if 500 <= http_error.code < 600:
-            logging.warning("Download of %s failed with code %d", url, http_error.code)
-            raise FileDownloadFailure("Download failed") from http_error
+        logging.error("Download of %s failed with code %d", url, http_error.code)
+        raise FileDownloadFailure("Download failed") from http_error
 
     logging.info("Downloaded %s", output_file_name)
     return output_file_path

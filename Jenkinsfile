@@ -44,15 +44,13 @@ devToolsProject.run(
           groovylintImage: data['image'],
         )
       },
-      'groovylint native 3.x': {
+      'groovylint native': {
         // Run groovylint using the system Python. This is not a recommended use-case for
         // Jenkins CI installations, but is often more useful for developers running
         // groovylint locally.
         sh "python3 run_codenarc.py --resources ${env.WORKSPACE}/resources" +
           " --groovy-home ${pwd()}/groovy-${data.groovy3Version}" +
           ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
-      },
-      'groovylint native 4.x': {
         sh "python3 run_codenarc.py --resources ${env.WORKSPACE}/resources" +
           " --groovy-home ${pwd()}/groovy-${data.groovy4Version} --groovy4" +
           ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'

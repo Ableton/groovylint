@@ -76,6 +76,26 @@ devToolsProject.run(
           }
         }
       },
+      'SLF4J version check': {
+        Set slf4jVersions = []
+        readMavenPom(file: 'pom.xml').dependencies.findAll { dependency ->
+          return dependency.artifactId.startsWith('slf4j')
+        }.each { dependency ->
+          slf4jVersions.add(dependency.version)
+        }
+
+        switch (slf4jVersions.size()) {
+          case 0:
+            error 'Could not find SLF4J libraries in pom.xml file'
+            break
+          case 1:
+            echo 'All SLF4J versions match'
+            break
+          default:
+            error 'pom.xml file contains mismatched SLF4J library versions'
+            break
+        }
+      },
     )
   },
   publish: { data -> jupiter.publishDocs("${data['docs']}/", 'Ableton/groovylint') },

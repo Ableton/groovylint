@@ -6,14 +6,14 @@
  */
 
 library(identifier: 'ableton-utils@0.22', changelog: false)
-library(identifier: 'python-utils@0.12', changelog: false)
+library(identifier: 'python-utils@0.13', changelog: false)
 // Get groovylint library from current commit so it can test itself in this Jenkinsfile
 library "groovylint@${params.JENKINS_COMMIT}"
 
 
 devToolsProject.run(
   setup: { data ->
-    data['venv'] = virtualenv.createWithPyenv(readFile('.python-version'))
+    data['venv'] = pyenv.createVirtualEnv(readFile('.python-version'))
     data.venv.run('pip install -r requirements-dev.txt')
 
     data['groovy3Version'] = '3.0.10'

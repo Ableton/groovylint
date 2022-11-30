@@ -32,7 +32,7 @@ devToolsProject.run(
   },
   test: { data ->
     data.venv.inside {
-      parallel(failFast: false,
+      parallel(
         black: { sh 'black --check .' },
         flake8: { sh 'flake8 -v' },
         groovydoc: { data['docs'] = groovydoc.generate() },
@@ -104,7 +104,7 @@ devToolsProject.run(
   deployWhen: { return devToolsProject.shouldDeploy() },
   deploy: { data ->
     String versionNumber = readFile('VERSION').trim()
-    parallel(failFast: false,
+    parallel(
       docker_hub: {
         docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-password') {
           try {

@@ -78,5 +78,5 @@ wrapt==1.12.1
 # The following packages are considered to be unsafe in a requirements file:
 pip==21.3.1
     # via pip-tools
-setuptools==60.5.0
+setuptools==65.5.1
     # via astroid

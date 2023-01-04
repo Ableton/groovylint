@@ -38,7 +38,7 @@
     </Rule>
     <Rule name='AbstractClassWithoutAbstractMethod'>
       <Description>
-        <![CDATA[The abstract class does not contain any abstract methods. An abstract class suggests an incomplete implementation, which is to be completed by subclasses implementing the abstract methods. If the class is intended to be used as a base class only (not to be instantiated direcly) a protected constructor can be provided prevent direct instantiation.]]></Description>
+        <![CDATA[The abstract class does not contain any abstract methods. An abstract class suggests an incomplete implementation, which is to be completed by subclasses implementing the abstract methods. If the class is intended to be used as a base class only (not to be instantiated directly) a protected constructor can be provided prevent direct instantiation.]]></Description>
     </Rule>
     <Rule name='AddEmptyString'>
       <Description>
@@ -573,7 +573,7 @@
     </Rule>
     <Rule name='InvertedCondition'>
       <Description>
-        <![CDATA[An inverted condition is one where a constant expression is used on the left hand side of the equals comparision. Such conditions can be confusing especially when used in assertions where the expected value is by convention placed on the right hand side of the comparision.]]></Description>
+        <![CDATA[An inverted condition is one where a constant expression is used on the left hand side of the equals comparison. Such conditions can be confusing especially when used in assertions where the expected value is by convention placed on the right hand side of the comparison.]]></Description>
     </Rule>
     <Rule name='InvertedIfElse'>
       <Description>

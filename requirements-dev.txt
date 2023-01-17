@@ -43,6 +43,8 @@ packaging==20.8
     # via pytest
 pathspec==0.9.0
     # via black
+pip==21.3.1
+    # via pip-tools
 pip-tools==5.5.0
     # via -r requirements-dev.in
 platformdirs==2.2.0
@@ -61,8 +63,10 @@ pylint==2.14.5
     # via -r requirements-dev.in
 pyparsing==2.4.7
     # via packaging
-pytest==7.2.0
+pytest==7.2.1
     # via -r requirements-dev.in
+setuptools==65.5.1
+    # via astroid
 snowballstemmer==2.0.0
     # via pydocstyle
 tomli==2.0.0
@@ -73,10 +77,4 @@ tomli==2.0.0
 tomlkit==0.11.0
     # via pylint
 wrapt==1.12.1
-    # via astroid
-
-# The following packages are considered to be unsafe in a requirements file:
-pip==21.3.1
-    # via pip-tools
-setuptools==65.5.1
     # via astroid

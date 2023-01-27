@@ -4,7 +4,7 @@
 #
 #    pip-compile --allow-unsafe --output-file=requirements-dev.txt requirements-dev.in
 #
-astroid==2.11.6
+astroid==2.13.3
     # via pylint
 attrs==20.3.0
     # via pytest
@@ -59,14 +59,12 @@ pydocstyle==6.1.1
     # via -r requirements-dev.in
 pyflakes==3.0.1
     # via flake8
-pylint==2.14.5
+pylint==2.15.10
     # via -r requirements-dev.in
 pyparsing==2.4.7
     # via packaging
 pytest==7.2.1
     # via -r requirements-dev.in
-setuptools==65.5.1
-    # via astroid
 snowballstemmer==2.0.0
     # via pydocstyle
 tomli==2.0.0
@@ -76,5 +74,7 @@ tomli==2.0.0
     #   pytest
 tomlkit==0.11.0
     # via pylint
+typing-extensions==4.4.0
+    # via astroid
 wrapt==1.12.1
     # via astroid

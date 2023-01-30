@@ -55,7 +55,7 @@ pluggy==0.13.1
     # via pytest
 pycodestyle==2.10.0
     # via flake8
-pydocstyle==6.1.1
+pydocstyle==6.3.0
     # via -r requirements-dev.in
 pyflakes==3.0.1
     # via flake8
@@ -65,7 +65,7 @@ pyparsing==2.4.7
     # via packaging
 pytest==7.2.1
     # via -r requirements-dev.in
-snowballstemmer==2.0.0
+snowballstemmer==2.2.0
     # via pydocstyle
 tomli==2.0.0
     # via

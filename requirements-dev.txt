@@ -8,7 +8,7 @@ astroid==2.13.3
     # via pylint
 attrs==20.3.0
     # via pytest
-black==22.12.0
+black==23.1.0
     # via -r requirements-dev.in
 click==8.0.3
     # via
@@ -39,12 +39,12 @@ mccabe==0.7.0
     #   pylint
 mypy-extensions==0.4.3
     # via black
-packaging==20.8
-    # via pytest
+packaging==23.0
+    # via
+    #   black
+    #   pytest
 pathspec==0.9.0
     # via black
-pip==21.3.1
-    # via pip-tools
 pip-tools==5.5.0
     # via -r requirements-dev.in
 platformdirs==2.2.0
@@ -61,8 +61,6 @@ pyflakes==3.0.1
     # via flake8
 pylint==2.15.10
     # via -r requirements-dev.in
-pyparsing==2.4.7
-    # via packaging
 pytest==7.2.1
     # via -r requirements-dev.in
 snowballstemmer==2.2.0

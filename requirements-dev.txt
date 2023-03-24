@@ -59,7 +59,7 @@ pydocstyle==6.3.0
     # via -r requirements-dev.in
 pyflakes==3.0.1
     # via flake8
-pylint==2.17.0
+pylint==2.17.1
     # via -r requirements-dev.in
 pytest==7.2.2
     # via -r requirements-dev.in

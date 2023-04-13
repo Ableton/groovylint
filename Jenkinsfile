@@ -34,7 +34,6 @@ devToolsProject.run(
     data.venv.inside {
       parallel(
         black: { sh 'black --check .' },
-        flake8: { sh 'flake8 -v' },
         groovydoc: { data['docs'] = groovydoc.generate() },
         'groovylint docker': {
           // Use the Docker image created in the Build stage above. This ensures that the
@@ -61,8 +60,6 @@ devToolsProject.run(
             sh 'hadolint Dockerfile'
           }
         },
-        pydocstyle: { sh 'pydocstyle -v' },
-        pylint: { sh 'pylint --max-line-length=90 *.py' },
         pytest: {
           withEnv([
             'GROOVY_HOME=test',
@@ -77,6 +74,7 @@ devToolsProject.run(
             }
           }
         },
+        ruff: { sh 'ruff check --verbose .' },
         'SLF4J version check': {
           Set slf4jVersions = []
           readMavenPom(file: 'pom.xml').dependencies.findAll { dependency ->

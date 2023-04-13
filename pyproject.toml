@@ -1,3 +1,6 @@
+[tool.pytest]
+junit_family = "legacy"
+
 [tool.ruff]
 exclude = [".direnv", ".venv"]
 line-length = 90

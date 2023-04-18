@@ -486,7 +486,7 @@ def run_codenarc(args, report_file=None):
             raise
 
         # Trim out empty lines which CodeNarc prints in its output.
-        codenarc_output = [x for x in output.stdout.decode().split("\n") if x != ""]
+        codenarc_output = [x for x in output.stdout.decode().split("\n") if x]
         # The last line of CodeNarc's output is (usually) a summary line, which is printed
         # to stdout and not through SLF4J. We save it to a variable and log it with an
         # assigned log level after printing out everything else. If CodeNarc fails due to

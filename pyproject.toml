@@ -1,0 +1,16 @@
+[tool.pytest]
+junit_family = "legacy"
+
+[tool.ruff]
+exclude = [".direnv", ".venv"]
+line-length = 90
+# See https://beta.ruff.rs/docs/rules
+select = ["C90", "D", "E", "F", "I", "PL", "W"]
+
+[tool.ruff.isort]
+lines-after-imports = 2
+lines-between-types = 1
+order-by-type = false
+
+[tool.ruff.pydocstyle]
+convention = "pep257"

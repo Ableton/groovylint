@@ -1,5 +1,5 @@
 [tool.pytest]
-addopts = "-rxXs"
+addopts = "-ra"
 filterwarnings = ["error"]
 junit_family = "legacy"
 

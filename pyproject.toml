@@ -1,4 +1,6 @@
 [tool.pytest]
+addopts = "-ra"
+filterwarnings = ["error"]
 junit_family = "legacy"
 
 [tool.ruff]

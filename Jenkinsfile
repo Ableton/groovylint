@@ -68,7 +68,7 @@ devToolsProject.run(
             'SLF4J_VERSION=test',
           ]) {
             try {
-              sh 'python -m pytest -Werror -rXxs --junit-xml=results.xml'
+              sh 'python -m pytest --junit-xml=results.xml'
             } finally {
               junit 'results.xml'
             }

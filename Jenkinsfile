@@ -5,13 +5,14 @@
  * license that can be found in the LICENSE file.
  */
 
-library(identifier: 'ableton-utils@0.22', changelog: false)
+library(identifier: 'ableton-utils@0.23', changelog: false)
 library(identifier: 'python-utils@0.13', changelog: false)
 // Get groovylint library from current commit so it can test itself in this Jenkinsfile
 library "groovylint@${params.JENKINS_COMMIT}"
 
 
 devToolsProject.run(
+  defaultBranch: 'master',
   setup: { data ->
     data['venv'] = pyenv.createVirtualEnv(readFile('.python-version'))
     data.venv.run('pip install -r requirements-dev.txt')
@@ -99,7 +100,6 @@ devToolsProject.run(
     }
   },
   publish: { data -> jupiter.publishDocs("${data['docs']}/", 'Ableton/groovylint') },
-  deployWhen: { return devToolsProject.shouldDeploy() },
   deploy: { data ->
     String versionNumber = readFile('VERSION').trim()
     parallel(

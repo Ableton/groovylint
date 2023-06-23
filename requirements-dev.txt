@@ -33,7 +33,7 @@ pluggy==1.0.0
     # via pytest
 pyproject-hooks==1.0.0
     # via build
-pytest==7.3.2
+pytest==7.4.0
     # via -r requirements-dev.in
 ruff==0.0.275
     # via -r requirements-dev.in

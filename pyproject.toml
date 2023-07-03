@@ -1,4 +1,4 @@
-[tool.pytest]
+[tool.pytest.ini_options]
 addopts = "-ra"
 filterwarnings = ["error"]
 junit_family = "legacy"

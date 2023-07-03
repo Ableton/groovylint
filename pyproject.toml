@@ -1,5 +1,5 @@
 [tool.pytest.ini_options]
-addopts = "-ra"
+addopts = "--import-mode=importlib -ra"
 filterwarnings = ["error"]
 junit_family = "legacy"
 

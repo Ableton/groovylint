@@ -446,13 +446,9 @@ def run_codenarc(args, report_file=None):
             report_file = os.path.join(tempdir, DEFAULT_REPORT_FILE)
 
         if args.single_file:
-            extra_args = [f"-includes=./{os.path.basename(args.single_file)}"]
-            cwd = tempdir
-            logging.debug("Copying %s into %s", args.single_file, cwd)
-            shutil.copy(args.single_file, cwd)
+            extra_args = [f"-sourcefiles=./{args.single_file}"]
         else:
             extra_args = args.codenarc_options
-            cwd = os.getcwd()
 
         # -rulesetfiles must not be an absolute path, only a relative one to the CLASSPATH
         codenarc_call = [
@@ -472,7 +468,6 @@ def run_codenarc(args, report_file=None):
             output = subprocess.run(
                 codenarc_call,
                 check=True,
-                cwd=cwd,
                 stderr=subprocess.STDOUT,
                 stdout=subprocess.PIPE,
             )

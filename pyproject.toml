@@ -8,6 +8,7 @@ exclude = [".direnv", ".venv"]
 line-length = 90
 # See https://beta.ruff.rs/docs/rules
 select = ["C90", "D", "E", "F", "I", "PL", "W"]
+target-version = "py310"
 
 [tool.ruff.isort]
 lines-after-imports = 2

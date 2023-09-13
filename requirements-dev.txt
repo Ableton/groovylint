@@ -4,7 +4,7 @@
 #
 #    pip-compile --allow-unsafe --output-file=requirements-dev.txt --resolver=backtracking --strip-extras requirements-dev.in
 #
-black==23.7.0
+black==23.9.1
     # via -r requirements-dev.in
 build==0.10.0
     # via pip-tools
@@ -43,6 +43,8 @@ tomli==2.0.1
     #   build
     #   pyproject-hooks
     #   pytest
+typing-extensions==4.7.1
+    # via black
 wheel==0.40.0
     # via pip-tools
 

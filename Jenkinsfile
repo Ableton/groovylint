@@ -117,7 +117,16 @@ devToolsProject.run(
         }
       },
       version: {
-        version.tag(versionNumber)
+        if (version.tag(versionNumber)) {
+          gitHub.makeRelease(
+            apiToken: BUILD_API_TOKEN,
+            commitish: params.JENKINS_COMMIT,
+            files: ['ruleset.groovy', 'run_codenarc.py'],
+            owner: 'Ableton',
+            repository: 'python-pipeline-utils',
+            tagName: versionNumber,
+          )
+        }
         version.forwardMinorBranch(versionNumber)
       },
     )

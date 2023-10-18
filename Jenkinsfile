@@ -118,14 +118,18 @@ devToolsProject.run(
       },
       version: {
         if (version.tag(versionNumber)) {
-          gitHub.makeRelease(
-            apiToken: BUILD_API_TOKEN,
-            commitish: params.JENKINS_COMMIT,
-            files: ['ruleset.groovy', 'run_codenarc.py'],
-            owner: 'Ableton',
-            repository: 'python-pipeline-utils',
-            tagName: versionNumber,
-          )
+          withCredentials([
+            string(credentialsId: 'build-api-key', variable: 'BUILD_API_TOKEN'),
+          ]) {
+            gitHub.makeRelease(
+              apiToken: BUILD_API_TOKEN,
+              commitish: params.JENKINS_COMMIT,
+              files: ['ruleset.groovy', 'run_codenarc.py'],
+              owner: 'Ableton',
+              repository: 'python-pipeline-utils',
+              tagName: versionNumber,
+            )
+          }
         }
         version.forwardMinorBranch(versionNumber)
       },

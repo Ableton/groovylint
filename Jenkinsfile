@@ -126,7 +126,7 @@ devToolsProject.run(
               commitish: params.JENKINS_COMMIT,
               files: ['ruleset.groovy', 'run_codenarc.py'],
               owner: 'Ableton',
-              repository: 'python-pipeline-utils',
+              repository: 'groovylint',
               tagName: versionNumber,
             )
           }

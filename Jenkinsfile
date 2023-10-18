@@ -121,10 +121,12 @@ devToolsProject.run(
           withCredentials([
             string(credentialsId: 'build-api-key', variable: 'BUILD_API_TOKEN'),
           ]) {
+            List distFiles = findFiles(glob: 'ruleset.groovy') +
+              findFiles(glob: 'run_codenarc.py')
             gitHub.makeRelease(
               apiToken: BUILD_API_TOKEN,
               commitish: params.JENKINS_COMMIT,
-              files: ['ruleset.groovy', 'run_codenarc.py'],
+              files: distFiles,
               owner: 'Ableton',
               repository: 'groovylint',
               tagName: versionNumber,

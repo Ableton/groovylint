@@ -101,6 +101,13 @@ devToolsProject.run(
   },
   publish: { data -> jupiter.publishDocs("${data['docs']}/", 'Ableton/groovylint') },
   deploy: { data ->
+    String lastTag = sh(
+      returnStdout: true, script: 'git describe --tags --abbrev=0'
+    ).trim()
+    String body = sh(
+      returnStdout: true, script: "git log --format='- %s (%h)' ${lastTag}..HEAD"
+    )
+
     String versionNumber = readFile('VERSION').trim()
     parallel(
       docker_hub: {
@@ -125,8 +132,10 @@ devToolsProject.run(
               findFiles(glob: 'run_codenarc.py')
             gitHub.makeRelease(
               apiToken: BUILD_API_TOKEN,
+              body: body,
               commitish: params.JENKINS_COMMIT,
               files: distFiles,
+              name: versionNumber,
               owner: 'Ableton',
               publish: true,
               repository: 'groovylint',

@@ -127,6 +127,7 @@ devToolsProject.run(
               apiToken: BUILD_API_TOKEN,
               commitish: params.JENKINS_COMMIT,
               files: distFiles,
+              name: versionNumber,
               owner: 'Ableton',
               publish: true,
               repository: 'groovylint',

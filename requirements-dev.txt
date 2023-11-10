@@ -35,7 +35,7 @@ pyproject-hooks==1.0.0
     # via build
 pytest==7.4.3
     # via -r requirements-dev.in
-ruff==0.1.4
+ruff==0.1.5
     # via -r requirements-dev.in
 tomli==2.0.1
     # via

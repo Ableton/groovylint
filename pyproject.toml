@@ -6,7 +6,7 @@ junit_family = "legacy"
 [tool.ruff]
 exclude = [".direnv", ".venv"]
 line-length = 90
-target-version = "py310"
+target-version = "py312"
 
 [tool.ruff.lint]
 # See https://beta.ruff.rs/docs/rules

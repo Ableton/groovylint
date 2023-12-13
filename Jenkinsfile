@@ -12,7 +12,7 @@ library "groovylint@${params.JENKINS_COMMIT}"
 
 
 devToolsProject.run(
-  defaultBranch: 'master',
+  defaultBranch: 'main',
   setup: { data ->
     data['venv'] = pyenv.createVirtualEnv(readFile('.python-version'))
     data.venv.run('pip install -r requirements-dev.txt')

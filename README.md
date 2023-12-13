@@ -99,8 +99,8 @@ $ /path/to/run_codenarc.py --resources /path/to/groovylint/resources \
 
 To assist in linting on Jenkins, `groovylint` provides a pipeline library and global
 singleton. To use `groovylint` in this manner, you'll need to add it to your [Jenkins
-master configuration][jenkins-lib-config]. Any `Jenkinsfile` which is using this library
-should also use the version tag, like so:
+controller configuration][jenkins-lib-config]. Any `Jenkinsfile` which is using this
+library should also use the version tag, like so:
 
 ```groovy
 // Example Jenkinsfile using a scripted pipeline

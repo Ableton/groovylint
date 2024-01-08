@@ -45,6 +45,20 @@ devToolsProject.run(
             groovylintImage: data['image'],
           )
         },
+        'groovylint failure': {
+          boolean failed = false
+          try {
+            groovylint.checkSingleFile(
+              groovylintImage: data['image'],
+              path: 'tests/resources/failure.badgroovy',
+            )
+          } catch (error) {
+            failed = true
+          }
+          if (!failed) {
+            error 'groovylint did not fail when analyzing code with violations'
+          }
+        },
         'groovylint native': {
           // Run groovylint using the system Python. This is not a recommended use-case
           // for Jenkins CI installations, but is often more useful for developers running

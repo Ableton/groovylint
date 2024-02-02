@@ -6,14 +6,16 @@ junit_family = "legacy"
 [tool.ruff]
 exclude = [".direnv", ".venv"]
 line-length = 90
-# See https://beta.ruff.rs/docs/rules
-select = ["C90", "D", "E", "F", "I", "PL", "W"]
 target-version = "py310"
 
-[tool.ruff.isort]
+[tool.ruff.lint]
+# See https://beta.ruff.rs/docs/rules
+select = ["C90", "D", "E", "F", "I", "PL", "W"]
+
+[tool.ruff.lint.isort]
 lines-after-imports = 2
 lines-between-types = 1
 order-by-type = false
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "pep257"

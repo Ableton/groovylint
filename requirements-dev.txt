@@ -4,7 +4,7 @@
 #
 #    pip-compile --allow-unsafe --output-file=requirements-dev.txt --resolver=backtracking --strip-extras requirements-dev.in
 #
-black==24.4.1
+black==24.4.2
     # via -r requirements-dev.in
 build==0.10.0
     # via pip-tools

@@ -23,7 +23,7 @@ devToolsProject.run(
     [data.groovy3Version, data.groovy4Version].each { groovyVersion ->
       String groovyZip = "apache-groovy-binary-${groovyVersion}.zip"
       String mirrorHost = 'groovy.jfrog.io/artifactory/dist-release-local/groovy-zips'
-      sh "curl -o ${groovyZip} https://${mirrorHost}/${groovyZip}"
+      sh "curl -L -o ${groovyZip} https://${mirrorHost}/${groovyZip}"
       unzip(zipFile: groovyZip)
     }
   },

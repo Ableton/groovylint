@@ -34,7 +34,7 @@ devToolsProject.run(
   test: { data ->
     data.venv.inside {
       parallel(
-        black: { sh 'black --check .' },
+        format: { sh 'ruff format --check .' },
         groovydoc: { data['docs'] = groovydoc.generate() },
         'groovylint docker': {
           // Use the Docker image created in the Build stage above. This ensures that the

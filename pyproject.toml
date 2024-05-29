@@ -9,8 +9,8 @@ line-length = 90
 target-version = "py312"
 
 [tool.ruff.lint]
-# See https://beta.ruff.rs/docs/rules
-select = ["C90", "D", "E", "F", "I", "PL", "W"]
+ignore = ["ANN101"]
+select = ["ANN", "C90", "D", "E", "F", "I", "PL", "W"]
 
 [tool.ruff.lint.isort]
 lines-after-imports = 2

@@ -138,7 +138,6 @@ branch.
 This project is maintained by the following GitHub users:
 
 - [@ala-ableton](https://github.com/ala-ableton)
-- [@mst-ableton](https://github.com/mst-ableton)
 - [@nre-ableton](https://github.com/nre-ableton)
 
 

@@ -18,7 +18,7 @@ devToolsProject.run(
     data.venv.run('pip install -r requirements-dev.txt')
 
     data['groovy3Version'] = '3.0.22'
-    data['groovy4Version'] = '4.0.2'
+    data['groovy4Version'] = '4.0.22'
 
     [data.groovy3Version, data.groovy4Version].each { groovyVersion ->
       String groovyZip = "apache-groovy-binary-${groovyVersion}.zip"

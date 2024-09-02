@@ -48,7 +48,6 @@ $ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` abletonag/groovylint \
     /opt/run_codenarc.py --single-file Jenkinsfile
 ```
 
-
 ### Running in a Docker container
 
 ```bash

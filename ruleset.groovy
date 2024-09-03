@@ -30,6 +30,7 @@ ruleset {
   ruleset('rulesets/generic.xml') {}
   ruleset('rulesets/groovyism.xml') {}
   ruleset('rulesets/imports.xml') {}
+  ruleset('rulesets/jenkins.xml') {}
   ruleset('rulesets/naming.xml') {
     FactoryMethodName(enabled: false)
     VariableName(ignoreVariableNames: '_')

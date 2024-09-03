@@ -4,7 +4,8 @@ This repository provides a way to run [CodeNarc][codenarc-home] checks from a do
 image. CodeNarc analyzes Groovy code for defects, bad practices, inconsistencies, style
 issues and more.
 
-CodeNarc, and Groovylint by extension, require Groovy 3.0 or greater.
+CodeNarc, and Groovylint by extension, require Groovy 3.0.22 or greater (or Groovy 4.0.11
+or greater, if using Groovy 4.x).
 
 ## Usage
 
@@ -47,7 +48,6 @@ When using this option, you can't pass any other options directly to CodeNarc:
 $ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` abletonag/groovylint \
     /opt/run_codenarc.py --single-file Jenkinsfile
 ```
-
 
 ### Running in a Docker container
 

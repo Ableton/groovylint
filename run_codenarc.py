@@ -171,6 +171,14 @@ def _guess_groovy_home() -> Optional[str]:
     return None
 
 
+def _is_groovy4(groovy_home: str) -> bool:
+    groovy_bin = os.path.join(groovy_home, "bin", "groovy")
+    logging.debug("Checking version for groovy binary %s", groovy_bin)
+    groovy_version = subprocess.check_output([f"{groovy_bin}", "--version"]).decode()
+    logging.debug("Groovy version string: %s", groovy_version)
+    return groovy_version.startswith("Groovy Version: 4.")
+
+
 def _is_slf4j_line(line: str) -> bool:
     """Determine if a log line was produced by SLF4J.
 
@@ -325,11 +333,7 @@ def parse_args(
         help="Groovy home directory.",
     )
 
-    arg_parser.add_argument(
-        "--groovy4",
-        action="store_true",
-        help="When given, use a JAR of CodeNarc that is compatible with Groovy 4",
-    )
+    arg_parser.add_argument("--groovy4", action="store_true", help=argparse.SUPPRESS)
 
     arg_parser.add_argument(
         "--resources",
@@ -391,6 +395,8 @@ def parse_args(
         raise ValueError("Could not determine GMetrics version")
     if not args.slf4j_version:
         raise ValueError("Could not determine SLF4J version")
+
+    args.groovy4 = _is_groovy4(args.groovy_home)
 
     if args.single_file and len(args.codenarc_options) > 1:
         arg_parser.error('--single-file cannot be used with "--"')

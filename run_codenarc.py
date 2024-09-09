@@ -379,6 +379,12 @@ def parse_args(
 
     args = arg_parser.parse_args(args)
 
+    logging.basicConfig(
+        format="%(levelname)s %(message)s",
+        level=args.log_level or logging.INFO,
+        stream=sys.stdout,
+    )
+
     if not args.codenarc_version:
         raise ValueError("Could not determine CodeNarc version")
     if not args.gmetrics_version:
@@ -392,12 +398,6 @@ def parse_args(
     args.codenarc_options = [
         option for sublist in args.codenarc_options for option in sublist
     ]
-
-    logging.basicConfig(
-        format="%(levelname)s %(message)s",
-        level=args.log_level or logging.INFO,
-        stream=sys.stdout,
-    )
 
     return args
 

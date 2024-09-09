@@ -64,10 +64,10 @@ devToolsProject.run(
           // Run groovylint using the system Python. This is not a recommended use-case
           // for Jenkins CI installations, but is often more useful for developers running
           // groovylint locally.
-          sh "python3 run_codenarc.py --resources ${env.WORKSPACE}/resources" +
+          sh "python3 run_codenarc.py --verbose --resources ${env.WORKSPACE}/resources" +
             " --groovy-home ${pwd()}/groovy-${data.groovy3Version}" +
             ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
-          sh "python3 run_codenarc.py --resources ${env.WORKSPACE}/resources" +
+          sh "python3 run_codenarc.py --verbose --resources ${env.WORKSPACE}/resources" +
             " --groovy-home ${pwd()}/groovy-${data.groovy4Version} --groovy4" +
             ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
         },

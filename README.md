@@ -85,7 +85,7 @@ $ docker run --rm -v `pwd`:/ws -v `pwd`/codnearc.properties:/opt/codenarc.proper
 
 ### Groovy 3 vs. Groovy 4
 
-CodeNarc supports both Groovy 3 & Groovy 4, but as of version [v3.1.0][codenarc-v310],
+CodeNarc supports both Groovy 3 & Groovy 4, but as of CodeNarc version [v3.1.0][codenarc-v310],
 there are separate JAR files depending on the Groovy version. The `groovylint` Docker
 container uses the Groovy 3 version, as does the `run_codenarc.py` script by default. To
 use Groovy 4, please use the `--groovy4` argument with `run_codenarc.py`, for example:

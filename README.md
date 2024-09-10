@@ -87,7 +87,7 @@ $ docker run --rm -v `pwd`:/ws -v `pwd`/codnearc.properties:/opt/codenarc.proper
 
 CodeNarc supports both Groovy 3 & Groovy 4, but as of CodeNarc version [v3.1.0][codenarc-v310],
 there are separate JAR files depending on the Groovy version. The `groovylint` Docker
-container uses the Groovy 3 version, but when running the `run_codenarc.py` script
+container uses the Groovy 4 version, but when running the `run_codenarc.py` script
 manually, it will attempt to auto-detect the Groovy version based on the binary under
 `--groovy-home` (or the `GROOVY_HOME` environment variable).
 

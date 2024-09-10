@@ -25,6 +25,7 @@ devToolsProject.run(
       String mirrorHost = 'groovy.jfrog.io/artifactory/dist-release-local/groovy-zips'
       sh "curl -L -o ${groovyZip} https://${mirrorHost}/${groovyZip}"
       unzip(zipFile: groovyZip)
+      sh "chmod 755 groovy-${groovyVersion}/bin/groovy"
     }
   },
   build: { data ->

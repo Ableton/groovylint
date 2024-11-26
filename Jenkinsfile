@@ -14,7 +14,7 @@ library "groovylint@${params.JENKINS_COMMIT}"
 devToolsProject.run(
   defaultBranch: 'main',
   setup: { data ->
-    data['venv'] = pyenv.createVirtualEnv(readFile('.python-version'))
+    data['venv'] = pyenv.createVirtualEnv(readFile('.python-version').trim())
     data.venv.run('pip install -r requirements-dev.txt')
 
     data['groovy3Version'] = '3.0.22'

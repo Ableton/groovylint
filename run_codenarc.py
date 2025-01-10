@@ -261,7 +261,7 @@ def _print_violations_in_files(package_path: str, files: List) -> int:
     num_violations = 0
 
     for package_file in files:
-        package_file_name = f'{package_path}/{package_file.attrib["name"]}'
+        package_file_name = f"{package_path}/{package_file.attrib['name']}"
         logging.debug("Parsing violations in file: %s", package_file_name)
         num_violations += _print_violations(
             package_file_name, package_file.findall("Violation")

@@ -72,7 +72,7 @@ devToolsProject.run(
             ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
         },
         hadolint: {
-          docker.image('hadolint/hadolint:v2.9.3-debian').inside {
+          docker.image('hadolint/hadolint:v2.12.0-debian').inside {
             sh 'hadolint Dockerfile'
           }
         },

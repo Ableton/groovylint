@@ -7,6 +7,11 @@ FROM groovy:4.0.24-jdk21-jammy
 
 USER root
 
+RUN sed -e 's/archive.ubuntu.com/de.archive.ubuntu.com/g' \
+    < /etc/apt/sources.list \
+    > /tmp/sources.list \
+    && mv /tmp/sources.list /etc/apt/
+
 # For add-apt-repository
 RUN apt-get update \
     && apt-get install -y software-properties-common=0.99.* --no-install-recommends \

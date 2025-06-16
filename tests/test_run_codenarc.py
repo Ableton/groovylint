@@ -7,7 +7,6 @@
 
 import os
 import subprocess
-from typing import Dict
 from unittest.mock import MagicMock, patch
 from urllib.error import HTTPError
 
@@ -112,7 +111,7 @@ def test_parse_xml_report_failed(report_file: str, num_violations: int) -> None:
 
 @patch("os.remove")
 def test_run_codenarc(
-    remove_mock: MagicMock, default_jar_versions: Dict[str, str]
+    remove_mock: MagicMock, default_jar_versions: dict[str, str]
 ) -> None:
     """Test that run_codenarc exits without errors if CodeNarc ran successfully."""
     with patch("os.path.exists") as path_exists_mock:
@@ -130,7 +129,7 @@ def test_run_codenarc(
     assert _report_file_contents("success.xml") == output
 
 
-def test_run_codenarc_compilation_failure(default_jar_versions: Dict[str, str]) -> None:
+def test_run_codenarc_compilation_failure(default_jar_versions: dict[str, str]) -> None:
     """Test that run_codenarc raises an error if CodeNarc found compilation errors."""
     with patch("subprocess.run") as subprocess_mock:
         subprocess_mock.return_value = subprocess.CompletedProcess(
@@ -148,7 +147,7 @@ def test_run_codenarc_compilation_failure(default_jar_versions: Dict[str, str]) 
             )
 
 
-def test_run_codenarc_failure_code(default_jar_versions: Dict[str, str]) -> None:
+def test_run_codenarc_failure_code(default_jar_versions: dict[str, str]) -> None:
     """Test that run_codenarc raises an error if CodeNarc failed to run."""
     with patch("subprocess.run") as subprocess_mock:
         subprocess_mock.return_value = subprocess.CompletedProcess(
@@ -161,7 +160,7 @@ def test_run_codenarc_failure_code(default_jar_versions: Dict[str, str]) -> None
             )
 
 
-def test_run_codenarc_no_report_file(default_jar_versions: Dict[str, str]) -> None:
+def test_run_codenarc_no_report_file(default_jar_versions: dict[str, str]) -> None:
     """Test that run_codenarc raises an error if CodeNarc did not produce a report."""
     with patch("subprocess.run") as subprocess_mock:
         subprocess_mock.return_value = subprocess.CompletedProcess(

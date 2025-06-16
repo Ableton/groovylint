@@ -52,7 +52,9 @@ def test_download_file_5xx() -> None:
 
 
 @patch("time.sleep")
-def test_download_jar_with_retry_always_fail(sleep_mock: MagicMock) -> None:
+def test_download_jar_with_retry_always_fail(
+        sleep_mock: MagicMock  # noqa: ARG001
+) -> None:
     """Test that _download_jar_with_retry fails when the download also fails."""
     with patch("run_codenarc._download_file") as _download_file_mock:
         _download_file_mock.side_effect = FileDownloadFailure()
@@ -61,7 +63,9 @@ def test_download_jar_with_retry_always_fail(sleep_mock: MagicMock) -> None:
 
 
 @patch("time.sleep")
-def test_download_jar_with_retry_fail_verification(sleep_mock: MagicMock) -> None:
+def test_download_jar_with_retry_fail_verification(
+        sleep_mock: MagicMock  # noqa: ARG001
+) -> None:
     """Test that _download_jar_with_retry fails properly when a JAR fails to verify."""
     with patch("run_codenarc._download_file") as _download_file_mock:
         _download_file_mock.return_value = "outfile"
@@ -73,7 +77,7 @@ def test_download_jar_with_retry_fail_verification(sleep_mock: MagicMock) -> Non
 
 
 @patch("time.sleep")
-def test_download_jar_with_retry_survival(sleep_mock: MagicMock) -> None:
+def test_download_jar_with_retry_survival(sleep_mock: MagicMock) -> None:  # noqa: ARG001
     """Test that _download_jar_with_retry can survive a single failure."""
     with patch("run_codenarc._download_file") as _download_file_mock:
         _download_file_mock.side_effect = [FileDownloadFailure(), "outfile"]

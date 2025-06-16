@@ -110,9 +110,7 @@ def test_parse_xml_report_failed(report_file: str, num_violations: int) -> None:
 
 
 @patch("os.remove")
-def test_run_codenarc(
-    remove_mock: MagicMock, default_jar_versions: dict[str, str]
-) -> None:
+def test_run_codenarc(default_jar_versions: dict[str, str]) -> None:
     """Test that run_codenarc exits without errors if CodeNarc ran successfully."""
     with patch("os.path.exists") as path_exists_mock:
         path_exists_mock.return_value = True

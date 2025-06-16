@@ -7,7 +7,6 @@
 
 import os
 import subprocess
-
 from typing import Dict
 from unittest.mock import MagicMock, patch
 from urllib.error import HTTPError
@@ -15,15 +14,14 @@ from urllib.error import HTTPError
 import pytest
 
 from run_codenarc import (
-    _download_file,
-    _download_jar_with_retry,
     CodeNarcViolationsException,
     FileDownloadFailure,
+    _download_file,
+    _download_jar_with_retry,
     parse_args,
     parse_xml_report,
     run_codenarc,
 )
-
 
 MOCK_CODENARC_SUMMARY = b"CodeNarc completed: (p1=0; p2=0; p3=0) 6664ms\n"
 

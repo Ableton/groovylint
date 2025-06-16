@@ -40,7 +40,7 @@ def test_download_file_4xx() -> None:
     with patch("run_codenarc.urlopen") as urlopen_mock:
         urlopen_mock.side_effect = HTTPError("url", 404, "Not found", None, None)
         with pytest.raises(FileDownloadFailure):
-            _download_file("http://example.com/mock", "/tmp")
+            _download_file("http://example.com/mock", "/mock")
 
 
 def test_download_file_5xx() -> None:
@@ -48,7 +48,7 @@ def test_download_file_5xx() -> None:
     with patch("run_codenarc.urlopen") as urlopen_mock:
         urlopen_mock.side_effect = HTTPError("url", 500, "Whoops", None, None)
         with pytest.raises(FileDownloadFailure):
-            _download_file("http://example.com/mock", "/tmp")
+            _download_file("http://example.com/mock", "/mock")
 
 
 @patch("time.sleep")
@@ -57,7 +57,7 @@ def test_download_jar_with_retry_always_fail(sleep_mock: MagicMock) -> None:
     with patch("run_codenarc._download_file") as _download_file_mock:
         _download_file_mock.side_effect = FileDownloadFailure()
         with pytest.raises(FileDownloadFailure):
-            _download_jar_with_retry("http://example.com/mock", "/tmp")
+            _download_jar_with_retry("http://example.com/mock", "/mock")
 
 
 @patch("time.sleep")
@@ -69,7 +69,7 @@ def test_download_jar_with_retry_fail_verification(sleep_mock: MagicMock) -> Non
             with patch("os.unlink"):
                 _is_valid_jar_mock.return_value = False
                 with pytest.raises(FileDownloadFailure):
-                    _download_jar_with_retry("http://example.com/mock", "/tmp")
+                    _download_jar_with_retry("http://example.com/mock", "/mock")
 
 
 @patch("time.sleep")
@@ -80,7 +80,7 @@ def test_download_jar_with_retry_survival(sleep_mock: MagicMock) -> None:
         with patch("run_codenarc._is_valid_jar") as _is_valid_jar_mock:
             _is_valid_jar_mock.return_value = True
             assert (
-                _download_jar_with_retry("http://example.com/mock", "/tmp") == "outfile"
+                _download_jar_with_retry("http://example.com/mock", "/mock") == "outfile"
             )
 
 

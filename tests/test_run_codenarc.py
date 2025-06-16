@@ -14,6 +14,7 @@ from urllib.error import HTTPError
 import pytest
 
 from run_codenarc import (
+    ClasspathError,
     CodeNarcViolationsException,
     FileDownloadFailure,
     _download_file,
@@ -141,7 +142,7 @@ def test_run_codenarc_compilation_failure(default_jar_versions: Dict[str, str]) 
             b" message: [startup failed:\n" + MOCK_CODENARC_SUMMARY,
         )
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ClasspathError):
             run_codenarc(
                 args=parse_args(args=[], default_jar_versions=default_jar_versions)
             )
@@ -154,7 +155,7 @@ def test_run_codenarc_failure_code(default_jar_versions: Dict[str, str]) -> None
             args="", returncode=1, stdout=MOCK_CODENARC_SUMMARY
         )
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ClasspathError):
             run_codenarc(
                 args=parse_args(args=[], default_jar_versions=default_jar_versions)
             )
@@ -167,7 +168,7 @@ def test_run_codenarc_no_report_file(default_jar_versions: Dict[str, str]) -> No
             args="", returncode=0, stdout=MOCK_CODENARC_SUMMARY
         )
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ClasspathError):
             run_codenarc(
                 args=parse_args(args=[], default_jar_versions=default_jar_versions),
                 report_file="invalid",

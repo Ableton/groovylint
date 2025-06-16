@@ -36,6 +36,10 @@ class CodeNarcViolationsException(Exception):
         self.num_violations = num_violations
 
 
+class ClasspathError(Exception):
+    """Raised if a classpath element does not exist."""
+
+
 class FileDownloadFailure(Exception):
     """Raised if a file fails to download."""
 
@@ -56,7 +60,7 @@ def _build_classpath(args: argparse.Namespace) -> str:
 
     for path in classpath:
         if not (os.path.exists(path) or path.endswith("*")):
-            raise ValueError(f"Classpath element {path} does not exist")
+            raise ClasspathError(f"Classpath element {path} does not exist")
 
     return ":".join(classpath)
 

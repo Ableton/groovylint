@@ -24,7 +24,7 @@ pyproject-hooks==1.0.0
     # via build
 pytest==8.4.1
     # via -r requirements-dev.in
-ruff==0.12.4
+ruff==0.12.5
     # via -r requirements-dev.in
 wheel==0.40.0
     # via pip-tools

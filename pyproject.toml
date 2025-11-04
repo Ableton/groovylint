@@ -24,5 +24,8 @@ order-by-type = false
 [tool.ruff.lint.pydocstyle]
 convention = "pep257"
 
+[tool.setuptools]
+packages = []
+
 [tool.setuptools.dynamic]
 version = { file = "VERSION" }

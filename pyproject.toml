@@ -19,7 +19,6 @@ line-length = 90
 target-version = "py312"
 
 [tool.ruff.lint]
-ignore = ["ANN101"]
 select = ["ANN", "C90", "D", "E", "F", "I", "PL", "W"]
 
 [tool.ruff.lint.isort]

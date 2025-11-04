@@ -1,3 +1,7 @@
+[project]
+name = "groovylint"
+dynamic = ["version"]
+
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib -ra"
 filterwarnings = ["error"]
@@ -19,3 +23,6 @@ order-by-type = false
 
 [tool.ruff.lint.pydocstyle]
 convention = "pep257"
+
+[tool.setuptools.dynamic]
+version = { file = "VERSION" }

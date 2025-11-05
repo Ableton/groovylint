@@ -6,7 +6,6 @@
  */
 
 library(identifier: 'ableton-utils@0.28', changelog: false)
-library(identifier: 'python-utils@0.13', changelog: false)
 // Get groovylint library from current commit so it can test itself in this Jenkinsfile
 library "groovylint@${params.JENKINS_COMMIT}"
 
@@ -14,9 +13,6 @@ library "groovylint@${params.JENKINS_COMMIT}"
 devToolsProject.run(
   defaultBranch: 'main',
   setup: { data ->
-    data['venv'] = pyenv.createVirtualEnv(readFile('.python-version').trim())
-    data.venv.run('pip install -r requirements-dev.txt')
-
     data['groovy3Version'] = '3.0.22'
     data['groovy4Version'] = '4.0.22'
 
@@ -33,84 +29,82 @@ devToolsProject.run(
     data['image'] = docker.build("abletonag/groovylint:${gitHash}")
   },
   test: { data ->
-    data.venv.inside {
-      parallel(
-        format: { sh 'ruff format --check .' },
-        groovydoc: { data['docs'] = groovydoc.generate() },
-        'groovylint docker': {
-          // Use the Docker image created in the Build stage above. This ensures that the
-          // we are checking our own Groovy code with the same library and image which
-          // would be published to production.
-          groovylint.check(
-            includesPattern: './Jenkinsfile,**/*.groovy',
+    parallel(
+      format: { sh 'uv run ruff format --check .' },
+      groovydoc: { data['docs'] = groovydoc.generate() },
+      'groovylint docker': {
+        // Use the Docker image created in the Build stage above. This ensures that the
+        // we are checking our own Groovy code with the same library and image which
+        // would be published to production.
+        groovylint.check(
+          includesPattern: './Jenkinsfile,**/*.groovy',
+          groovylintImage: data['image'],
+        )
+      },
+      'groovylint failure': {
+        boolean failed = false
+        try {
+          groovylint.checkSingleFile(
             groovylintImage: data['image'],
+            path: 'tests/resources/failure.badgroovy',
           )
-        },
-        'groovylint failure': {
-          boolean failed = false
-          try {
-            groovylint.checkSingleFile(
-              groovylintImage: data['image'],
-              path: 'tests/resources/failure.badgroovy',
-            )
-          } catch (error) {
-            failed = true
+        } catch (error) {
+          failed = true
+        }
+        if (!failed) {
+          error 'groovylint did not fail when analyzing code with violations'
+        }
+      },
+      'groovylint native': {
+        // Run groovylint using the system Python. This is not a recommended use-case
+        // for Jenkins CI installations, but is often more useful for developers running
+        // groovylint locally.
+        sh "python3 run_codenarc.py --verbose --resources ${env.WORKSPACE}/resources" +
+          " --groovy-home ${pwd()}/groovy-${data.groovy3Version}" +
+          ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
+        sh "python3 run_codenarc.py --verbose --resources ${env.WORKSPACE}/resources" +
+          " --groovy-home ${pwd()}/groovy-${data.groovy4Version} --groovy4" +
+          ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
+      },
+      hadolint: {
+        docker.image('hadolint/hadolint:v2.12.0-debian').inside {
+          sh 'hadolint Dockerfile'
+        }
+      },
+      pytest: {
+        withEnv([
+          'GROOVY_HOME=test',
+          'CODENARC_VERSION=test',
+          'GMETRICS_VERSION=test',
+          'SLF4J_VERSION=test',
+        ]) {
+          junitUtils.run(testResults: 'results.xml') {
+            sh 'uv run python -m pytest --junit-xml=results.xml'
           }
-          if (!failed) {
-            error 'groovylint did not fail when analyzing code with violations'
-          }
-        },
-        'groovylint native': {
-          // Run groovylint using the system Python. This is not a recommended use-case
-          // for Jenkins CI installations, but is often more useful for developers running
-          // groovylint locally.
-          sh "python3 run_codenarc.py --verbose --resources ${env.WORKSPACE}/resources" +
-            " --groovy-home ${pwd()}/groovy-${data.groovy3Version}" +
-            ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
-          sh "python3 run_codenarc.py --verbose --resources ${env.WORKSPACE}/resources" +
-            " --groovy-home ${pwd()}/groovy-${data.groovy4Version} --groovy4" +
-            ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
-        },
-        hadolint: {
-          docker.image('hadolint/hadolint:v2.12.0-debian').inside {
-            sh 'hadolint Dockerfile'
-          }
-        },
-        pytest: {
-          withEnv([
-            'GROOVY_HOME=test',
-            'CODENARC_VERSION=test',
-            'GMETRICS_VERSION=test',
-            'SLF4J_VERSION=test',
-          ]) {
-            junitUtils.run(testResults: 'results.xml') {
-              sh 'python -m pytest --junit-xml=results.xml'
-            }
-          }
-        },
-        ruff: { sh 'ruff check --verbose .' },
-        'SLF4J version check': {
-          Set slf4jVersions = []
-          readMavenPom(file: 'pom.xml').dependencies.findAll { dependency ->
-            return dependency.artifactId.startsWith('slf4j')
-          }.each { dependency ->
-            slf4jVersions.add(dependency.version)
-          }
+        }
+      },
+      ruff: { sh 'uv run ruff check --verbose .' },
+      'SLF4J version check': {
+        Set slf4jVersions = []
+        readMavenPom(file: 'pom.xml').dependencies.findAll { dependency ->
+          return dependency.artifactId.startsWith('slf4j')
+        }.each { dependency ->
+          slf4jVersions.add(dependency.version)
+        }
 
-          switch (slf4jVersions.size()) {
-            case 0:
-              error 'Could not find SLF4J libraries in pom.xml file'
-              break
-            case 1:
-              echo 'All SLF4J versions match'
-              break
-            default:
-              error 'pom.xml file contains mismatched SLF4J library versions'
-              break
-          }
-        },
-      )
-    }
+        switch (slf4jVersions.size()) {
+          case 0:
+            error 'Could not find SLF4J libraries in pom.xml file'
+            break
+          case 1:
+            echo 'All SLF4J versions match'
+            break
+          default:
+            error 'pom.xml file contains mismatched SLF4J library versions'
+            break
+        }
+      },
+    )
   },
   publish: { data -> jupiter.publishDocs("${data['docs']}/", 'Ableton/groovylint') },
   deploy: { data ->

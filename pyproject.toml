@@ -1,3 +1,13 @@
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "ruff>=0.14.3",
+]
+
+[project]
+name = "groovylint"
+dynamic = ["version"]
+
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib -ra"
 filterwarnings = ["error"]
@@ -9,7 +19,6 @@ line-length = 90
 target-version = "py312"
 
 [tool.ruff.lint]
-ignore = ["ANN101"]
 select = ["ANN", "C90", "D", "E", "F", "I", "PL", "W"]
 
 [tool.ruff.lint.isort]
@@ -19,3 +28,9 @@ order-by-type = false
 
 [tool.ruff.lint.pydocstyle]
 convention = "pep257"
+
+[tool.setuptools]
+packages = []
+
+[tool.setuptools.dynamic]
+version = { file = "VERSION" }

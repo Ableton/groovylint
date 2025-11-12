@@ -2,13 +2,11 @@
 
 """Test configuration for groovylint tests."""
 
-from typing import Dict
-
 import pytest
 
 
 @pytest.fixture
-def default_jar_versions() -> Dict[str, str]:
+def default_jar_versions() -> dict[str, str]:
     """Return a dict for default JAR versions."""
     return {
         "CodeNarc": "1.0.0",

@@ -406,11 +406,11 @@ def parse_args(
     )
 
     if not args.codenarc_version:
-        raise ValueError("Could not determine CodeNarc version")
+        sys.exit("Could not determine CodeNarc version")
     if not args.gmetrics_version:
-        raise ValueError("Could not determine GMetrics version")
+        sys.exit("Could not determine GMetrics version")
     if not args.slf4j_version:
-        raise ValueError("Could not determine SLF4J version")
+        sys.exit("Could not determine SLF4J version")
 
     args.groovy4 = _is_groovy4(args.groovy_home)
 

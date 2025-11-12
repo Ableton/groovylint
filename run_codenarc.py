@@ -37,11 +37,11 @@ class CodeNarcError(Exception):
         super().__init__(f"CodeNarc failed with return code {returncode}")
 
 
-class CodeNarcViolationsException(Exception):
+class CodeNarcViolationsError(Exception):
     """Raised if CodeNarc violations were found."""
 
     def __init__(self, num_violations: int) -> None:
-        """Create a new instance of the CodeNarcViolationsException class."""
+        """Create a new instance of the CodeNarcViolationsError class."""
         super().__init__()
         self.num_violations = num_violations
 
@@ -484,7 +484,7 @@ def parse_xml_report(xml_text: str) -> None:
     total_violations = _print_violations_in_packages(xml_doc.findall("Package"))
 
     if total_violations != 0:
-        raise CodeNarcViolationsException(total_violations)
+        raise CodeNarcViolationsError(total_violations)
 
 
 def run_codenarc(args: argparse.Namespace, report_file: str = None) -> str:
@@ -578,6 +578,6 @@ if __name__ == "__main__":
         _fetch_jars(parsed_args)
         parse_xml_report(run_codenarc(parsed_args))
         logging.info("No violations found")
-    except CodeNarcViolationsException as exception:
+    except CodeNarcViolationsError as exception:
         logging.error("Found %s violation(s)", exception.num_violations)
         sys.exit(1)

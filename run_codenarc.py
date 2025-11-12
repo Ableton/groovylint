@@ -38,6 +38,14 @@ class CodeNarcViolationsException(Exception):
         self.num_violations = num_violations
 
 
+class CompilationError(Exception):
+    """Raised if there was a compilation error."""
+
+    def __init__(self) -> None:
+        """Create a new instance of the CompilationError class."""
+        super().__init__("Error when compiling files!")
+
+
 class DownloadError(Exception):
     """Base class for download errors."""
 
@@ -534,7 +542,7 @@ def run_codenarc(args: argparse.Namespace, report_file: str = None) -> str:
         # also does not return a non-zero code in such cases. For our purposes, we want to
         # treat syntax errors (and similar problems) as a failure condition.
         if "Compilation failed" in str(output.stdout):
-            raise ValueError("Error when compiling files!")
+            raise CompilationError
 
         if output.returncode != 0:
             raise ValueError(f"CodeNarc failed with return code {output.returncode}")

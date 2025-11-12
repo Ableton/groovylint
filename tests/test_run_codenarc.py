@@ -18,6 +18,7 @@ from run_codenarc import (
     _download_file,
     _download_jar_with_retry,
     CodeNarcViolationsException,
+    CompilationError,
     DownloadFailedError,
     parse_args,
     parse_xml_report,
@@ -146,7 +147,7 @@ def test_run_codenarc_compilation_failure(default_jar_versions: Dict[str, str]) 
             b" message: [startup failed:\n" + MOCK_CODENARC_SUMMARY,
         )
 
-        with pytest.raises(ValueError):
+        with pytest.raises(CompilationError):
             run_codenarc(
                 args=parse_args(args=[], default_jar_versions=default_jar_versions)
             )

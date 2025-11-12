@@ -38,8 +38,24 @@ class CodeNarcViolationsException(Exception):
         self.num_violations = num_violations
 
 
-class FileDownloadFailure(Exception):
-    """Raised if a file fails to download."""
+class DownloadError(Exception):
+    """Base class for download errors."""
+
+
+class DownloadFailedError(DownloadError):
+    """Raised if a download fails."""
+
+    def __init__(self, url: str) -> None:
+        """Create a new instance of the DownloadFailedError class."""
+        super().__init__(f"Failed to download {url}")
+
+
+class InvalidJARError(DownloadError):
+    """Raised if a downloaded JAR file is invalid."""
+
+    def __init__(self) -> None:
+        """Create a new instance of the InvalidJARError class."""
+        super().__init__("Invalid JAR file")
 
 
 def _build_classpath(args: argparse.Namespace) -> str:
@@ -83,7 +99,7 @@ def _download_file(url: str, output_dir: str) -> str:
             shutil.copyfileobj(response, out_fp)
     except HTTPError as http_error:
         logging.error("Download of %s failed with code %d", url, http_error.code)
-        raise FileDownloadFailure("Download failed") from http_error
+        raise DownloadFailedError(url) from http_error
 
     logging.info("Downloaded %s", output_file_name)
     return output_file_path
@@ -100,17 +116,17 @@ def _download_jar_with_retry(url: str, output_dir: str) -> str:
             if not _is_valid_jar(output_file_path):
                 logging.warning("%s is not a valid JAR file", output_file_path)
                 os.unlink(output_file_path)
-                raise FileDownloadFailure("Invalid JAR file")
+                raise InvalidJARError
 
             return output_file_path
-        except FileDownloadFailure:
+        except DownloadError:
             download_attempt -= 1
             sleep_duration *= 2
             logging.debug("Sleeping %d seconds until next retry...", sleep_duration)
             time.sleep(sleep_duration)
 
     logging.error("Failed to download %s after %d attempts", url, MAX_DOWNLOAD_ATTEMPTS)
-    raise FileDownloadFailure(f"Failed to download {url}")
+    raise DownloadFailedError(url)
 
 
 def _fetch_jars(args: argparse.Namespace) -> None:

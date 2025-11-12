@@ -17,6 +17,7 @@ import pytest
 from run_codenarc import (
     _download_file,
     _download_jar_with_retry,
+    CodeNarcError,
     CodeNarcViolationsException,
     CompilationError,
     DownloadFailedError,
@@ -163,7 +164,7 @@ def test_run_codenarc_failure_code(default_jar_versions: Dict[str, str]) -> None
             args="", returncode=1, stdout=MOCK_CODENARC_SUMMARY
         )
 
-        with pytest.raises(ValueError):
+        with pytest.raises(CodeNarcError):
             run_codenarc(
                 args=parse_args(args=[], default_jar_versions=default_jar_versions)
             )

@@ -29,6 +29,14 @@ GROOVYLINT_HOME = os.path.dirname(os.path.realpath(__file__))
 MAX_DOWNLOAD_ATTEMPTS = 5
 
 
+class CodeNarcError(Exception):
+    """Raised if CodeNarc failed to run."""
+
+    def __init__(self, returncode: int) -> None:
+        """Create a new instance of the CodeNarcError class."""
+        super().__init__(f"CodeNarc failed with return code {returncode}")
+
+
 class CodeNarcViolationsException(Exception):
     """Raised if CodeNarc violations were found."""
 
@@ -545,7 +553,7 @@ def run_codenarc(args: argparse.Namespace, report_file: str = None) -> str:
             raise CompilationError
 
         if output.returncode != 0:
-            raise ValueError(f"CodeNarc failed with return code {output.returncode}")
+            raise CodeNarcError(output.returncode)
         if not os.path.exists(report_file):
             raise ValueError(f"{report_file} was not generated, aborting!")
 

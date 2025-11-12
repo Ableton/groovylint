@@ -21,7 +21,7 @@ import zipfile
 from typing import Dict, List, Optional
 from urllib.error import HTTPError
 from urllib.request import urlopen
-from xml.etree import ElementTree
+from xml.etree import ElementTree as ET
 
 
 DEFAULT_REPORT_FILE = "codenarc-report.xml"
@@ -461,7 +461,7 @@ def parse_pom() -> Dict[str, str]:
     jar_versions = {}
 
     namespace = {"project": "http://maven.apache.org/POM/4.0.0"}
-    pom_root = ElementTree.parse(os.path.join(GROOVYLINT_HOME, "pom.xml")).getroot()
+    pom_root = ET.parse(os.path.join(GROOVYLINT_HOME, "pom.xml")).getroot()
     for dependency in pom_root.find("project:dependencies", namespace):
         name = dependency.find("project:artifactId", namespace)
         version = dependency.find("project:version", namespace)
@@ -477,7 +477,7 @@ def parse_xml_report(xml_text: str) -> None:
     :return: 0 on success, 1 if any violations were found
     """
     logging.debug("Parsing report XML")
-    xml_doc = ElementTree.fromstring(xml_text)
+    xml_doc = ET.fromstring(xml_text)
 
     package_summary = xml_doc.find("PackageSummary")
     logging.info("Scanned %s files", package_summary.attrib["totalFiles"])

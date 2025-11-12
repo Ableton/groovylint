@@ -7,7 +7,7 @@ from typing import Dict
 import pytest
 
 
-@pytest.fixture()
+@pytest.fixture
 def default_jar_versions() -> Dict[str, str]:
     """Return a dict for default JAR versions."""
     return {

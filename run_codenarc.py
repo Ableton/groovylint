@@ -18,7 +18,6 @@ import tempfile
 import time
 import zipfile
 
-from typing import Optional
 from urllib.error import HTTPError
 from urllib.request import urlopen
 from xml.etree import ElementTree as ET
@@ -201,7 +200,7 @@ def _fetch_jars(args: argparse.Namespace) -> None:
         _download_jar_with_retry(url, args.resources)
 
 
-def _guess_groovy_home() -> Optional[str]:
+def _guess_groovy_home() -> str | None:
     """Try to determine the location where Groovy is installed.
 
     :return: Path of the Groovy installation, or None if it can't be determined.

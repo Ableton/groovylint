@@ -82,6 +82,14 @@ class MissingClasspathElementError(Exception):
         super().__init__(f"Classpath element {element} does not exist")
 
 
+class MissingReportFileError(Exception):
+    """Raised if the CodeNarc report file is missing."""
+
+    def __init__(self, report_file: str) -> None:
+        """Create a new instance of the MissingReportFileError class."""
+        super().__init__(f"{report_file} was not generated, aborting!")
+
+
 def _build_classpath(args: argparse.Namespace) -> str:
     """Construct the classpath to use for running CodeNarc."""
     codenarc_version = _codenarc_version(args.codenarc_version, args.groovy4)
@@ -555,7 +563,7 @@ def run_codenarc(args: argparse.Namespace, report_file: str = None) -> str:
         if output.returncode != 0:
             raise CodeNarcError(output.returncode)
         if not os.path.exists(report_file):
-            raise ValueError(f"{report_file} was not generated, aborting!")
+            raise MissingReportFileError(report_file)
 
         logging.debug("Reading report file %s", report_file)
         with open(report_file, encoding="utf-8") as xml_file:

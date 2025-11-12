@@ -21,6 +21,7 @@ from run_codenarc import (
     CodeNarcViolationsException,
     CompilationError,
     DownloadFailedError,
+    MissingReportFileError,
     parse_args,
     parse_xml_report,
     run_codenarc,
@@ -180,7 +181,7 @@ def test_run_codenarc_no_report_file(default_jar_versions: Dict[str, str]) -> No
             args="", returncode=0, stdout=MOCK_CODENARC_SUMMARY
         )
 
-        with pytest.raises(ValueError):
+        with pytest.raises(MissingReportFileError):
             run_codenarc(
                 args=parse_args(args=[], default_jar_versions=default_jar_versions),
                 report_file="invalid",

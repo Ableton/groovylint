@@ -521,7 +521,8 @@ def run_codenarc(args: argparse.Namespace, report_file: str = None) -> str:
             "-failOnError=true",
             "-rulesetfiles=ruleset.groovy",
             f"-report=xml:{os.path.abspath(report_file)}",
-        ] + extra_args
+            *extra_args,
+        ]
 
         log.debug("Executing CodeNarc command: %s", " ".join(codenarc_call))
         try:

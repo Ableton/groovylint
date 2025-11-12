@@ -133,7 +133,10 @@ def test_run_codenarc(
 
 def test_run_codenarc_compilation_failure(default_jar_versions: Dict[str, str]) -> None:
     """Test that run_codenarc raises an error if CodeNarc found compilation errors."""
-    with patch("subprocess.run") as subprocess_mock:
+    with (
+        patch("subprocess.run") as subprocess_mock,
+        patch("run_codenarc._build_classpath", return_value=""),
+    ):
         subprocess_mock.return_value = subprocess.CompletedProcess(
             args="",
             returncode=0,
@@ -151,7 +154,10 @@ def test_run_codenarc_compilation_failure(default_jar_versions: Dict[str, str]) 
 
 def test_run_codenarc_failure_code(default_jar_versions: Dict[str, str]) -> None:
     """Test that run_codenarc raises an error if CodeNarc failed to run."""
-    with patch("subprocess.run") as subprocess_mock:
+    with (
+        patch("subprocess.run") as subprocess_mock,
+        patch("run_codenarc._build_classpath", return_value=""),
+    ):
         subprocess_mock.return_value = subprocess.CompletedProcess(
             args="", returncode=1, stdout=MOCK_CODENARC_SUMMARY
         )
@@ -164,7 +170,10 @@ def test_run_codenarc_failure_code(default_jar_versions: Dict[str, str]) -> None
 
 def test_run_codenarc_no_report_file(default_jar_versions: Dict[str, str]) -> None:
     """Test that run_codenarc raises an error if CodeNarc did not produce a report."""
-    with patch("subprocess.run") as subprocess_mock:
+    with (
+        patch("subprocess.run") as subprocess_mock,
+        patch("run_codenarc._build_classpath", return_value=""),
+    ):
         subprocess_mock.return_value = subprocess.CompletedProcess(
             args="", returncode=0, stdout=MOCK_CODENARC_SUMMARY
         )

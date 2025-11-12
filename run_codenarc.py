@@ -58,6 +58,14 @@ class InvalidJARError(DownloadError):
         super().__init__("Invalid JAR file")
 
 
+class MissingClasspathElementError(Exception):
+    """Raised if a classpath element is missing."""
+
+    def __init__(self, element: str) -> None:
+        """Create a new instance of the MissingClasspathElementError class."""
+        super().__init__(f"Classpath element {element} does not exist")
+
+
 def _build_classpath(args: argparse.Namespace) -> str:
     """Construct the classpath to use for running CodeNarc."""
     codenarc_version = _codenarc_version(args.codenarc_version, args.groovy4)
@@ -74,7 +82,7 @@ def _build_classpath(args: argparse.Namespace) -> str:
 
     for path in classpath:
         if not (os.path.exists(path) or path.endswith("*")):
-            raise ValueError(f"Classpath element {path} does not exist")
+            raise MissingClasspathElementError(path)
 
     return ":".join(classpath)
 

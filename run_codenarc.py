@@ -130,7 +130,7 @@ def _download_file(url: str, output_dir: str) -> str:
 
     log.debug("Downloading %s to %s", url, output_file_path)
     try:
-        with urlopen(url) as response, open(output_file_path, "wb") as out_fp:
+        with urlopen(url) as response, open(output_file_path, "wb") as out_fp:  # noqa: S310
             shutil.copyfileobj(response, out_fp)
     except HTTPError as http_error:
         log.error("Download of %s failed with code %d", url, http_error.code)

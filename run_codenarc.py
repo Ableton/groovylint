@@ -152,13 +152,13 @@ def _download_jar_with_retry(url: str, output_dir: str) -> str:
                 log.warning("%s is not a valid JAR file", output_file_path)
                 os.unlink(output_file_path)
                 raise InvalidJARError
-
-            return output_file_path
         except DownloadError:
             download_attempt -= 1
             sleep_duration *= 2
             log.debug("Sleeping %d seconds until next retry...", sleep_duration)
             time.sleep(sleep_duration)
+        else:
+            return output_file_path
 
     log.error("Failed to download %s after %d attempts", url, MAX_DOWNLOAD_ATTEMPTS)
     raise DownloadFailedError(url)

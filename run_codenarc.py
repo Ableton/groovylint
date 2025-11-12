@@ -92,7 +92,7 @@ class MissingReportFileError(Exception):
 
 def _build_classpath(args: argparse.Namespace) -> str:
     """Construct the classpath to use for running CodeNarc."""
-    codenarc_version = _codenarc_version(args.codenarc_version, args.groovy4)
+    codenarc_version = _codenarc_version(args.codenarc_version, is_groovy4=args.groovy4)
     classpath = [
         args.resources,
         f"{args.groovy_home}/lib/*",
@@ -111,7 +111,7 @@ def _build_classpath(args: argparse.Namespace) -> str:
     return ":".join(classpath)
 
 
-def _codenarc_version(version: str, is_groovy4: bool) -> str:
+def _codenarc_version(version: str, *, is_groovy4: bool) -> str:
     """Get the CodeNarc version depending on the version of Groovy being used."""
     return f"{version}-groovy-4.0" if is_groovy4 else version
 
@@ -166,7 +166,7 @@ def _fetch_jars(args: argparse.Namespace) -> None:
     if not os.path.exists(args.resources):
         os.mkdir(args.resources)
 
-    codenarc_version = _codenarc_version(args.codenarc_version, args.groovy4)
+    codenarc_version = _codenarc_version(args.codenarc_version, is_groovy4=args.groovy4)
     jar_urls = [
         (
             "https://github.com/CodeNarc/CodeNarc/releases/download"

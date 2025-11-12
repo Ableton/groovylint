@@ -95,7 +95,7 @@ def test_parse_xml_report() -> None:
 
 
 @pytest.mark.parametrize(
-    "report_file, num_violations",
+    ("report_file", "num_violations"),
     [
         ("multiple-violations-multiple-files-2.xml", 5),
         ("multiple-violations-multiple-files.xml", 3),

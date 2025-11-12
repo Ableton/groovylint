@@ -490,7 +490,7 @@ def parse_xml_report(xml_text: str) -> None:
         raise CodeNarcViolationsError(total_violations)
 
 
-def run_codenarc(args: argparse.Namespace, report_file: str = None) -> str:
+def run_codenarc(args: argparse.Namespace, report_file: str | None = None) -> str:
     """Run CodeNarc on specified code.
 
     :param args: Parsed command line arguments.

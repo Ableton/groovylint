@@ -71,11 +71,13 @@ def test_download_jar_with_retry_fail_verification(_sleep_mock: MagicMock) -> No
     """Test that _download_jar_with_retry fails properly when a JAR fails to verify."""
     with patch("run_codenarc._download_file") as _download_file_mock:
         _download_file_mock.return_value = "outfile"
-        with patch("run_codenarc._is_valid_jar") as _is_valid_jar_mock:
-            with patch("os.unlink"):
-                _is_valid_jar_mock.return_value = False
-                with pytest.raises(DownloadFailedError):
-                    _download_jar_with_retry("http://example.com/mock", "/tmp")
+        with (
+            patch("run_codenarc._is_valid_jar") as _is_valid_jar_mock,
+            patch("os.unlink"),
+        ):
+            _is_valid_jar_mock.return_value = False
+            with pytest.raises(DownloadFailedError):
+                _download_jar_with_retry("http://example.com/mock", "/tmp")
 
 
 @patch("time.sleep")

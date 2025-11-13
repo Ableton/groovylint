@@ -29,17 +29,65 @@ GROOVYLINT_HOME = os.path.dirname(os.path.realpath(__file__))
 MAX_DOWNLOAD_ATTEMPTS = 5
 
 
-class CodeNarcViolationsException(Exception):
+class CodeNarcError(Exception):
+    """Raised if CodeNarc failed to run."""
+
+    def __init__(self, returncode: int) -> None:
+        """Create a new instance of the CodeNarcError class."""
+        super().__init__(f"CodeNarc failed with return code {returncode}")
+
+
+class CodeNarcViolationsError(Exception):
     """Raised if CodeNarc violations were found."""
 
     def __init__(self, num_violations: int) -> None:
-        """Create a new instance of the CodeNarcViolationsException class."""
+        """Create a new instance of the CodeNarcViolationsError class."""
         super().__init__()
         self.num_violations = num_violations
 
 
-class FileDownloadFailure(Exception):
-    """Raised if a file fails to download."""
+class CompilationError(Exception):
+    """Raised if there was a compilation error."""
+
+    def __init__(self) -> None:
+        """Create a new instance of the CompilationError class."""
+        super().__init__("Error when compiling files!")
+
+
+class DownloadError(Exception):
+    """Base class for download errors."""
+
+
+class DownloadFailedError(DownloadError):
+    """Raised if a download fails."""
+
+    def __init__(self, url: str) -> None:
+        """Create a new instance of the DownloadFailedError class."""
+        super().__init__(f"Failed to download {url}")
+
+
+class InvalidJARError(DownloadError):
+    """Raised if a downloaded JAR file is invalid."""
+
+    def __init__(self) -> None:
+        """Create a new instance of the InvalidJARError class."""
+        super().__init__("Invalid JAR file")
+
+
+class MissingClasspathElementError(Exception):
+    """Raised if a classpath element is missing."""
+
+    def __init__(self, element: str) -> None:
+        """Create a new instance of the MissingClasspathElementError class."""
+        super().__init__(f"Classpath element {element} does not exist")
+
+
+class MissingReportFileError(Exception):
+    """Raised if the CodeNarc report file is missing."""
+
+    def __init__(self, report_file: str) -> None:
+        """Create a new instance of the MissingReportFileError class."""
+        super().__init__(f"{report_file} was not generated, aborting!")
 
 
 def _build_classpath(args: argparse.Namespace) -> str:
@@ -58,7 +106,7 @@ def _build_classpath(args: argparse.Namespace) -> str:
 
     for path in classpath:
         if not (os.path.exists(path) or path.endswith("*")):
-            raise ValueError(f"Classpath element {path} does not exist")
+            raise MissingClasspathElementError(path)
 
     return ":".join(classpath)
 
@@ -83,7 +131,7 @@ def _download_file(url: str, output_dir: str) -> str:
             shutil.copyfileobj(response, out_fp)
     except HTTPError as http_error:
         logging.error("Download of %s failed with code %d", url, http_error.code)
-        raise FileDownloadFailure("Download failed") from http_error
+        raise DownloadFailedError(url) from http_error
 
     logging.info("Downloaded %s", output_file_name)
     return output_file_path
@@ -100,17 +148,17 @@ def _download_jar_with_retry(url: str, output_dir: str) -> str:
             if not _is_valid_jar(output_file_path):
                 logging.warning("%s is not a valid JAR file", output_file_path)
                 os.unlink(output_file_path)
-                raise FileDownloadFailure("Invalid JAR file")
+                raise InvalidJARError
 
             return output_file_path
-        except FileDownloadFailure:
+        except DownloadError:
             download_attempt -= 1
             sleep_duration *= 2
             logging.debug("Sleeping %d seconds until next retry...", sleep_duration)
             time.sleep(sleep_duration)
 
     logging.error("Failed to download %s after %d attempts", url, MAX_DOWNLOAD_ATTEMPTS)
-    raise FileDownloadFailure(f"Failed to download {url}")
+    raise DownloadFailedError(url)
 
 
 def _fetch_jars(args: argparse.Namespace) -> None:
@@ -390,11 +438,11 @@ def parse_args(
     )
 
     if not args.codenarc_version:
-        raise ValueError("Could not determine CodeNarc version")
+        sys.exit("Could not determine CodeNarc version")
     if not args.gmetrics_version:
-        raise ValueError("Could not determine GMetrics version")
+        sys.exit("Could not determine GMetrics version")
     if not args.slf4j_version:
-        raise ValueError("Could not determine SLF4J version")
+        sys.exit("Could not determine SLF4J version")
 
     args.groovy4 = _is_groovy4(args.groovy_home)
 
@@ -436,7 +484,7 @@ def parse_xml_report(xml_text: str) -> None:
     total_violations = _print_violations_in_packages(xml_doc.findall("Package"))
 
     if total_violations != 0:
-        raise CodeNarcViolationsException(total_violations)
+        raise CodeNarcViolationsError(total_violations)
 
 
 def run_codenarc(args: argparse.Namespace, report_file: str = None) -> str:
@@ -510,12 +558,12 @@ def run_codenarc(args: argparse.Namespace, report_file: str = None) -> str:
         # also does not return a non-zero code in such cases. For our purposes, we want to
         # treat syntax errors (and similar problems) as a failure condition.
         if "Compilation failed" in str(output.stdout):
-            raise ValueError("Error when compiling files!")
+            raise CompilationError
 
         if output.returncode != 0:
-            raise ValueError(f"CodeNarc failed with return code {output.returncode}")
+            raise CodeNarcError(output.returncode)
         if not os.path.exists(report_file):
-            raise ValueError(f"{report_file} was not generated, aborting!")
+            raise MissingReportFileError(report_file)
 
         logging.debug("Reading report file %s", report_file)
         with open(report_file, encoding="utf-8") as xml_file:
@@ -530,6 +578,6 @@ if __name__ == "__main__":
         _fetch_jars(parsed_args)
         parse_xml_report(run_codenarc(parsed_args))
         logging.info("No violations found")
-    except CodeNarcViolationsException as exception:
+    except CodeNarcViolationsError as exception:
         logging.error("Found %s violation(s)", exception.num_violations)
         sys.exit(1)

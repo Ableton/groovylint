@@ -8,8 +8,7 @@
 import os
 import subprocess
 
-from typing import Dict
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 from urllib.error import HTTPError
 
 import pytest
@@ -56,33 +55,32 @@ def test_download_file_5xx() -> None:
             _download_file("http://example.com/mock", "/tmp")
 
 
-@patch("time.sleep")
-def test_download_jar_with_retry_always_fail(sleep_mock: MagicMock) -> None:
+def test_download_jar_with_retry_always_fail() -> None:
     """Test that _download_jar_with_retry fails when the download also fails."""
     url = "http://example.com/mock"
-    with patch("run_codenarc._download_file") as _download_file_mock:
+    with patch("time.sleep"), patch("run_codenarc._download_file") as _download_file_mock:
         _download_file_mock.side_effect = DownloadFailedError(url)
         with pytest.raises(DownloadFailedError):
-            _download_jar_with_retry(url, "/tmp")
+            _download_jar_with_retry("http://example.com/mock", "/tmp")
 
 
-@patch("time.sleep")
-def test_download_jar_with_retry_fail_verification(sleep_mock: MagicMock) -> None:
+def test_download_jar_with_retry_fail_verification() -> None:
     """Test that _download_jar_with_retry fails properly when a JAR fails to verify."""
-    with patch("run_codenarc._download_file") as _download_file_mock:
+    with patch("time.sleep"), patch("run_codenarc._download_file") as _download_file_mock:
         _download_file_mock.return_value = "outfile"
-        with patch("run_codenarc._is_valid_jar") as _is_valid_jar_mock:
-            with patch("os.unlink"):
-                _is_valid_jar_mock.return_value = False
-                with pytest.raises(DownloadFailedError):
-                    _download_jar_with_retry("http://example.com/mock", "/tmp")
+        with (
+            patch("run_codenarc._is_valid_jar") as _is_valid_jar_mock,
+            patch("os.unlink"),
+        ):
+            _is_valid_jar_mock.return_value = False
+            with pytest.raises(DownloadFailedError):
+                _download_jar_with_retry("http://example.com/mock", "/tmp")
 
 
-@patch("time.sleep")
-def test_download_jar_with_retry_survival(sleep_mock: MagicMock) -> None:
+def test_download_jar_with_retry_survival() -> None:
     """Test that _download_jar_with_retry can survive a single failure."""
     url = "http://example.com/mock"
-    with patch("run_codenarc._download_file") as _download_file_mock:
+    with patch("time.sleep"), patch("run_codenarc._download_file") as _download_file_mock:
         _download_file_mock.side_effect = [DownloadFailedError(url), "outfile"]
         with patch("run_codenarc._is_valid_jar") as _is_valid_jar_mock:
             _is_valid_jar_mock.return_value = True
@@ -95,7 +93,7 @@ def test_parse_xml_report() -> None:
 
 
 @pytest.mark.parametrize(
-    "report_file, num_violations",
+    ("report_file", "num_violations"),
     [
         ("multiple-violations-multiple-files-2.xml", 5),
         ("multiple-violations-multiple-files.xml", 3),
@@ -114,12 +112,9 @@ def test_parse_xml_report_failed(report_file: str, num_violations: int) -> None:
     assert raised_error.value.num_violations == num_violations
 
 
-@patch("os.remove")
-def test_run_codenarc(
-    remove_mock: MagicMock, default_jar_versions: Dict[str, str]
-) -> None:
+def test_run_codenarc(default_jar_versions: dict[str, str]) -> None:
     """Test that run_codenarc exits without errors if CodeNarc ran successfully."""
-    with patch("os.path.exists") as path_exists_mock:
+    with patch("os.remove"), patch("os.path.exists") as path_exists_mock:
         path_exists_mock.return_value = True
         with patch("subprocess.run") as subprocess_mock:
             subprocess_mock.return_value = subprocess.CompletedProcess(
@@ -134,7 +129,7 @@ def test_run_codenarc(
     assert _report_file_contents("success.xml") == output
 
 
-def test_run_codenarc_compilation_failure(default_jar_versions: Dict[str, str]) -> None:
+def test_run_codenarc_compilation_failure(default_jar_versions: dict[str, str]) -> None:
     """Test that run_codenarc raises an error if CodeNarc found compilation errors."""
     with (
         patch("subprocess.run") as subprocess_mock,
@@ -155,7 +150,7 @@ def test_run_codenarc_compilation_failure(default_jar_versions: Dict[str, str]) 
             )
 
 
-def test_run_codenarc_failure_code(default_jar_versions: Dict[str, str]) -> None:
+def test_run_codenarc_failure_code(default_jar_versions: dict[str, str]) -> None:
     """Test that run_codenarc raises an error if CodeNarc failed to run."""
     with (
         patch("subprocess.run") as subprocess_mock,
@@ -171,7 +166,7 @@ def test_run_codenarc_failure_code(default_jar_versions: Dict[str, str]) -> None
             )
 
 
-def test_run_codenarc_no_report_file(default_jar_versions: Dict[str, str]) -> None:
+def test_run_codenarc_no_report_file(default_jar_versions: dict[str, str]) -> None:
     """Test that run_codenarc raises an error if CodeNarc did not produce a report."""
     with (
         patch("subprocess.run") as subprocess_mock,

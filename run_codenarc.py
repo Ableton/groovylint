@@ -18,10 +18,12 @@ import tempfile
 import time
 import zipfile
 
-from typing import Dict, List, Optional
 from urllib.error import HTTPError
 from urllib.request import urlopen
-from xml.etree import ElementTree
+from xml.etree import ElementTree as ET
+
+
+log = logging.getLogger(__name__)
 
 
 DEFAULT_REPORT_FILE = "codenarc-report.xml"
@@ -92,7 +94,7 @@ class MissingReportFileError(Exception):
 
 def _build_classpath(args: argparse.Namespace) -> str:
     """Construct the classpath to use for running CodeNarc."""
-    codenarc_version = _codenarc_version(args.codenarc_version, args.groovy4)
+    codenarc_version = _codenarc_version(args.codenarc_version, is_groovy4=args.groovy4)
     classpath = [
         args.resources,
         f"{args.groovy_home}/lib/*",
@@ -111,7 +113,7 @@ def _build_classpath(args: argparse.Namespace) -> str:
     return ":".join(classpath)
 
 
-def _codenarc_version(version: str, is_groovy4: bool) -> str:
+def _codenarc_version(version: str, *, is_groovy4: bool) -> str:
     """Get the CodeNarc version depending on the version of Groovy being used."""
     return f"{version}-groovy-4.0" if is_groovy4 else version
 
@@ -122,18 +124,18 @@ def _download_file(url: str, output_dir: str) -> str:
     output_file_path = os.path.join(output_dir, output_file_name)
 
     if os.path.exists(output_file_path):
-        logging.debug("%s already exists, skipping download", output_file_path)
+        log.debug("%s already exists, skipping download", output_file_path)
         return output_file_path
 
-    logging.debug("Downloading %s to %s", url, output_file_path)
+    log.debug("Downloading %s to %s", url, output_file_path)
     try:
-        with urlopen(url) as response, open(output_file_path, "wb") as out_fp:
+        with urlopen(url) as response, open(output_file_path, "wb") as out_fp:  # noqa: S310
             shutil.copyfileobj(response, out_fp)
     except HTTPError as http_error:
-        logging.error("Download of %s failed with code %d", url, http_error.code)
+        log.error("Download of %s failed with code %d", url, http_error.code)
         raise DownloadFailedError(url) from http_error
 
-    logging.info("Downloaded %s", output_file_name)
+    log.info("Downloaded %s", output_file_name)
     return output_file_path
 
 
@@ -146,18 +148,18 @@ def _download_jar_with_retry(url: str, output_dir: str) -> str:
         try:
             output_file_path = _download_file(url, output_dir)
             if not _is_valid_jar(output_file_path):
-                logging.warning("%s is not a valid JAR file", output_file_path)
+                log.warning("%s is not a valid JAR file", output_file_path)
                 os.unlink(output_file_path)
                 raise InvalidJARError
-
-            return output_file_path
         except DownloadError:
             download_attempt -= 1
             sleep_duration *= 2
-            logging.debug("Sleeping %d seconds until next retry...", sleep_duration)
+            log.debug("Sleeping %d seconds until next retry...", sleep_duration)
             time.sleep(sleep_duration)
+        else:
+            return output_file_path
 
-    logging.error("Failed to download %s after %d attempts", url, MAX_DOWNLOAD_ATTEMPTS)
+    log.error("Failed to download %s after %d attempts", url, MAX_DOWNLOAD_ATTEMPTS)
     raise DownloadFailedError(url)
 
 
@@ -166,7 +168,7 @@ def _fetch_jars(args: argparse.Namespace) -> None:
     if not os.path.exists(args.resources):
         os.mkdir(args.resources)
 
-    codenarc_version = _codenarc_version(args.codenarc_version, args.groovy4)
+    codenarc_version = _codenarc_version(args.codenarc_version, is_groovy4=args.groovy4)
     jar_urls = [
         (
             "https://github.com/CodeNarc/CodeNarc/releases/download"
@@ -198,7 +200,7 @@ def _fetch_jars(args: argparse.Namespace) -> None:
         _download_jar_with_retry(url, args.resources)
 
 
-def _guess_groovy_home() -> Optional[str]:
+def _guess_groovy_home() -> str | None:
     """Try to determine the location where Groovy is installed.
 
     :return: Path of the Groovy installation, or None if it can't be determined.
@@ -221,9 +223,9 @@ def _guess_groovy_home() -> Optional[str]:
 
 def _is_groovy4(groovy_home: str) -> bool:
     groovy_bin = os.path.join(groovy_home, "bin", "groovy")
-    logging.debug("Checking version for groovy binary %s", groovy_bin)
+    log.debug("Checking version for groovy binary %s", groovy_bin)
     groovy_version = subprocess.check_output([f"{groovy_bin}", "--version"]).decode()
-    logging.debug("Groovy version string: %s", groovy_version)
+    log.debug("Groovy version string: %s", groovy_version)
     return groovy_version.startswith("Groovy Version: 4.")
 
 
@@ -238,20 +240,20 @@ def _is_slf4j_line(line: str) -> bool:
 
 def _is_valid_jar(file_path: str) -> bool:
     """Determine if a file is a valid JAR file."""
-    logging.debug("Verifying %s", file_path)
+    log.debug("Verifying %s", file_path)
     try:
         with zipfile.ZipFile(file_path, "r") as jar_file:
             if "META-INF/MANIFEST.MF" not in jar_file.namelist():
-                logging.warning("%s does not appear to be a valid JAR", file_path)
+                log.warning("%s does not appear to be a valid JAR", file_path)
                 return False
     except zipfile.BadZipfile:
-        logging.warning("%s is not a valid zipfile", file_path)
+        log.warning("%s is not a valid zipfile", file_path)
         return False
 
     return True
 
 
-def _log_codenarc_output(lines: List[str]) -> None:
+def _log_codenarc_output(lines: list[str]) -> None:
     """Re-log lines from CodeNarc's output.
 
     This function takes a log line generated by CodeNarc and re-logs it with the logging
@@ -272,10 +274,10 @@ def _log_codenarc_output(lines: List[str]) -> None:
             # entire line and not chop off the first word.
             log_message = line
 
-        logging.log(log_level, log_message)
+        log.log(log_level, log_message)
 
 
-def _print_violations(package_file_path: str, violations: List) -> int:
+def _print_violations(package_file_path: str, violations: list) -> int:
     """Print violations for a file.
 
     :param package_file_path: File path.
@@ -288,7 +290,7 @@ def _print_violations(package_file_path: str, violations: List) -> int:
             message = message_element.text
         else:
             message = "[empty message]"
-        logging.error(
+        log.error(
             "%s:%s: %s: %s",
             package_file_path,
             violation.attrib["lineNumber"],
@@ -299,7 +301,7 @@ def _print_violations(package_file_path: str, violations: List) -> int:
     return len(violations)
 
 
-def _print_violations_in_files(package_path: str, files: List) -> int:
+def _print_violations_in_files(package_path: str, files: list) -> int:
     """Print violations for each file in a package.
 
     :param package_path: Package path.
@@ -310,7 +312,7 @@ def _print_violations_in_files(package_path: str, files: List) -> int:
 
     for package_file in files:
         package_file_name = f"{package_path}/{package_file.attrib['name']}"
-        logging.debug("Parsing violations in file: %s", package_file_name)
+        log.debug("Parsing violations in file: %s", package_file_name)
         num_violations += _print_violations(
             package_file_name, package_file.findall("Violation")
         )
@@ -318,7 +320,7 @@ def _print_violations_in_files(package_path: str, files: List) -> int:
     return num_violations
 
 
-def _print_violations_in_packages(packages: List) -> int:
+def _print_violations_in_packages(packages: list) -> int:
     """Print violations for each package in a list of packages.
 
     :param packages: List of Package elements.
@@ -333,7 +335,7 @@ def _print_violations_in_packages(packages: List) -> int:
         if not package_path:
             package_path = "."
 
-        logging.debug("Parsing violations in package: %s", package_path)
+        log.debug("Parsing violations in package: %s", package_path)
         num_violations += _print_violations_in_files(
             package_path, package.findall("File")
         )
@@ -342,7 +344,7 @@ def _print_violations_in_packages(packages: List) -> int:
 
 
 def parse_args(
-    args: List[str], default_jar_versions: Dict[str, str]
+    args: list[str], default_jar_versions: dict[str, str]
 ) -> argparse.Namespace:
     """Parse arguments from the command line."""
     arg_parser = argparse.ArgumentParser(
@@ -408,7 +410,7 @@ def parse_args(
         "-q",
         "--quiet",
         action="store_const",
-        const=logging.WARN,
+        const=logging.WARNING,
         dest="log_level",
         help="Show less output",
     )
@@ -456,12 +458,12 @@ def parse_args(
     return args
 
 
-def parse_pom() -> Dict[str, str]:
+def parse_pom() -> dict[str, str]:
     """Parse the pom.xml file and extract default JAR versions."""
     jar_versions = {}
 
     namespace = {"project": "http://maven.apache.org/POM/4.0.0"}
-    pom_root = ElementTree.parse(os.path.join(GROOVYLINT_HOME, "pom.xml")).getroot()
+    pom_root = ET.parse(os.path.join(GROOVYLINT_HOME, "pom.xml")).getroot()
     for dependency in pom_root.find("project:dependencies", namespace):
         name = dependency.find("project:artifactId", namespace)
         version = dependency.find("project:version", namespace)
@@ -476,25 +478,25 @@ def parse_xml_report(xml_text: str) -> None:
     :param xml_text: Raw XML text of CodeNarc report.
     :return: 0 on success, 1 if any violations were found
     """
-    logging.debug("Parsing report XML")
-    xml_doc = ElementTree.fromstring(xml_text)
+    log.debug("Parsing report XML")
+    xml_doc = ET.fromstring(xml_text)
 
     package_summary = xml_doc.find("PackageSummary")
-    logging.info("Scanned %s files", package_summary.attrib["totalFiles"])
+    log.info("Scanned %s files", package_summary.attrib["totalFiles"])
     total_violations = _print_violations_in_packages(xml_doc.findall("Package"))
 
     if total_violations != 0:
         raise CodeNarcViolationsError(total_violations)
 
 
-def run_codenarc(args: argparse.Namespace, report_file: str = None) -> str:
+def run_codenarc(args: argparse.Namespace, report_file: str | None = None) -> str:
     """Run CodeNarc on specified code.
 
     :param args: Parsed command line arguments.
     :param report_file: Name of report file to generate.
     :return: Raw XML text report generated by CodeNarc.
     """
-    slf4j_log_level = {logging.DEBUG: "debug", logging.WARN: "warn", None: "info"}[
+    slf4j_log_level = {logging.DEBUG: "debug", logging.WARNING: "warn", None: "info"}[
         args.log_level
     ]
 
@@ -518,9 +520,10 @@ def run_codenarc(args: argparse.Namespace, report_file: str = None) -> str:
             "-failOnError=true",
             "-rulesetfiles=ruleset.groovy",
             f"-report=xml:{os.path.abspath(report_file)}",
-        ] + extra_args
+            *extra_args,
+        ]
 
-        logging.debug("Executing CodeNarc command: %s", " ".join(codenarc_call))
+        log.debug("Executing CodeNarc command: %s", " ".join(codenarc_call))
         try:
             output = subprocess.run(
                 codenarc_call,
@@ -529,8 +532,8 @@ def run_codenarc(args: argparse.Namespace, report_file: str = None) -> str:
                 stdout=subprocess.PIPE,
             )
         except subprocess.CalledProcessError as error:
-            logging.error("Failed executing command: %s", " ".join(codenarc_call))
-            logging.error(
+            log.error("Failed executing command: %s", " ".join(codenarc_call))
+            log.error(
                 "CodeNarc exited with code %d: %s",
                 error.returncode,
                 error.stdout.decode(),
@@ -550,8 +553,8 @@ def run_codenarc(args: argparse.Namespace, report_file: str = None) -> str:
         _log_codenarc_output(codenarc_output)
 
         if codenarc_summary:
-            logging.debug(codenarc_summary)
-        logging.debug("CodeNarc returned with code %d", output.returncode)
+            log.debug(codenarc_summary)
+        log.debug("CodeNarc returned with code %d", output.returncode)
 
         # CodeNarc doesn't fail on compilation errors, it just logs a message for each
         # file that could not be compiled and generates a report for everything else. It
@@ -565,7 +568,7 @@ def run_codenarc(args: argparse.Namespace, report_file: str = None) -> str:
         if not os.path.exists(report_file):
             raise MissingReportFileError(report_file)
 
-        logging.debug("Reading report file %s", report_file)
+        log.debug("Reading report file %s", report_file)
         with open(report_file, encoding="utf-8") as xml_file:
             xml_text = xml_file.read()
 
@@ -577,7 +580,7 @@ if __name__ == "__main__":
         parsed_args = parse_args(sys.argv[1:], parse_pom())
         _fetch_jars(parsed_args)
         parse_xml_report(run_codenarc(parsed_args))
-        logging.info("No violations found")
+        log.info("No violations found")
     except CodeNarcViolationsError as exception:
-        logging.error("Found %s violation(s)", exception.num_violations)
+        log.error("Found %s violation(s)", exception.num_violations)
         sys.exit(1)

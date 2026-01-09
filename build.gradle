@@ -1,0 +1,88 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        url = uri('https://repo.maven.apache.org/maven2/')
+    }
+}
+
+def groovyVersion = project.findProperty('groovyVersion') ?:
+    libs.versions.org.apache.groovy.groovy.all.get()
+def useGroovy3 = groovyVersion ==~ /^3\..*/
+
+def codeNarcVersion = project.findProperty('codeNarcVersion') ?:
+    libs.versions.org.codenarc.codenarc.get()
+def codeNarcLibraryVersion = useGroovy3 ? codeNarcVersion :
+    "${codeNarcVersion}-groovy-4.0"
+
+def codeNarcLib = "org.codenarc:CodeNarc:${codeNarcLibraryVersion}"
+def groovyLib = useGroovy3 ?
+    "org.codehaus.groovy:groovy-all:${groovyVersion}" :
+    "org.apache.groovy:groovy-all:${groovyVersion}"
+
+def versionStr = useGroovy3 ? codeNarcVersion : "${codeNarcVersion}-groovy-4.0"
+
+dependencies {
+    api codeNarcLib
+    api groovyLib
+    api libs.org.slf4j.slf4j.api
+    api libs.org.slf4j.slf4j.simple
+}
+
+group = 'com.ableton'
+version = versionStr
+description = 'groovylint'
+java.sourceCompatibility = JavaVersion.VERSION_11
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.register('fatJar', Jar) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    
+    archiveAppendix = ''
+    archiveBaseName = 'groovylint'
+    archiveExtension = 'jar'
+    archiveVersion = versionStr
+    
+    manifest {
+        attributes 'Main-Class': 'org.codenarc.CodeNarc'
+    }
+    
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    
+    with jar
+}
+
+tasks.register('docker', Exec) {
+    description = 'Build Docker image for groovylint'
+    group = 'docker'
+
+    def dockerImageTag = project.findProperty('dockerImageTag') ?:
+        "groovylint:${codeNarcVersion}"
+    
+    commandLine 'docker', 'build',
+        '--build-arg', "groovyVersion=${project.findProperty('groovyVersion')}",
+        '--build-arg', "codeNarcVersion=${codeNarcVersion}",
+        '-t', dockerImageTag,
+        '.'
+}

@@ -4,142 +4,50 @@ This repository provides a way to run [CodeNarc][codenarc-home] checks from a do
 image. CodeNarc analyzes Groovy code for defects, bad practices, inconsistencies, style
 issues and more.
 
-CodeNarc, and Groovylint by extension, require Groovy 3.0.22 or greater (or Groovy 4.0.11
-or greater, if using Groovy 4.x).
+Groovylint is a Maven project that builds a self-contained, so called fat JAR, for
+CodeNarc. The self-contained JAR also includes a custom [ruleset][codenarc-rules].
 
-## Usage
+Note that Groovylint used to have been a Python script in the past, until commit
+`ec26609`.
 
-### Running with Python
+## Build
 
-To use `groovylint` as a standalone Python script, simply, run the `run_codenarc.py`
-script like so:
+All you need to build the self-contained JAR is an OpenJDK 21+ distribution. To build
+everything run the following command from the root of the repository:
 
-```bash
-$ /path/to/run_codenarc.py --resources /path/to/groovylint/resources \
-  -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"
+```sh
+./gradlew clean fatJar
 ```
 
-The `--resources` argument should point to the `resources` directory underneath
-where you've cloned the `groovylint` sources.
+- pass `-PcodeNarcVersion=<version>` to build against a different CodeNarc release
+- pass `-PgroovyVersion=<version>` to build with a different Groovy interpreter
 
-Note that the `run_codenarc.py` script requires Python 3.6 or greater to be installed on
-the local system.
+Use Docker if you don't have a JDK available:
 
-### Running as a Docker application
-
-`groovylint` is also published as a Docker container [on Docker Hub][docker-hub-home]. To
-run `groovylint` from the container, that would look something like this:
-
-```bash
-$ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` abletonag/groovylint \
-    /opt/run_codenarc.py -- -includes='foo/bar.groovy,src/**/*.groovy'
+```sh
+docker run -v $PWD:/project --workdir /project --rm -it gradle:jdk21-ubi ./gradlew clean fatJar
 ```
 
-By default, the Docker image will run CodeNarc checks on the `/ws` directory, so
-this command uses a volume mapping from the current working directory to that
-location. The above example would check the file `foo/bar.groovy`, and all
-Groovy files in the `src` directory tree.
+The compiled, self-contained JAR can then be found at
+`build/libs/groovylint-*.jar`.
 
+## Run Groovylint
 
-`groovylint` also has a `--single-file` option which can be used to lint a single file.
-When using this option, you can't pass any other options directly to CodeNarc:
+Below is a simple usage example:
 
-```bash
-$ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` abletonag/groovylint \
-    /opt/run_codenarc.py --single-file Jenkinsfile
+```sh
+java -jar /path/to/groovylint-fatjar.jar -rulesetfiles=ruleset.groovy -sourcefiles=Jenkinsfile
 ```
 
-### Running in a Docker container
+## Docker
 
-```bash
-$ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` --entrypoint=/bin/sh -i -t \
-    abletonag/groovylint
+A Docker container that contains all the self-contained JARs can be built by running:
+
+```sh
+./gradlew docker
 ```
 
-This command will run the CodeNarc image and override the entry point. You can then run
-`run_codenarc.py` inside the container as a regular program.
-
-### Specifying the ruleset
-
-As described in the [CodeNarc documentation][codenarc-rules], you can specify your own
-ruleset file. The file's location must be relative to your workspace, and can be given in
-the command line arguments with the `-rulesetfile` flag:
-
-```bash
-$ docker run --rm -v `pwd`:/ws -u `id -u`:`id -g` abletonag/groovylint \
-    /opt/run_codenarc.py -- -includes='*.groovy' -rulesetfiles=file:myrules.groovy
-```
-
-### Using a codenarc.properties file
-
-As described in the [CodeNarc documentation][codenarc-properties], you can configure a
-ruleset with `*.properties` files. Property files must be available on the Groovy
-classpath. The Groovy classpath of the docker image is set to `/opt` in the docker image,
-so you must mount the properties file there:
-
-```bash
-$ docker run --rm -v `pwd`:/ws -v `pwd`/codnearc.properties:/opt/codenarc.properties \
-    -u `id -u`:`id -g` abletonag/groovylint /opt/run_codenarc.py -- -includes='*.groovy' \
-    -rulesetfiles=file:myrules.groovy
-```
-
-### Groovy 3 vs. Groovy 4
-
-CodeNarc supports both Groovy 3 & Groovy 4, but as of CodeNarc version [v3.1.0][codenarc-v310],
-there are separate JAR files depending on the Groovy version. The `groovylint` Docker
-container uses the Groovy 4 version, but when running the `run_codenarc.py` script
-manually, it will attempt to auto-detect the Groovy version based on the binary under
-`--groovy-home` (or the `GROOVY_HOME` environment variable).
-
-### Usage in a Jenkinsfile
-
-To assist in linting on Jenkins, `groovylint` provides a pipeline library and global
-singleton. To use `groovylint` in this manner, you'll need to add it to your [Jenkins
-controller configuration][jenkins-lib-config]. Any `Jenkinsfile` which is using this
-library should also use the version tag, like so:
-
-```groovy
-// Example Jenkinsfile using a scripted pipeline
-@Library('groovylint@x.y.z') _
-
-node('linux') {
-  stage('Lint') {
-    // Example linting of multiple files and directories
-    groovylint.check('./Jenkinsfile,**/*.groovy')
-
-    // Example linting of a single file
-    groovylint.checkSingleFile(path: 'Jenkinsfile')
-  }
-}
-```
-
-Tags are available for all `major.minor.patch` versions, and branches with `major.minor`
-versions are updated whenever a new patch version is released. Jenkins exposes the library
-version in the environment variables, and the library will use that version to find the
-corresponding Docker image for that release.
-
-## Making releases
-
-In order to ensure that the library is using a compatible version of the Docker image, a
-file named `VERSION` exists in the top-level directory of this project. To make a release,
-this file should be updated accordingly and the commit merged to the `main` branch.
-Please also update the groovylint version in `pom.xml`.
-
-Once on `main`, a new Docker image will be published by Ableton's CI service, which will
-also push a corresponding git tag to the origin and update the respective `major.minor`
-branch.
-
-## Maintainers
-
-This project is maintained by the following GitHub users:
-
-- [@ala-ableton](https://github.com/ala-ableton)
-- [@nre-ableton](https://github.com/nre-ableton)
-
+To use a different image tag pass `-PdockerImageTag=<my-tag>`.
 
 [codenarc-home]: https://codenarc.github.io/CodeNarc/
 [codenarc-rules]: https://codenarc.github.io/CodeNarc/codenarc-rule-index.html
-[codenarc-properties]: https://codenarc.github.io/CodeNarc/codenarc-configuring-rules.html#configuring-rules-using-a-properties-file
-[codenarc-v310]: https://github.com/CodeNarc/CodeNarc/blob/master/CHANGELOG.md#version-310
-[docker-hub-home]: https://hub.docker.com/r/abletonag/groovylint
-[jenkins-lib-config]: https://jenkins.io/doc/book/pipeline/shared-libraries/#using-libraries

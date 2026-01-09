@@ -1,16 +1,9 @@
-# Build directory
+# Gradle
+/.gradle/
+# VSCode
+/.vscode
+# Build output
 /build/
-
-# Python stuff
-__pycache__
-
-# Gradle files
-.gradle
-gradle-app.setting
-!gradle-wrapper.jar
-.gradletasknamecache
-
-# Environment files
-.direnv
-.env
-.envrc
+/target/
+# CodeNarc
+/CodeNarcReport.*

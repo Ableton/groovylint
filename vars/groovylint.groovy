@@ -5,6 +5,7 @@
  * license that can be found in the LICENSE file.
  */
 
+// TODO(anz): This should receive a new, generic API that just passes through to CodeNarc.
 
 /**
  * Check a set of files with the {@code groovylint} Docker image.
@@ -42,11 +43,12 @@ void check(Map args = [:]) {
   }
   echo "Using groovylint Docker image: ${image.id}"
 
-  image.inside {
-    sh "python3 /opt/run_codenarc.py -- -includes=${includesPattern} ${extraArgs}"
+  image.inside('--entrypoint=""') {
+    sh 'java -jar /groovylint/groovylint.jar -failOnError=true' +
+       ' -rulesetfiles=ruleset.groovy -report=xml:codenarc-report.xml' +
+       " -includes=${includesPattern} ${extraArgs}"
   }
 }
-
 
 /**
  * Check a set of files with the {@code groovylint} Docker image.
@@ -67,7 +69,6 @@ void check(String includesPattern, Object groovylintImage = null, String extraAr
   )
 }
 
-
 /**
  * Check a single file with the {@code groovylint} Docker image.
  * @param args Map of arguments, which may include:
@@ -86,18 +87,5 @@ void check(String includesPattern, Object groovylintImage = null, String extraAr
 void checkSingleFile(Map args = [:]) {
   assert args.path
 
-  Object image = args.groovylintImage
-  if (!image) {
-    String version = env['library.groovylint.version']
-    if (!version) {
-      error 'Could not find groovylint version in environment'
-    }
-    image = docker.image("abletonag/groovylint:${version}")
-    image.pull()
-  }
-  echo "Using groovylint Docker image: ${image.id}"
-
-  image.inside {
-    sh "python3 /opt/run_codenarc.py --single-file ${args.path}"
-  }
+  check(includesPattern: args.path, groovylintImage: groovylintImage)
 }

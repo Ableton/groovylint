@@ -44,9 +44,19 @@ void check(Map args = [:]) {
   echo "Using groovylint Docker image: ${image.id}"
 
   image.inside('--entrypoint=""') {
-    sh 'java -jar /groovylint/groovylint.jar -failOnError=true' +
-       ' -rulesetfiles=ruleset.groovy -report=xml:codenarc-report.xml' +
-       " -includes=${includesPattern} ${extraArgs}"
+    String output = sh(
+      label: "Run groovylint",
+      script: 'java -jar /groovylint/groovylint.jar -failOnError=true' +
+        ' -rulesetfiles=ruleset.groovy' +
+        ' -report=console:stdout' + // We need this output to check for errors.
+        ' -report=json:codenarc-report.json' +
+        " -includes=${includesPattern} ${extraArgs}",
+      returnStdout: true,
+    ).trim()
+    echo "$output"
+    if (!output.contains('FilesWithViolations=0')) {
+        error("CodeNarc reported files with violations")
+    }
   }
 }
 

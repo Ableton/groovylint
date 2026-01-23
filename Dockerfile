@@ -1,7 +1,3 @@
-# A note for Apple Silicon users: Configure the Virtual Machine Options in Docker Desktop
-# to use the Apple Virtualization Framework, instead of Docker VMM. Otherwise the
-# container might hang indefinitely.
-
 FROM codenarc/codenarc:3.7.0-groovy-4.0.24
 
 RUN apt-get update\

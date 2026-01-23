@@ -17,6 +17,11 @@ By default, the Docker image will run CodeNarc checks on the `/ws` directory, so
 this command uses a volume mapping from the current working directory to that
 location.
 
+### On Apple Silicon
+
+Configure the Virtual Machine Options in Docker Desktop to use the Apple Virtualization
+Framework, instead of Docker VMM. Otherwise the container might hang indefinitely.
+
 ### Usage in a Jenkinsfile
 
 To assist in linting on Jenkins, `groovylint` provides a pipeline library and global

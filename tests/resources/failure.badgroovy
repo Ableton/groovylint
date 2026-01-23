@@ -1,1 +1,0 @@
-def foo = 'hello'  // Should trigger the VariableTypeRequired violation

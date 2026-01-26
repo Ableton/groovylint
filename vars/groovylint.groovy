@@ -29,7 +29,7 @@ void check(Map args) {
     "--volume=${env.WORKSPACE}:/ws",
   ].join(' ')
 
-  String image = args.groovylintImage ?: 'abletonag/codenarc:latest'
+  String image = args.groovylintImage ?: 'abletonag/groovylint:latest'
   echo "Using groovylint Docker image: ${image}"
 
   String command = '/entrypoint.sh'

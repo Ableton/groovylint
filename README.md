@@ -17,8 +17,8 @@ By default, the Docker image will run CodeNarc checks on the `/ws` directory, so
 this command uses a volume mapping from the current working directory to that
 location.
 
-An include pattern can be passed as the first argument, otherwise a default pattern (see
-`entrypoint.sh`).
+An include pattern can be passed as the first argument, otherwise a default pattern will
+be used (see `entrypoint.sh`).
 
 ### On Apple Silicon
 

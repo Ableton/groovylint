@@ -29,7 +29,7 @@ devToolsProject.run(
         docker.image('hadolint/hadolint:v2.14.0-debian').inside {
           sh 'hadolint Dockerfile'
         }
-      }
+      },
     )
   },
   publish: { data -> jupiter.publishDocs("${data['docs']}/", 'Ableton/groovylint') },

@@ -23,7 +23,21 @@ devToolsProject.run(
         // Use the Docker image created in the Build stage above. This ensures that the
         // we are checking our own Groovy code with the same library and image which
         // would be published to production.
-        groovylint.check(data['image'].id)
+        groovylint.check(groovylintImage: data['image'].id)
+      },
+      'groovylint failure': {
+        boolean failed = false
+        try {
+          groovylint.check(
+            groovylintImage: data['image'].id,
+            includesPattern: 'tests/resources/failure.badgroovy',
+          )
+        } catch (error) {
+          failed = true
+        }
+        if (!failed) {
+          error 'groovylint did not fail when analyzing code with violations'
+        }
       },
       hadolint: {
         docker.image('hadolint/hadolint:v2.14.0-debian').inside {

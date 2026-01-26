@@ -4,9 +4,11 @@ set -euo pipefail
 
 codenarc_json="$(mktemp)"
 
+_include_pattern="${1:-Jenkinsfile,*.gradle,**/*.groovy}"
+
 java -jar /lib/codenarc-all.jar\
     -failOnError=true\
-    -includes=Jenkinsfile,*.gradle,**/*.groovy\
+    -includes="${_include_pattern}"\
     -report=console:stdout\
     -report=json:${codenarc_json}\
     -rulesetfiles=file:/codenarc-rules/ruleset.groovy\

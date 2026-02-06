@@ -120,7 +120,7 @@ def _codenarc_version(version: str, *, is_groovy4: bool) -> str:
 
 def _download_file(url: str, output_dir: str) -> str:
     """Download a file from a URL to the download directory."""
-    output_file_name = url.split("/")[-1]
+    output_file_name = url.rsplit("/", maxsplit=1)[-1]
     output_file_path = os.path.join(output_dir, output_file_name)
 
     if os.path.exists(output_file_path):
@@ -235,7 +235,7 @@ def _is_slf4j_line(line: str) -> bool:
     CodeNarc in some cases prints things to stdout, or uses multi-line logging calls which
     cannot be parsed correctly when we attempt to re-log them in _log_codenarc_output.
     """
-    return isinstance(logging.getLevelName(line.split(" ")[0]), int)
+    return isinstance(logging.getLevelName(line.split(" ", maxsplit=1)[0]), int)
 
 
 def _is_valid_jar(file_path: str) -> bool:

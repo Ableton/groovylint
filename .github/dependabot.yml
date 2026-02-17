@@ -1,13 +1,7 @@
 ---
 version: 2
 updates:
-  - package-ecosystem: maven
-    directory: "/"
+  - package-ecosystem: docker
+    directory: ".hadolint"
     schedule:
-      interval: daily
-    open-pull-requests-limit: 1
-  - package-ecosystem: uv
-    directory: "/"
-    schedule:
-      interval: daily
-    open-pull-requests-limit: 1
+      interval: weekly

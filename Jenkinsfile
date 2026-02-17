@@ -66,11 +66,7 @@ devToolsProject.run(
           " --groovy-home ${pwd()}/groovy-${data.groovy4Version} --groovy4" +
           ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
       },
-      hadolint: {
-        docker.image('hadolint/hadolint:v2.12.0-debian').inside {
-          sh 'hadolint Dockerfile'
-        }
-      },
+      hadolint: { hadolint.check('Dockerfile') },
       pytest: {
         withEnv([
           'GROOVY_HOME=test',

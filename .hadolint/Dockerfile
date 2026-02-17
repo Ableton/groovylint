@@ -1,1 +1,1 @@
-FROM hadolint/hadolint:v2.12.0-debian
+FROM hadolint/hadolint:v2.14.0-debian

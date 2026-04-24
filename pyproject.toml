@@ -1,7 +1,7 @@
 [dependency-groups]
 dev = [
     "pytest>=8.4.2",
-    "ruff>=0.15.11",
+    "ruff>=0.15.12",
 ]
 
 [project]

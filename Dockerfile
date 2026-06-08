@@ -23,7 +23,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY pom.xml /opt/
-COPY ruleset.groovy /opt/resources/
+COPY resources/ruleset.groovy /opt/resources/
 COPY run_codenarc.py /opt/
 
 WORKDIR /opt

@@ -1,6 +1,6 @@
 [dependency-groups]
 dev = [
-    "pytest>=8.4.2",
+    "pytest>=9.1.0",
     "ruff>=0.15.17",
 ]
 

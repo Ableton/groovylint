@@ -23,6 +23,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY pom.xml /opt/
+COPY resources/WorkflowScriptStub.jar /opt/resources/
 COPY resources/ruleset.groovy /opt/resources/
 COPY run_codenarc.py /opt/
 

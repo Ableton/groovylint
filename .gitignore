@@ -1,5 +1,6 @@
 # Build directory
 /build/
+/target/
 
 # Python stuff
 __pycache__

@@ -15,8 +15,8 @@
  *            to check. <strong>(required)</strong>.
  *          </li>
  *          <li>
- *            {@code extraArgs}: Extra arguments to pass to CodeNarc. Callers will have to
- *            escape these arguments if necessary.
+ *            {@code codeNarcArgs}: Extra arguments to pass to CodeNarc. Callers will
+ *            have to escape these arguments if necessary.
  *          </li>
  *          <li>
  *            {@code groovylintImage}: If specified, use this Docker image handle to run
@@ -29,7 +29,7 @@
 void check(Map args = [:]) {
   assert args.includesPattern
   String includesPattern = args.includesPattern
-  String extraArgs = args.extraArgs ?: ''
+  String codeNarcArgs = args.codeNarcArgs ?: ''
 
   Object image = args.groovylintImage
   if (!image) {
@@ -43,7 +43,7 @@ void check(Map args = [:]) {
   echo "Using groovylint Docker image: ${image.id}"
 
   image.inside {
-    sh "python3 /opt/run_codenarc.py -- -includes=${includesPattern} ${extraArgs}"
+    sh "python3 /opt/run_codenarc.py -- -includes=${includesPattern} ${codeNarcArgs}"
   }
 }
 

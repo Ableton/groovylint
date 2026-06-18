@@ -19,6 +19,10 @@
  *            have to escape these arguments if necessary.
  *          </li>
  *          <li>
+ *            {@code groovylintArgs}: Extra arguments to pass to {@code run_codenarc.py}.
+ *            Callers will have to escape these arguments if necessary.
+ *          </li>
+ *          <li>
  *            {@code groovylintImage}: If specified, use this Docker image handle to run
  *            {@code groovylint}. If {@code null}, then this function will try to fetch
  *            {@code groovylint} from Docker hub using the same version number
@@ -29,6 +33,7 @@
 void check(Map args = [:]) {
   assert args.includesPattern
   String includesPattern = args.includesPattern
+  String groovylintArgs = args.groovylintArgs ?: ''
   String codeNarcArgs = args.codeNarcArgs ?: ''
 
   Object image = args.groovylintImage
@@ -43,7 +48,8 @@ void check(Map args = [:]) {
   echo "Using groovylint Docker image: ${image.id}"
 
   image.inside {
-    sh "python3 /opt/run_codenarc.py -- -includes=${includesPattern} ${codeNarcArgs}"
+    sh "python3 /opt/run_codenarc.py ${groovylintArgs} " +
+      "-- -includes=${includesPattern} ${codeNarcArgs}"
   }
 }
 
@@ -54,6 +60,10 @@ void check(Map args = [:]) {
  *        <ul>
  *          <li>
  *            {@code path}: Path to the single file to lint <strong>(required)</strong>.
+ *          </li>
+ *          <li>
+ *            {@code groovylintArgs}: Extra arguments to pass to {@code run_codenarc.py}.
+ *            Callers will have to escape these arguments if necessary.
  *          </li>
  *          <li>
  *            {@code groovylintImage}: If specified, use this Docker image handle to run
@@ -76,8 +86,9 @@ void checkSingleFile(Map args = [:]) {
     image.pull()
   }
   echo "Using groovylint Docker image: ${image.id}"
+  String groovylintArgs = args.groovylintArgs ?: ''
 
   image.inside {
-    sh "python3 /opt/run_codenarc.py --single-file ${args.path}"
+    sh "python3 /opt/run_codenarc.py ${groovylintArgs} --single-file ${args.path}"
   }
 }

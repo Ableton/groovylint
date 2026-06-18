@@ -25,6 +25,10 @@ devToolsProject.run(
     }
   },
   build: { data ->
+    sh(
+      label: 'Build WorkflowScript stub JAR',
+      script: 'mvn --batch-mode --no-transfer-progress package',
+    )
     String gitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
     data['image'] = docker.build("abletonag/groovylint:${gitHash}")
   },

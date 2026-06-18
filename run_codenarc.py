@@ -106,6 +106,12 @@ def _build_classpath(args: argparse.Namespace) -> str:
         f"{args.resources}/slf4j-simple-{args.slf4j_version}.jar",
     ]
 
+    # For Jenkinsfiles that reference the WorkflowScript class, they will need to use this
+    # stub class with Groovy 4.x and later. The JAR can be built with `mvn package`.
+    stub_jar = f"{args.resources}/WorkflowScriptStub.jar"
+    if os.path.exists(stub_jar):
+        classpath.append(stub_jar)
+
     for path in classpath:
         if not (os.path.exists(path) or path.endswith("*")):
             raise MissingClasspathElementError(path)

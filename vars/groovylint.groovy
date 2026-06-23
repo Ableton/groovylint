@@ -92,3 +92,31 @@ void checkSingleFile(Map args = [:]) {
     sh "python3 /opt/run_codenarc.py ${groovylintArgs} --single-file ${args.path}"
   }
 }
+
+
+/**
+ * Helper function to find a JAR file under a given search path.
+ *
+ * When using Jenkinsfiles that import libraries, it may be necessary to provide CodeNarc
+ * with a path to the corresponding JAR files (see the {@code --jar} argument in
+ * {@code run_codenarc.py}). Assuming you know the name of the library, this function will
+ * help you find its path on the remote host. Note that you'll need a {@code node} context
+ * to use this function.
+ *
+ * @param searchPath Path to search for the JAR file in.
+ * @param glob Ant-like glob to use to find the JAR file.
+ */
+String findJar(String searchPath, String glob) {
+  String result
+  dir(searchPath) {
+    List jarFiles = findFiles(glob: glob)
+    if (jarFiles.size() == 0) {
+      error "Failed to find ${glob} in ${searchPath}"
+    }
+    else if (jarFiles.size() > 1) {
+      error "Found multiple candidates for ${glob} in ${searchPath}"
+    }
+    result = "${searchPath}/${jarFiles[0].path}"
+  }
+  return result
+}

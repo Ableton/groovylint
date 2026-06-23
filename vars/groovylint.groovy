@@ -15,8 +15,12 @@
  *            to check. <strong>(required)</strong>.
  *          </li>
  *          <li>
- *            {@code extraArgs}: Extra arguments to pass to CodeNarc. Callers will have to
- *            escape these arguments if necessary.
+ *            {@code codeNarcArgs}: Extra arguments to pass to CodeNarc. Callers will
+ *            have to escape these arguments if necessary.
+ *          </li>
+ *          <li>
+ *            {@code groovylintArgs}: Extra arguments to pass to {@code run_codenarc.py}.
+ *            Callers will have to escape these arguments if necessary.
  *          </li>
  *          <li>
  *            {@code groovylintImage}: If specified, use this Docker image handle to run
@@ -29,7 +33,8 @@
 void check(Map args = [:]) {
   assert args.includesPattern
   String includesPattern = args.includesPattern
-  String extraArgs = args.extraArgs ?: ''
+  String groovylintArgs = args.groovylintArgs ?: ''
+  String codeNarcArgs = args.codeNarcArgs ?: ''
 
   Object image = args.groovylintImage
   if (!image) {
@@ -43,28 +48,9 @@ void check(Map args = [:]) {
   echo "Using groovylint Docker image: ${image.id}"
 
   image.inside {
-    sh "python3 /opt/run_codenarc.py -- -includes=${includesPattern} ${extraArgs}"
+    sh "python3 /opt/run_codenarc.py ${groovylintArgs} " +
+      "-- -includes=${includesPattern} ${codeNarcArgs}"
   }
-}
-
-
-/**
- * Check a set of files with the {@code groovylint} Docker image.
- * @param includesPattern A comma-separated list of Ant-style file patterns to check.
- * @param groovylintImage If specified, use this Docker image handle to run
- *        {@code groovylint}. If {@code null}, then this function will try to fetch
- *        {@code groovylint} from Docker hub using the same version number corresponding
- *        to this library. (default: {@code null})
- * @param extraArgs Extra arguments to pass to CodeNarc. Callers will have to escape these
- *        arguments if necessary.
- * @deprecated Use check(Map) instead.
- */
-void check(String includesPattern, Object groovylintImage = null, String extraArgs = '') {
-  check(
-    extraArgs: extraArgs,
-    includesPattern: includesPattern,
-    groovylintImage: groovylintImage,
-  )
 }
 
 
@@ -74,6 +60,10 @@ void check(String includesPattern, Object groovylintImage = null, String extraAr
  *        <ul>
  *          <li>
  *            {@code path}: Path to the single file to lint <strong>(required)</strong>.
+ *          </li>
+ *          <li>
+ *            {@code groovylintArgs}: Extra arguments to pass to {@code run_codenarc.py}.
+ *            Callers will have to escape these arguments if necessary.
  *          </li>
  *          <li>
  *            {@code groovylintImage}: If specified, use this Docker image handle to run
@@ -96,8 +86,9 @@ void checkSingleFile(Map args = [:]) {
     image.pull()
   }
   echo "Using groovylint Docker image: ${image.id}"
+  String groovylintArgs = args.groovylintArgs ?: ''
 
   image.inside {
-    sh "python3 /opt/run_codenarc.py --single-file ${args.path}"
+    sh "python3 /opt/run_codenarc.py ${groovylintArgs} --single-file ${args.path}"
   }
 }

@@ -105,6 +105,7 @@ def _build_classpath(args: argparse.Namespace) -> str:
         f"{args.resources}/slf4j-api-{args.slf4j_version}.jar",
         f"{args.resources}/slf4j-simple-{args.slf4j_version}.jar",
     ]
+    classpath.extend(args.jars)
 
     # For Jenkinsfiles that reference the WorkflowScript class, they will need to use this
     # stub class with Groovy 4.x and later. The JAR can be built with `mvn package`.
@@ -367,6 +368,15 @@ def parse_args(
         "--codenarc-version",
         default=default_jar_versions["CodeNarc"],
         help="CodeNarc version to use.",
+    )
+
+    arg_parser.add_argument(
+        "-j",
+        "--jar",
+        action="append",
+        default=[],
+        dest="jars",
+        help="Path to a JAR file to add to the classpath. May be given multiple times.",
     )
 
     arg_parser.add_argument(

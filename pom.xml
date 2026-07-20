@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.codenarc</groupId>
             <artifactId>CodeNarc</artifactId>
-            <version>3.7.0</version>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.gmetrics</groupId>

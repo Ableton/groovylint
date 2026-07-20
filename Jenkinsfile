@@ -13,10 +13,9 @@ library "groovylint@${params.JENKINS_COMMIT}"
 devToolsProject.run(
   defaultBranch: 'main',
   setup: { data ->
-    data['groovy3Version'] = '3.0.22'
     data['groovy4Version'] = '4.0.22'
 
-    [data.groovy3Version, data.groovy4Version].each { groovyVersion ->
+    [data.groovy4Version].each { groovyVersion ->
       String groovyZip = "apache-groovy-binary-${groovyVersion}.zip"
       String mirrorHost = 'groovy.jfrog.io/artifactory/dist-release-local/groovy-zips'
       sh "curl -L -o ${groovyZip} https://${mirrorHost}/${groovyZip}"
@@ -63,9 +62,6 @@ devToolsProject.run(
         // Run groovylint using the system Python. This is not a recommended use-case
         // for Jenkins CI installations, but is often more useful for developers running
         // groovylint locally.
-        sh "python3 run_codenarc.py --verbose --resources ${env.WORKSPACE}/resources" +
-          " --groovy-home ${pwd()}/groovy-${data.groovy3Version}" +
-          ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
         sh "python3 run_codenarc.py --verbose --resources ${env.WORKSPACE}/resources" +
           " --groovy-home ${pwd()}/groovy-${data.groovy4Version} --groovy4" +
           ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'

@@ -14,8 +14,9 @@ devToolsProject.run(
   defaultBranch: 'main',
   setup: { data ->
     data['groovy4Version'] = '4.0.22'
+    data['groovy5Version'] = '5.0.6'
 
-    [data.groovy4Version].each { groovyVersion ->
+    [data.groovy4Version, data.groovy5Version].each { groovyVersion ->
       String groovyZip = "apache-groovy-binary-${groovyVersion}.zip"
       String mirrorHost = 'groovy.jfrog.io/artifactory/dist-release-local/groovy-zips'
       sh "curl -L -o ${groovyZip} https://${mirrorHost}/${groovyZip}"
@@ -64,6 +65,9 @@ devToolsProject.run(
         // groovylint locally.
         sh "python3 run_codenarc.py --verbose --resources ${env.WORKSPACE}/resources" +
           " --groovy-home ${pwd()}/groovy-${data.groovy4Version}" +
+          ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
+        sh "python3 run_codenarc.py --verbose --resources ${env.WORKSPACE}/resources" +
+          " --groovy-home ${pwd()}/groovy-${data.groovy5Version}" +
           ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
       },
       hadolint: { hadolint.check('Dockerfile') },

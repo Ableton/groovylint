@@ -63,7 +63,7 @@ devToolsProject.run(
         // for Jenkins CI installations, but is often more useful for developers running
         // groovylint locally.
         sh "python3 run_codenarc.py --verbose --resources ${env.WORKSPACE}/resources" +
-          " --groovy-home ${pwd()}/groovy-${data.groovy4Version} --groovy4" +
+          " --groovy-home ${pwd()}/groovy-${data.groovy4Version}" +
           ' -- -includes="./Jenkinsfile,**/*.groovy,**/*.gradle"'
       },
       hadolint: { hadolint.check('Dockerfile') },

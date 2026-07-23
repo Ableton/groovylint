@@ -94,7 +94,7 @@ class MissingReportFileError(Exception):
 
 def _build_classpath(args: argparse.Namespace) -> str:
     """Construct the classpath to use for running CodeNarc."""
-    codenarc_version = _codenarc_version(args.codenarc_version, is_groovy4=args.groovy4)
+    codenarc_version = _codenarc_version(args.codenarc_version)
     classpath = [
         args.resources,
         f"{args.groovy_home}/lib/*",
@@ -120,9 +120,9 @@ def _build_classpath(args: argparse.Namespace) -> str:
     return ":".join(classpath)
 
 
-def _codenarc_version(version: str, *, is_groovy4: bool) -> str:
-    """Get the CodeNarc version depending on the version of Groovy being used."""
-    return f"Groovy4-{version}" if is_groovy4 else version
+def _codenarc_version(version: str) -> str:
+    """Get the CodeNarc version string."""
+    return f"Groovy4-{version}"
 
 
 def _download_file(url: str, output_dir: str) -> str:
@@ -175,7 +175,7 @@ def _fetch_jars(args: argparse.Namespace) -> None:
     if not os.path.exists(args.resources):
         os.mkdir(args.resources)
 
-    codenarc_version = _codenarc_version(args.codenarc_version, is_groovy4=args.groovy4)
+    codenarc_version = _codenarc_version(args.codenarc_version)
     jar_urls = [
         (
             "https://github.com/CodeNarc/CodeNarc/releases/download"
@@ -226,14 +226,6 @@ def _guess_groovy_home() -> str | None:
             return linux_groovy_home
 
     return None
-
-
-def _is_groovy4(groovy_home: str) -> bool:
-    groovy_bin = os.path.join(groovy_home, "bin", "groovy")
-    log.debug("Checking version for groovy binary %s", groovy_bin)
-    groovy_version = subprocess.check_output([f"{groovy_bin}", "--version"]).decode()
-    log.debug("Groovy version string: %s", groovy_version)
-    return groovy_version.startswith("Groovy Version: 4.")
 
 
 def _is_slf4j_line(line: str) -> bool:
@@ -399,8 +391,6 @@ def parse_args(
         help="Groovy home directory.",
     )
 
-    arg_parser.add_argument("--groovy4", action="store_true", help=argparse.SUPPRESS)
-
     arg_parser.add_argument(
         "--resources",
         default=os.path.join(GROOVYLINT_HOME, "resources"),
@@ -461,8 +451,6 @@ def parse_args(
         sys.exit("Could not determine GMetrics version")
     if not args.slf4j_version:
         sys.exit("Could not determine SLF4J version")
-
-    args.groovy4 = _is_groovy4(args.groovy_home)
 
     if args.single_file and len(args.codenarc_options) > 1:
         arg_parser.error('--single-file cannot be used with "--"')

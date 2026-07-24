@@ -100,7 +100,6 @@ def _build_classpath(args: argparse.Namespace) -> str:
         f"{args.groovy_home}/lib/*",
         f"{args.resources}/CodeNarc-{codenarc_version}.jar",
         f"{args.resources}/GMetrics-{args.gmetrics_version}.jar",
-        f"{args.resources}/activation-{args.activation_version}.jar",
         f"{args.resources}/jaxb-api-{args.jaxb_api_version}.jar",
         f"{args.resources}/slf4j-api-{args.slf4j_version}.jar",
         f"{args.resources}/slf4j-simple-{args.slf4j_version}.jar",
@@ -184,10 +183,6 @@ def _fetch_jars(args: argparse.Namespace) -> None:
         (
             "https://github.com/dx42/gmetrics/releases/download"
             f"/v{args.gmetrics_version}/GMetrics-{args.gmetrics_version}.jar"
-        ),
-        (
-            "https://repo1.maven.org/maven2/javax/activation/activation"
-            f"/{args.activation_version}/activation-{args.activation_version}.jar"
         ),
         (
             "https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api"
@@ -348,12 +343,6 @@ def parse_args(
     """Parse arguments from the command line."""
     arg_parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
-
-    arg_parser.add_argument(
-        "--activation-version",
-        default=default_jar_versions["activation"],
-        help="Activation Framework version to use (required for JDK11 + Groovy 3.x).",
     )
 
     arg_parser.add_argument(

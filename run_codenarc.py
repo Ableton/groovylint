@@ -100,7 +100,6 @@ def _build_classpath(args: argparse.Namespace) -> str:
         f"{args.groovy_home}/lib/*",
         f"{args.resources}/CodeNarc-{codenarc_version}.jar",
         f"{args.resources}/GMetrics-{args.gmetrics_version}.jar",
-        f"{args.resources}/jaxb-api-{args.jaxb_api_version}.jar",
         f"{args.resources}/slf4j-api-{args.slf4j_version}.jar",
         f"{args.resources}/slf4j-simple-{args.slf4j_version}.jar",
     ]
@@ -183,10 +182,6 @@ def _fetch_jars(args: argparse.Namespace) -> None:
         (
             "https://github.com/dx42/gmetrics/releases/download"
             f"/v{args.gmetrics_version}/GMetrics-{args.gmetrics_version}.jar"
-        ),
-        (
-            "https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api"
-            f"/{args.jaxb_api_version}/jaxb-api-{args.jaxb_api_version}.jar"
         ),
         (
             f"https://repo1.maven.org/maven2/org/slf4j/slf4j-api/{args.slf4j_version}"
@@ -358,12 +353,6 @@ def parse_args(
         default=[],
         dest="jars",
         help="Path to a JAR file to add to the classpath. May be given multiple times.",
-    )
-
-    arg_parser.add_argument(
-        "--jaxb-api-version",
-        default=default_jar_versions["jaxb-api"],
-        help="JAXB API version to use (required for JDK11 + Groovy 3.x).",
     )
 
     arg_parser.add_argument(

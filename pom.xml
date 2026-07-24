@@ -17,11 +17,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.4.0-b180830.0359</version>
-        </dependency>
-        <dependency>
             <groupId>org.codenarc</groupId>
             <artifactId>CodeNarc</artifactId>
             <version>4.0.0</version>

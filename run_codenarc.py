@@ -94,14 +94,12 @@ class MissingReportFileError(Exception):
 
 def _build_classpath(args: argparse.Namespace) -> str:
     """Construct the classpath to use for running CodeNarc."""
-    codenarc_version = _codenarc_version(args.codenarc_version, is_groovy4=args.groovy4)
+    codenarc_version = _codenarc_version(args.codenarc_version)
     classpath = [
         args.resources,
         f"{args.groovy_home}/lib/*",
         f"{args.resources}/CodeNarc-{codenarc_version}.jar",
         f"{args.resources}/GMetrics-{args.gmetrics_version}.jar",
-        f"{args.resources}/activation-{args.activation_version}.jar",
-        f"{args.resources}/jaxb-api-{args.jaxb_api_version}.jar",
         f"{args.resources}/slf4j-api-{args.slf4j_version}.jar",
         f"{args.resources}/slf4j-simple-{args.slf4j_version}.jar",
     ]
@@ -120,9 +118,9 @@ def _build_classpath(args: argparse.Namespace) -> str:
     return ":".join(classpath)
 
 
-def _codenarc_version(version: str, *, is_groovy4: bool) -> str:
-    """Get the CodeNarc version depending on the version of Groovy being used."""
-    return f"Groovy4-{version}" if is_groovy4 else version
+def _codenarc_version(version: str) -> str:
+    """Get the CodeNarc version string."""
+    return f"Groovy4-{version}"
 
 
 def _download_file(url: str, output_dir: str) -> str:
@@ -175,7 +173,7 @@ def _fetch_jars(args: argparse.Namespace) -> None:
     if not os.path.exists(args.resources):
         os.mkdir(args.resources)
 
-    codenarc_version = _codenarc_version(args.codenarc_version, is_groovy4=args.groovy4)
+    codenarc_version = _codenarc_version(args.codenarc_version)
     jar_urls = [
         (
             "https://github.com/CodeNarc/CodeNarc/releases/download"
@@ -184,14 +182,6 @@ def _fetch_jars(args: argparse.Namespace) -> None:
         (
             "https://github.com/dx42/gmetrics/releases/download"
             f"/v{args.gmetrics_version}/GMetrics-{args.gmetrics_version}.jar"
-        ),
-        (
-            "https://repo1.maven.org/maven2/javax/activation/activation"
-            f"/{args.activation_version}/activation-{args.activation_version}.jar"
-        ),
-        (
-            "https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api"
-            f"/{args.jaxb_api_version}/jaxb-api-{args.jaxb_api_version}.jar"
         ),
         (
             f"https://repo1.maven.org/maven2/org/slf4j/slf4j-api/{args.slf4j_version}"
@@ -226,14 +216,6 @@ def _guess_groovy_home() -> str | None:
             return linux_groovy_home
 
     return None
-
-
-def _is_groovy4(groovy_home: str) -> bool:
-    groovy_bin = os.path.join(groovy_home, "bin", "groovy")
-    log.debug("Checking version for groovy binary %s", groovy_bin)
-    groovy_version = subprocess.check_output([f"{groovy_bin}", "--version"]).decode()
-    log.debug("Groovy version string: %s", groovy_version)
-    return groovy_version.startswith("Groovy Version: 4.")
 
 
 def _is_slf4j_line(line: str) -> bool:
@@ -359,12 +341,6 @@ def parse_args(
     )
 
     arg_parser.add_argument(
-        "--activation-version",
-        default=default_jar_versions["activation"],
-        help="Activation Framework version to use (required for JDK11 + Groovy 3.x).",
-    )
-
-    arg_parser.add_argument(
         "--codenarc-version",
         default=default_jar_versions["CodeNarc"],
         help="CodeNarc version to use.",
@@ -380,12 +356,6 @@ def parse_args(
     )
 
     arg_parser.add_argument(
-        "--jaxb-api-version",
-        default=default_jar_versions["jaxb-api"],
-        help="JAXB API version to use (required for JDK11 + Groovy 3.x).",
-    )
-
-    arg_parser.add_argument(
         "--gmetrics-version",
         default=default_jar_versions["GMetrics"],
         help="GMetrics version to use.",
@@ -398,8 +368,6 @@ def parse_args(
         required=(default_groovy_home is None),
         help="Groovy home directory.",
     )
-
-    arg_parser.add_argument("--groovy4", action="store_true", help=argparse.SUPPRESS)
 
     arg_parser.add_argument(
         "--resources",
@@ -461,8 +429,6 @@ def parse_args(
         sys.exit("Could not determine GMetrics version")
     if not args.slf4j_version:
         sys.exit("Could not determine SLF4J version")
-
-    args.groovy4 = _is_groovy4(args.groovy_home)
 
     if args.single_file and len(args.codenarc_options) > 1:
         arg_parser.error('--single-file cannot be used with "--"')

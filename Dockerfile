@@ -5,7 +5,7 @@
 
 FROM groovy:4.0.24-jdk21-jammy
 
-USER root
+USER 0
 
 RUN sed --in-place -e 's/archive.ubuntu.com/de.archive.ubuntu.com/g' /etc/apt/sources.list
 
@@ -29,8 +29,8 @@ COPY run_codenarc.py /opt/
 
 WORKDIR /opt
 RUN python3.12 run_codenarc.py --resources /opt/resources
-RUN groupadd -r jenkins && useradd --no-log-init -r -g jenkins jenkins
-USER jenkins
+RUN groupadd -r jenkins && useradd -u 1337 --no-log-init -r -g jenkins jenkins
+USER 1337
 
 WORKDIR /ws
 

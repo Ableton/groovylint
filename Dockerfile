@@ -3,7 +3,7 @@
 # Use of this source code is governed by a MIT-style
 # license that can be found in the LICENSE file.
 
-FROM groovy:4.0.24-jdk21-jammy
+FROM groovy:4.0.33-jdk21-noble
 
 USER 0
 
@@ -15,8 +15,7 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Add deadsnakes and install Python 3.12
-RUN add-apt-repository ppa:deadsnakes/ppa
+# Install Python 3.12
 RUN apt-get update \
     && apt-get install -y python3.12=3.12.* --no-install-recommends \
     && apt-get clean \

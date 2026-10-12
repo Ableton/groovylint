@@ -78,7 +78,7 @@ classpath. The Groovy classpath of the docker image is set to `/opt` in the dock
 so you must mount the properties file there:
 
 ```bash
-$ docker run --rm -v `pwd`:/ws -v `pwd`/codnearc.properties:/opt/codenarc.properties \
+$ docker run --rm -v `pwd`:/ws -v `pwd`/codenarc.properties:/opt/codenarc.properties \
     -u `id -u`:`id -g` abletonag/groovylint /opt/run_codenarc.py -- -includes='*.groovy' \
     -rulesetfiles=file:myrules.groovy
 ```
